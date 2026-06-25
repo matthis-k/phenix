@@ -3,6 +3,10 @@
   "workspace": "phenix",
   "repos": [
     {
+      "name": "phenix",
+      "path": "."
+    },
+    {
       "name": "phenixos",
       "path": "phenixos"
     },
