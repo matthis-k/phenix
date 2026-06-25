@@ -1,10 +1,27 @@
 ---
-title: Phenix Migration Plan
+title: Phenix Migration Plan (Archived)
 type: note
 permalink: newxos/phenix/phenix-migration-plan
+archive: true
 ---
 
-# Phenix Migration Plan
+> **DEPRECATED — This document describes the old `phenix-sync` plan.**
+>
+> The old `phenix sync` / `phenix-sync` tool has been retired.
+>
+> **`stitch` is the replacement** — a standalone multi-repo Git changeset coordinator.
+>
+> - Docs: `docs/stitch.md`
+> - Config: `.stitch.json` (not `sync.json`)
+> - State: `.stitch/changesets/<id>.json` (not DAG-based)
+>
+> The old `sync.json` files in individual repos are preserved for reference
+> but are no longer consumed by any active tool. `tend` covers the
+> maintenance/check workflow that `sync.json` used to describe.
+>
+> See `docs/stitch.md` and `docs/tend.md` for current documentation.
+
+# Phenix Migration Plan (Archived)
 
 ## Required repos
 

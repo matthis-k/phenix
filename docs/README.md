@@ -14,9 +14,11 @@ This documentation is an **ought-state** documentation set. It defines how the w
 
 1. `guardrails.md`
 2. `opencode.md`
-3. `testing.md`
-4. `migration.md`
-5. `roadmap.md`
+3. `stitch.md`
+4. `tend.md`
+5. `testing.md`
+6. `migration.md`
+7. `roadmap.md`
 
 ## Core idea
 
@@ -44,6 +46,20 @@ The project intentionally proceeds in this order:
 3. Migration from `newxos`
 
 Do not migrate features before the guardrails and test runner exist.
+
+## Agent workflows
+
+Agents should use the Phenix MCP tools rather than reconstructing workflows from shell commands.
+
+- Use `tend` for check planning and execution.
+- Use `stitch` for multi-repo git status, DAGs, commits, and sync.
+
+See:
+
+- `docs/agents/tool-routing.md`
+- `docs/workflows/agent-check-flow.md`
+- `docs/workflows/agent-commit-flow.md`
+- `docs/mcp/contracts.md`
 
 ## Foundation boundary
 
