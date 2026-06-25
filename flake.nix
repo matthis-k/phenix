@@ -2,6 +2,7 @@
   description = "Phenix workspace superflake aggregating all subflakes";
 
   inputs = {
+    flake-parts.url = "github:hercules-ci/flake-parts";
     phenix-pins.url = "github:matthis-k/phenix-pins";
 
     phenix-packages.url = "github:matthis-k/phenix-packages";
@@ -20,10 +21,12 @@
     phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
   };
 
-  outputs = inputs: {
-    apps.x86_64-linux = {
-      sync = inputs.phenix-tools.apps.x86_64-linux.sync;
-      default = inputs.phenix-tools.apps.x86_64-linux.sync;
+  outputs = inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" "aarch64-linux" ];
+      perSystem = { system, ... }: {
+        apps.sync = inputs.phenix-tools.apps.${system}.sync;
+        apps.default = inputs.phenix-tools.apps.${system}.sync;
+      };
     };
-  };
 }
