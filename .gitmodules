@@ -4,9 +4,6 @@
 [submodule "phenix-packages"]
 	path = phenix-packages
 	url = git@github.com:matthis-k/phenix-packages.git
-[submodule "phenix-shell"]
-	path = phenix-shell
-	url = git@github.com:matthis-k/phenix-shell.git
 [submodule "phenix-nvim"]
 	path = phenix-nvim
 	url = git@github.com:matthis-k/phenix-nvim.git
@@ -16,3 +13,6 @@
 [submodule "phenix-tools"]
 	path = phenix-tools
 	url = git@github.com:matthis-k/phenix-tools.git
+[submodule "phenix-de"]
+	path = phenix-de
+	url = git@github.com:matthis-k/phenix-de.git

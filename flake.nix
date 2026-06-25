@@ -9,8 +9,8 @@
     phenix-packages.url = "github:matthis-k/phenix-packages";
     phenix-packages.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-shell.url = "github:matthis-k/phenix-shell";
-    phenix-shell.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-de.url = "github:matthis-k/phenix-de";
+    phenix-de.inputs.phenix-pins.follows = "phenix-pins";
 
     phenix-nvim.url = "github:matthis-k/phenix-nvim";
     phenix-nvim.inputs.phenix-pins.follows = "phenix-pins";
@@ -28,7 +28,7 @@
       imports = [
         ./phenix-module.nix
         inputs.phenix-packages.flakeModules.default
-        inputs.phenix-shell.flakeModules.default
+        inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
         inputs.phenix-hosts.flakeModules.default
         inputs.phenix-tools.flakeModules.default
