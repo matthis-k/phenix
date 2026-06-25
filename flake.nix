@@ -36,6 +36,7 @@
 
       perSystem = { system, phenixPackages, ... }: {
         apps.sync = inputs.phenix-tools.apps.${system}.sync;
+        apps.gate = inputs.phenix-tools.apps.${system}.gate;
         apps.default = inputs.phenix-tools.apps.${system}.sync;
       };
     };
