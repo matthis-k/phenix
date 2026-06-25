@@ -7,7 +7,7 @@ Used for foundation work only.
 - guardrails
 - OpenCode config
 - dev shells
-- test runner
+- test runner scaffold
 - gate infrastructure
 - docs
 - roadmap
@@ -25,6 +25,7 @@ Must not migrate real `newxos` features.
 5. Run gates (via `phenix-tools gate`)
 6. Review invariants
 7. Update `docs/roadmap.md`
+8. End with final report
 
 ## After each task
 

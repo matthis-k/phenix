@@ -2,6 +2,14 @@
 
 Documents the Phenix tooling and gate infrastructure.
 
+## Dev shell
+
+The dev shell should make expected tools available. Enter with:
+
+```sh
+nix develop
+```
+
 ## Gate runner
 
 - Command: `phenix-tools gate`
@@ -19,3 +27,10 @@ Documents the Phenix tooling and gate infrastructure.
 ## Key principle
 
 Never claim a check passed unless it actually ran.
+
+## Design rules
+
+- Check routing is not AI-based
+- Narrow checks before broad checks
+- No expected-failing default gates
+- No large testing DSL in foundation phase

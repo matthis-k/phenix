@@ -13,3 +13,6 @@ Documents the Phenix repo architecture and guardrails.
 - One feature per file/directory
 - Wrapper-first runtime composition
 - No newxos compatibility debt
+- No big-bang migration
+- Docs as ought-state — describe the intended workflow, not historical notes
+- Roadmap tracks actual implementation vs documented intent

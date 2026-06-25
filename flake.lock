@@ -877,11 +877,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782392416,
-        "narHash": "sha256-OvWMZVM/1THliTPp0LJpTzGdD82tbC22Cu0OwvCvHvM=",
+        "lastModified": 1782404353,
+        "narHash": "sha256-fc+rrF60ddV6tfREc4g9KSZwbwDjPvnye6Ox4weFw+U=",
         "owner": "matthis-k",
         "repo": "phenix-tools",
-        "rev": "5db77620ee64dcb169796b6c3321ec819c1f148c",
+        "rev": "71c84448687fc19d8a87a5f3d47e69872ae22771",
         "type": "github"
       },
       "original": {

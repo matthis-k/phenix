@@ -6,9 +6,7 @@ permalink: newxos/opencode
 
 # Phenix OpenCode Workflow
 
-This document describes the intended Phenix workflow.
-
-It is an **ought-state** document. Items not yet implemented must be tracked in [`roadmap.md`](./roadmap.md).
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
 
 ## Purpose
 
@@ -28,19 +26,9 @@ intake
   -> final report
 ```
 
-## Strategy: repo-local (only)
+## Preferred setup
 
-Phenix uses **repo-local** OpenCode configuration. This is the sole strategy.
-
-Rules:
-
-- The default `opencode` wrapper remains general-purpose and is never modified for Phenix.
-- No separate `phenix-opencode` wrapper is created unless the existing Nix tooling already has a clean wrapper pattern that does not duplicate repo-local definitions.
-- No Nix wrapper writes to `~/.config/opencode`.
-- Phenix agents and commands are available when running `opencode` inside the Phenix repo via `.opencode/`.
-- If a wrapper is ever added, it must not duplicate repo-local agent definitions.
-
-## Configuration layout
+Default to repo-local OpenCode configuration:
 
 ```text
 .opencode/
@@ -62,6 +50,24 @@ Rules:
       SKILL.md
 ```
 
+This keeps Phenix-specific behavior versioned with the workspace.
+
+## Default OpenCode vs Phenix OpenCode
+
+The default `opencode` wrapper should remain general-purpose.
+
+Phenix-specific behavior should come from repo-local `.opencode/` by default.
+
+Do not create a Nix-generated Phenix OpenCode config unless all of the following are true:
+
+1. the existing Nix code already has a simple wrapper pattern,
+2. the wrapper does not duplicate repo-local `.opencode` definitions,
+3. the wrapper does not delay the foundation work.
+
+Do not write Phenix agents into global user config.
+
+Do not mutate `~/.config/opencode` from Nix.
+
 ## Commands
 
 ### `/phenix-foundation`
@@ -71,7 +77,7 @@ Used for foundation work only:
 * guardrails
 * OpenCode config
 * dev shells
-* test runner
+* test runner scaffold
 * gate infrastructure
 * docs
 * roadmap
@@ -127,7 +133,7 @@ Implementation subagent for tooling and dev environment only.
 May work on:
 
 * dev shells
-* wrappers
+* wrapper scaffolds for tools only
 * CLI skeletons
 * gate runner
 * JSON schema

@@ -6,7 +6,7 @@ Check/test subagent.
 
 Runs checks, diagnoses failures, and proposes regression guards.
 
-Must never claim a check passed unless it actually ran.
+Never claims a check passed unless it actually ran.
 
 ## Permissions
 

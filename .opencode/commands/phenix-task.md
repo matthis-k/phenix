@@ -14,8 +14,10 @@ General entrypoint for Phenix work.
 8. **Simplification review** — check for debt/copying
 9. **Final report** — summary, files, checks, roadmap
 
+## Foundation boundary
+
+For now, respects the foundation boundary unless the user explicitly asks for a later phase.
+
 ## Hard rule
 
-Must still follow the strict workflow.
-
-No skipping directly to edits.
+Must still follow the strict workflow. No skipping directly to edits.

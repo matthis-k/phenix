@@ -6,9 +6,7 @@ permalink: newxos/testing
 
 # Phenix Testing and Gates
 
-This document describes the intended Phenix workflow.
-
-It is an **ought-state** document. Items not yet implemented must be tracked in [`roadmap.md`](./roadmap.md).
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
 
 ## Purpose
 
@@ -24,66 +22,34 @@ The gate runner should answer:
 - which checks passed?
 - which checks are missing?
 
-## Scope boundary
-
-The gate runner exists to constrain agents, not to be a testing framework.
-
-**Keep it small.** Do not add:
-
-- output verification plugins (stdoutContains, stderrContains)
-- multi-step workflow DSL (steps)
-- AI-based check routing
-- expected-failing checks
-- migration-specific checks before migration starts
-
-Future checks belong in `roadmap.md`, not in the default gate set.
-
 ## Main command
 
-Actual implementation:
+Preferred command:
 
 ```sh
-phenix-tools gate
+phenix gate
 ```
 
-(Short alias `pt gate` is also available from the phenix-tools build.)
-
-Expected subcommands:
+Expected eventual subcommands:
 
 ```sh
-phenix-tools gate list
-phenix-tools gate all
-phenix-tools gate changed
-phenix-tools gate id <id>
-phenix-tools gate group <group>
-phenix-tools gate tag <tag>
-phenix-tools gate explain <id>
-<general>
-nix run .#gate -- list
-nix run .#gate -- all
-nix run .#gate -- changed
-nix run .#gate -- id <id>
+phenix gate list
+phenix gate all
+phenix gate changed
+phenix gate id <id>
+phenix gate group <group>
+phenix gate tag <tag>
+phenix gate explain <id>
 ```
 
-The first implementation supports:
+If the first implementation is smaller, it should at least support or scaffold:
 
 ```sh
-phenix-tools gate list
-phenix-tools gate all
-phenix-tools gate changed
-phenix-tools gate id <id>
+phenix gate list
+phenix gate all
+phenix gate changed
+phenix gate id <id>
 ```
-
-These can be run from the workspace root via:
-
-```sh
-nix run .#gate -- list
-nix run .#gate -- all
-nix run .#gate -- changed
-nix run .#gate -- id <id>
-```
-
-Current implementation: these subcommands are available via `phenix-tools gate`.
 
 ## Distributed check files
 
@@ -93,14 +59,13 @@ Canonical file name:
 .phenix-checks.json
 ```
 
-The runner should discover these files recursively from the workspace root.
+The runner should eventually discover these files recursively from the workspace root.
 
 Explicit config files should be passable with:
 
 ```sh
-phenix-tools gate --config path/to/.phenix-checks.json list
-phenix-tools gate -c path/to/.phenix-checks.json all
-nix run .#gate -- --config .phenix-checks.json list
+phenix gate --config path/to/.phenix-checks.json
+phenix gate -c path/to/.phenix-checks.json
 ```
 
 ## Deterministic merge
@@ -147,7 +112,7 @@ Expected rules:
 
 ## Required check fields
 
-Each check should support:
+Each check should eventually support:
 
 ```json
 {
@@ -221,7 +186,7 @@ Do not use AI to decide which checks to run.
 
 The gate runner should mostly print failures and summarize passes.
 
-Expected output shape:
+Expected output shape for failure:
 
 ```text
 FAILED nix-format
@@ -236,7 +201,7 @@ Summary:
   skipped: 2
 ```
 
-For success:
+Expected output shape for success:
 
 ```text
 Summary:
@@ -251,16 +216,18 @@ Summary:
 * Static checks before expensive builds.
 * Changed-file routing before full-repo checks.
 * Behavior checks over implementation trivia.
+* No expected-failing checks in the default gate.
+* Future desired checks belong in `roadmap.md`, not as failing gates.
 
 ## Initial useful checks
 
-The first gate set should cover:
+The first gate set should cover simple presence or static checks only, unless deeper checks are already passable:
 
-* Nix formatting
-* Nix static analysis
-* flake checks
-* OpenCode config presence
 * docs presence
-* gate runner self-test
+* OpenCode config presence
+* Nix formatting if already passable
+* Nix static analysis if already passable
+* flake check if already passable
+* gate runner self-test if implemented
 
 Do not add migration-specific checks before migration starts.

@@ -4,7 +4,13 @@ Read-only exploration subagent.
 
 ## Role
 
-Finds files, patterns, checks, docs, and relevant ownership information.
+Finds:
+- files
+- existing patterns
+- checks
+- docs
+- relevant ownership
+- potential source material in `newxos`
 
 No edits allowed.
 

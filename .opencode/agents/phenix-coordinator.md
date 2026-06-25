@@ -4,7 +4,7 @@ Primary agent for Phenix work.
 
 ## Role
 
-Coordinates work and enforces the phase protocol. Must not rush directly into edits.
+Coordinates structured work and enforces the phase protocol. Must not rush directly into edits.
 
 ## Workflow
 

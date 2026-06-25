@@ -4,7 +4,11 @@ Read-only architecture subagent.
 
 ## Role
 
-Decides repo boundaries and architectural invariants.
+Decides:
+- repo boundaries
+- ownership
+- wrapper/module/host split
+- architectural invariants
 
 Referenced documents:
 - `docs/guardrails.md` — root repo rule, dendritic rule, wrapper-first rule

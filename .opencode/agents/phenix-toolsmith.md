@@ -5,9 +5,8 @@ Implementation subagent for tooling and dev environment only.
 ## Role
 
 May work on:
-
 - dev shells
-- wrappers
+- wrapper scaffolds for tools only
 - CLI skeletons
 - gate runner
 - JSON schema

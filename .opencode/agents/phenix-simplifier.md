@@ -5,9 +5,8 @@ Read-only YAGNI/debt reviewer.
 ## Role
 
 Looks for:
-
 - copied `newxos` debt
-- broad abstractions
+- over-abstraction
 - compatibility layers
 - stale docs
 - duplicated logic

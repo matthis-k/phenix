@@ -34,10 +34,30 @@
         inputs.phenix-tools.flakeModules.default
       ];
 
-      perSystem = { system, phenixPackages, ... }: {
+      perSystem = { system, pkgs, lib, phenixPackages, ... }: let
+        toolsPkg = inputs.phenix-tools.packages.${system}.gate;
+      in {
         apps.sync = inputs.phenix-tools.apps.${system}.sync;
         apps.gate = inputs.phenix-tools.apps.${system}.gate;
         apps.default = inputs.phenix-tools.apps.${system}.sync;
+
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            git
+            gh
+            jq
+            ripgrep
+            fd
+            statix
+            deadnix
+            nixfmt-rfc-style
+          ] ++ lib.optional (toolsPkg.meta.position or "" != "") toolsPkg;
+          shellHook = ''
+            echo "Phenix development shell"
+            echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt"
+            echo "  phenix-tools: available via 'pt' / 'phenix-tools'"
+          '';
+        };
       };
     };
 }

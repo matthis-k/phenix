@@ -6,9 +6,7 @@ permalink: newxos/migration
 
 # Phenix Migration Workflow
 
-This document describes the intended Phenix workflow.
-
-It is an **ought-state** document. Items not yet implemented must be tracked in [`roadmap.md`](./roadmap.md).
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
 
 ## Purpose
 
@@ -25,7 +23,7 @@ No real migration should happen until:
 - OpenCode workflow exists
 - docs exist
 - guardrails exist
-- gate runner exists
+- gate runner exists or is deliberately scaffolded
 - basic checks pass
 - roadmap has the next migration slice
 
