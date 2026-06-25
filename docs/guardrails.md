@@ -171,6 +171,14 @@ Avoid:
 * deprecated option support
 * historical fallback paths
 
+## Read-only newxos rule
+
+`~/phenix/newxos` is read-only reference material.
+
+Do not edit files inside `newxos`. It is the old source used only for migration reference.
+
+Agents must never "clean up" or add helper docs to `newxos`.
+
 ## Agent workflow rule
 
 Every nontrivial agent task should use this sequence:
@@ -219,6 +227,7 @@ After editing, check:
 * [ ] No feature implementation landed in the wrong repo
 * [ ] No hidden `~/.config` sprawl was introduced
 * [ ] No `newxos` compatibility layer was added
+* [ ] No files inside `newxos` were edited
 * [ ] Docs still describe the intended workflow
 * [ ] Roadmap tracks unfinished work
 * [ ] Gates/checks cover the important behavior

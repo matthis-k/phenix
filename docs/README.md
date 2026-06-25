@@ -46,3 +46,26 @@ The project intentionally proceeds in this order:
 3. Migration from `newxos`
 
 Do not migrate features before the guardrails and test runner exist.
+
+## Task scope boundary
+
+Every task should have a clear stop condition.
+
+**Required** for any task:
+- ought-state docs exist and are consistent
+- roadmap exists and was updated
+- guardrails are respected
+
+**Allowed only if small** relative to the task:
+- new OpenCode agents, commands, or skills
+- minimal gate runner improvements
+- new `.phenix-checks.json` checks
+
+**Forbidden unless explicitly requested**:
+- real `newxos` feature migration
+- editing files inside `~/phenix/newxos`
+- implementing browser/shell/Hyprland/VPN/theming/host features
+- broad generic frameworks or libraries
+- global OpenCode config mutation (writes to `~/.config/opencode`)
+- large testing DSLs or plugin systems
+- compatibility layers for `newxos` patterns

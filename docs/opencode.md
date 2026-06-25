@@ -28,13 +28,17 @@ intake
   -> final report
 ```
 
-## Strategy: repo-local
+## Strategy: repo-local (only)
 
-Phenix uses **repo-local** OpenCode configuration.
+Phenix uses **repo-local** OpenCode configuration. This is the sole strategy.
 
-The default `opencode` wrapper remains general-purpose.
-Phenix agents and commands are available when running `opencode` inside the Phenix repo via `.opencode/`.
-No global config is mutated. Nix wrappers do not write to `~/.config/opencode`.
+Rules:
+
+- The default `opencode` wrapper remains general-purpose and is never modified for Phenix.
+- No separate `phenix-opencode` wrapper is created unless the existing Nix tooling already has a clean wrapper pattern that does not duplicate repo-local definitions.
+- No Nix wrapper writes to `~/.config/opencode`.
+- Phenix agents and commands are available when running `opencode` inside the Phenix repo via `.opencode/`.
+- If a wrapper is ever added, it must not duplicate repo-local agent definitions.
 
 ## Configuration layout
 

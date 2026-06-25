@@ -24,6 +24,14 @@ Use:
 - [!] blocked
 - [-] intentionally deferred
 
+Where relevant, items distinguish three states:
+
+- **[D]** documented — the intended rule exists in docs
+- **[I]** implemented — code/config exists
+- **[E]** enforced — a deterministic check verifies it
+
+Do not mark an item done merely because it is documented, if the item describes implementation or enforcement.
+
 ## Phase 1: Guardrails and OpenCode
 
 Goal:
@@ -165,15 +173,25 @@ Start only after Phases 1 and 2 are usable.
 
 ## Permanent guardrails
 
-These must remain true throughout the project:
+These must remain true throughout the project.
 
-- [x] Root repo remains orchestration-only
-- [x] Feature ownership remains explicit
-- [x] Dendritic structure is preserved
-- [x] Wrapper-first model is preferred
-- [x] No accidental global OpenCode pollution
-- [x] No writes to user config from Nix wrappers
-- [x] No big-bang migration
-- [x] No expected-failing default gates
-- [x] No stale docs pretending to be current implementation
-- [x] Roadmap remains updated
+Three-state tracking:
+
+- **[D]** documented in docs
+- **[I]** implemented in code/config
+- **[E]** enforced by a deterministic gate
+
+| Guardrail | D | I | E |
+| --------- | - | - | - |
+| Root repo is orchestration-only | D | I | |
+| Feature ownership is explicit | D | I | |
+| Dendritic structure is preserved | D | I | |
+| Wrapper-first model is preferred | D | I | |
+| No accidental global OpenCode pollution | D | I | |
+| No writes to user config from Nix wrappers | D | I | |
+| No big-bang migration | D | I | |
+| No expected-failing default gates | D | I | |
+| No stale docs pretending to be current | D | I | |
+| Roadmap remains updated | D | I | |
+| No edits to `newxos` outside migration passes | D | I | |
+| `~/phenix/newxos` is read-only reference | D | | |

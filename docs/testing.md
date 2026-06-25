@@ -24,6 +24,20 @@ The gate runner should answer:
 - which checks passed?
 - which checks are missing?
 
+## Scope boundary
+
+The gate runner exists to constrain agents, not to be a testing framework.
+
+**Keep it small.** Do not add:
+
+- output verification plugins (stdoutContains, stderrContains)
+- multi-step workflow DSL (steps)
+- AI-based check routing
+- expected-failing checks
+- migration-specific checks before migration starts
+
+Future checks belong in `roadmap.md`, not in the default gate set.
+
 ## Main command
 
 Actual implementation:
@@ -237,8 +251,6 @@ Summary:
 * Static checks before expensive builds.
 * Changed-file routing before full-repo checks.
 * Behavior checks over implementation trivia.
-* No expected-failing checks in the default gate.
-* Future desired checks belong in `roadmap.md`, not as failing gates.
 
 ## Initial useful checks
 
