@@ -1,7 +1,6 @@
 ---
 title: roadmap
 type: note
-permalink: newxos/roadmap
 ---
 
 # Phenix Roadmap

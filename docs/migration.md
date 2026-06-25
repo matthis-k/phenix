@@ -1,7 +1,6 @@
 ---
 title: migration
 type: note
-permalink: newxos/migration-1
 ---
 
 # Phenix Migration Workflow

@@ -1,7 +1,6 @@
 ---
 title: Phenix Migration Plan
 type: note
-permalink: newxos/phenix/phenix-migration-plan
 ---
 
 # Phenix Migration Plan

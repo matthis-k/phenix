@@ -1,7 +1,6 @@
 ---
 title: opencode
 type: note
-permalink: newxos/opencode
 ---
 
 # Phenix OpenCode Workflow

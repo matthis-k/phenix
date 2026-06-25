@@ -1,7 +1,6 @@
 ---
 title: guardrails
 type: note
-permalink: newxos/guardrails
 ---
 
 # Phenix Guardrails
