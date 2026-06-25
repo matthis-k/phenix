@@ -204,14 +204,32 @@ The sync tool discovers repos by scanning for `sync.json` files under `~/phenix/
 ```
 
 `phenix-tools` is part of the graph but also contains the sync tool that evaluates the graph. The tool must handle checking its own repo without special cases.
+
 ## Workspace root inputs
+The workspace superflake references subflakes via **GitHub URLs**, not `path:./` references. This is necessary because Nix's `restrict-eval` mode in git repos cannot see files inside submodule directories.
 
 ```nix
-inputs.phenix-tools.url = "path:./phenix-tools";
+inputs.phenix-pins.url = "github:matthis-k/phenix-pins";
+
+inputs.phenix-packages.url = "github:matthis-k/phenix-packages";
+inputs.phenix-packages.inputs.phenix-pins.follows = "phenix-pins";
+
+inputs.phenix-shell.url = "github:matthis-k/phenix-shell";
+inputs.phenix-shell.inputs.phenix-pins.follows = "phenix-pins";
+
+inputs.phenix-nvim.url = "github:matthis-k/phenix-nvim";
+inputs.phenix-nvim.inputs.phenix-pins.follows = "phenix-pins";
+
+inputs.phenix-hosts.url = "github:matthis-k/phenix-hosts";
+inputs.phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
+
+inputs.phenix-tools.url = "github:matthis-k/phenix-tools";
 inputs.phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
 ```
 
 Remove `inputs.phenix-sync`.
+
+`path:./` references would be preferred once Nix supports submodule path resolution (`path:./phenix-pins`). Consider switching if/when `flake.submodules = true` is fully respected by the `path` fetcher.
 
 ## Workspace root apps
 
