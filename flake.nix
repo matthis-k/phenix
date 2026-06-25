@@ -3,6 +3,7 @@
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.follows = "phenix-pins/nixpkgs";
     phenix-pins.url = "github:matthis-k/phenix-pins";
 
     phenix-packages.url = "github:matthis-k/phenix-packages";
@@ -24,7 +25,16 @@
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" "aarch64-linux" ];
-      perSystem = { system, ... }: {
+      imports = [
+        ./phenix-module.nix
+        inputs.phenix-packages.flakeModules.default
+        inputs.phenix-shell.flakeModules.default
+        inputs.phenix-nvim.flakeModules.default
+        inputs.phenix-hosts.flakeModules.default
+        inputs.phenix-tools.flakeModules.default
+      ];
+
+      perSystem = { system, phenixPackages, ... }: {
         apps.sync = inputs.phenix-tools.apps.${system}.sync;
         apps.default = inputs.phenix-tools.apps.${system}.sync;
       };
