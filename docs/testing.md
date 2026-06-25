@@ -1,6 +1,7 @@
 ---
 title: testing
 type: note
+permalink: newxos/testing
 ---
 
 # Phenix Testing and Gates

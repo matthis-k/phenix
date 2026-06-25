@@ -1,6 +1,7 @@
 ---
 title: README
 type: note
+permalink: newxos/readme
 ---
 
 # Phenix Development Docs

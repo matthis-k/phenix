@@ -18,8 +18,10 @@
     phenix-hosts.url = "github:matthis-k/phenix-hosts";
     phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-tools.url = "github:matthis-k/phenix-tools";
-    phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
+    # TODO: switch back to github: when both repos are pushed
+    phenix-tools.url = "git+file:./phenix-tools";
+    # phenix-tools.url = "github:matthis-k/phenix-tools";
+    # phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
   };
 
   outputs = inputs@{ flake-parts, ... }:
@@ -37,9 +39,12 @@
       perSystem = { system, pkgs, lib, phenixPackages, ... }: let
         toolsPkg = inputs.phenix-tools.packages.${system}.gate;
       in {
-        apps.sync = inputs.phenix-tools.apps.${system}.sync;
+        packages.opencode = pkgs.opencode;
+
         apps.gate = inputs.phenix-tools.apps.${system}.gate;
-        apps.default = inputs.phenix-tools.apps.${system}.sync;
+        apps.tend = inputs.phenix-tools.apps.${system}.tend;
+        apps.stitch = inputs.phenix-tools.apps.${system}.stitch;
+        apps.default = inputs.phenix-tools.apps.${system}.stitch;
 
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
@@ -51,11 +56,14 @@
             statix
             deadnix
             nixfmt-rfc-style
+            opencode
           ] ++ lib.optional (toolsPkg.meta.position or "" != "") toolsPkg;
           shellHook = ''
             echo "Phenix development shell"
-            echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt"
+            echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode"
             echo "  phenix-tools: available via 'pt' / 'phenix-tools'"
+            echo "  stitch: coordinated multi-repo changeset tool"
+            echo "  tend: distributed maintenance/check harness"
           '';
         };
       };

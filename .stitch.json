@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "workspace": "phenix",
+  "repos": [
+    {
+      "name": "phenixos",
+      "path": "phenixos"
+    },
+    {
+      "name": "phenix-tools",
+      "path": "phenix-tools"
+    },
+    {
+      "name": "phenix-packages",
+      "path": "phenix-packages"
+    },
+    {
+      "name": "phenix-modules",
+      "path": "phenix-modules"
+    },
+    {
+      "name": "phenix-hosts",
+      "path": "phenix-hosts"
+    },
+    {
+      "name": "phenix-shell",
+      "path": "phenix-shell"
+    },
+    {
+      "name": "phenix-pins",
+      "path": "phenix-pins"
+    }
+  ]
+}

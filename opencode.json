@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "tend-mcp": {
+      "type": "local",
+      "command": ["./phenix-tools/target/debug/tend-mcp"],
+      "enabled": true
+    },
+    "stitch-mcp": {
+      "type": "local",
+      "command": ["./phenix-tools/target/debug/stitch-mcp"],
+      "enabled": true
+    }
+  }
+}

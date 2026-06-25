@@ -1,6 +1,7 @@
 ---
 title: roadmap
 type: note
+permalink: newxos/roadmap
 ---
 
 # Phenix Roadmap
@@ -91,7 +92,7 @@ Make the repo safe for agentic work before any migration.
 - [x] `nix develop` works
 - [ ] common tools are available
 - [ ] `opencode` is available if intended
-- [x] `phenix` tool is available via `nix run .#gate` or `nix run .#sync`
+- [x] `phenix` tool is available via `nix run .#gate` or `nix run .#stitch`
 
 ## Phase 2: Testing and gate tooling
 

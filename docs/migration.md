@@ -1,6 +1,7 @@
 ---
 title: migration
 type: note
+permalink: newxos/migration-1
 ---
 
 # Phenix Migration Workflow
@@ -83,7 +84,7 @@ For each migrated concern, decide:
 | reusable module       | `phenix-modules`  |
 | host enablement       | `phenix-hosts`    |
 | shell/UI              | `phenix-shell`    |
-| sync/gate/dev tooling | `phenix-tools`    |
+| stitch/tend/gate tooling | `phenix-tools`    |
 | root orchestration    | `phenixos`        |
 
 ## Wrapper-first migration

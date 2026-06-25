@@ -1,6 +1,7 @@
 ---
 title: guardrails
 type: note
+permalink: newxos/guardrails
 ---
 
 # Phenix Guardrails
@@ -29,7 +30,7 @@ Expected workspace layout:
 ```text
 ~/phenix/
   phenixos/          # root orchestration workspace
-  phenix-tools/      # sync, gate, test runner, helper CLIs
+  phenix-tools/      # stitch, tend, gate, test runner, helper CLIs
   phenix-packages/   # packages and runtime wrappers
   phenix-modules/    # reusable NixOS/Home Manager modules
   phenix-hosts/      # actual host definitions
