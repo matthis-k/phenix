@@ -10,14 +10,14 @@ in {
     };
 
     config = let
-      merged = (pkgs.extend (compose config.phenix.overlays)).phenix or { };
+      merged = pkgs.extend (compose config.phenix.overlays);
     in {
       _module.args.phenixPackages = merged;
 
       packages = lib.mapAttrs' (name: value: {
         name = "phenix-${name}";
         value = value;
-      }) merged;
+      }) (merged.phenix or { });
     };
   };
 }
