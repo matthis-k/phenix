@@ -163,11 +163,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782387870,
-        "narHash": "sha256-rarkTZietR9+cfNbc49IUB72kZTTfnPLGeYfBefBXTk=",
+        "lastModified": 1782389038,
+        "narHash": "sha256-5AmCSjNQF5UqDbiHq8PgLHZdsDCBQ3WPaqkX9ITc+aw=",
         "owner": "matthis-k",
         "repo": "phenix-tools",
-        "rev": "7b0f1ecd4976c00518baf5de0d1a444e5c40fc77",
+        "rev": "adece111d838886d559a1a9ca125a023df34219b",
         "type": "github"
       },
       "original": {
