@@ -960,11 +960,11 @@
         "phenix-pins": "phenix-pins_2"
       },
       "locked": {
-        "lastModified": 1782462360,
-        "narHash": "sha256-ldu+hfNxHCsnBX3Htj89aflXbSSyaOEsOIlGC2CnoEk=",
+        "lastModified": 1782462768,
+        "narHash": "sha256-uPc0mEQyFSqrFtVq5gPDyiSfov+6rVwoHJp6UGeOBYw=",
         "ref": "refs/heads/main",
-        "rev": "535f48c004330d8ea0232b516b23f9a82c805de8",
-        "revCount": 41,
+        "rev": "87aca8de515eec4e012be5f6d2181cdc77025bac",
+        "revCount": 42,
         "type": "git",
         "url": "file:./phenix-tools"
       },
