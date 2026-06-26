@@ -25,6 +25,10 @@
     phenix-hosts.url = ./flakes/05-consumers/phenix-hosts;
     phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
+    phenix-opencode.url = ./flakes/02-producers/phenix-opencode;
+    phenix-opencode.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-opencode.inputs.phenix-tools.follows = "phenix-tools";
+
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
   };
 
@@ -33,6 +37,8 @@
       systems = [ "x86_64-linux" "aarch64-linux" ];
       imports = [
         ./phenix-module.nix
+        ./phenix-wrappers.nix
+        inputs.phenix-opencode.flakeModules.default
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
@@ -45,11 +51,9 @@
       let
         tendPkg = inputs.phenix-tools.packages.${system}.tend;
         stitchPkg = inputs.phenix-tools.packages.${system}.stitch;
-        tendMcpPkg = inputs.phenix-tools.packages.${system}."tend-mcp";
-        stitchMcpPkg = inputs.phenix-tools.packages.${system}."stitch-mcp";
         rustToolchain = [ pkgs.cargo pkgs.rustc pkgs.rustfmt pkgs.clippy ];
       in {
-        packages.opencode = pkgs.opencode;
+        packages.opencode = config.phenixWrapped.opencode;
 
         apps.tend = inputs.phenix-tools.apps.${system}.tend;
         apps.stitch = inputs.phenix-tools.apps.${system}.stitch;
@@ -173,37 +177,13 @@
             statix
             deadnix
             nixfmt-rfc-style
-            opencode
+            config.phenixWrapped.opencode
             tendPkg
             stitchPkg
-            tendMcpPkg
-            stitchMcpPkg
           ] ++ rustToolchain;
 
           shellHook = ''
             ${config.pre-commit.installationScript}
-
-            # Generate correct opencode.json with Nix store paths
-            # Replaces the static dev-mode file on dev shell entry
-            cat > opencode.json << 'JSON'
-            {
-              "$schema": "https://opencode.ai/config.json",
-              "mcp": {
-                "tend-mcp": {
-                  "type": "local",
-                  "command": ["${tendMcpPkg}/bin/tend-mcp"],
-                  "enabled": true
-                },
-                "stitch-mcp": {
-                  "type": "local",
-                  "command": ["${stitchMcpPkg}/bin/stitch-mcp"],
-                  "enabled": true
-                }
-              }
-            }
-            JSON
-            echo "  opencode MCP: tend-mcp=${tendMcpPkg}/bin/tend-mcp"
-            echo "  opencode MCP: stitch-mcp=${stitchMcpPkg}/bin/stitch-mcp"
 
             repo-hook() {
               ${tendPkg}/bin/tend check --profile git-hook --staged "$@"

@@ -216,6 +216,24 @@
         "type": "github"
       }
     },
+    "flake-parts_8": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib_8"
+      },
+      "locked": {
+        "lastModified": 1778716662,
+        "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "git-hooks-nix": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -657,6 +675,28 @@
         "type": "github"
       }
     },
+    "nix-wrapper-modules_2": {
+      "inputs": {
+        "nixpkgs": [
+          "phenix-opencode",
+          "phenix-pins",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782135443,
+        "narHash": "sha256-vAmbArdCyjqpVW+37aCy/PMBOLIqukUXLQuEKLwUhA4=",
+        "owner": "BirdeeHub",
+        "repo": "nix-wrapper-modules",
+        "rev": "6e7f66fa2cdf4d63162580b438f7fcf87c28a46f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BirdeeHub",
+        "repo": "nix-wrapper-modules",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1770073757,
@@ -778,6 +818,21 @@
         "type": "github"
       }
     },
+    "nixpkgs-lib_8": {
+      "locked": {
+        "lastModified": 1777168982,
+        "narHash": "sha256-GOkGPcboWE9BmGCRMLX3worL4EMnsnG8MyKmXNeYuhQ=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "f5901329dade4a6ea039af1433fb087bd9c1fe14",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
+      }
+    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1751274312,
@@ -879,9 +934,35 @@
       },
       "parent": []
     },
-    "phenix-packages": {
+    "phenix-opencode": {
       "inputs": {
         "flake-parts": "flake-parts_5",
+        "nix-wrapper-modules": "nix-wrapper-modules_2",
+        "nixpkgs": [
+          "phenix-opencode",
+          "phenix-pins",
+          "nixpkgs"
+        ],
+        "phenix-pins": [
+          "phenix-pins"
+        ],
+        "phenix-tools": [
+          "phenix-tools"
+        ]
+      },
+      "locked": {
+        "path": "flakes/02-producers/phenix-opencode",
+        "type": "path"
+      },
+      "original": {
+        "path": "flakes/02-producers/phenix-opencode",
+        "type": "path"
+      },
+      "parent": []
+    },
+    "phenix-packages": {
+      "inputs": {
+        "flake-parts": "flake-parts_6",
         "nixpkgs": [
           "phenix-packages",
           "phenix-pins",
@@ -903,7 +984,7 @@
     },
     "phenix-pins": {
       "inputs": {
-        "flake-parts": "flake-parts_6",
+        "flake-parts": "flake-parts_7",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable"
       },
@@ -919,7 +1000,7 @@
     },
     "phenix-tools": {
       "inputs": {
-        "flake-parts": "flake-parts_7",
+        "flake-parts": "flake-parts_8",
         "nixpkgs": [
           "phenix-tools",
           "phenix-pins",
@@ -974,6 +1055,7 @@
         "phenix-de": "phenix-de",
         "phenix-hosts": "phenix-hosts",
         "phenix-nvim": "phenix-nvim",
+        "phenix-opencode": "phenix-opencode",
         "phenix-packages": "phenix-packages",
         "phenix-pins": "phenix-pins",
         "phenix-tools": "phenix-tools"

@@ -1,3 +1,9 @@
+---
+title: check-execution-model
+type: note
+permalink: newxos/check-execution-model
+---
+
 # Check execution model
 
 - `git commit` runs `tend check --profile git-hook --staged` via `git-hooks.nix`.
