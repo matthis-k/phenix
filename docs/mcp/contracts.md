@@ -15,8 +15,11 @@ This document defines the MCP tool contracts for `tend-mcp` and `stitch-mcp`.
 | Level | Description | Requires `apply: true` |
 |-------|-------------|----------------------|
 | `ReadOnly` | No side effects | No |
+| `WritesWorktree` | May modify files in the worktree but does not create commits | Yes |
 | `CreatesCommit` | Creates Git commits | Yes |
 | `Network` | Network access (pull/push) | Yes |
+
+`tend.run` never creates commits. Commit creation is owned by `stitch.commit`.
 
 ### Error Handling
 
@@ -38,7 +41,7 @@ Every tool call is logged to `~/.local/share/phenix/audit/<server-name>/`.
 |------|-------------|----------|--------|
 | `tend.status` | Show config health and known checks | ReadOnly | Implemented |
 | `tend.plan` | Show which checks would run and why | ReadOnly | Implemented |
-| `tend.run` | Execute checks | CreatesCommit | Implemented |
+| `tend.run` | Execute tasks/checks | Phase-dependent: `verify` = ReadOnly; `fix`/`generate`/`setup`/`cleanup` = WritesWorktree; never CreatesCommit | Implemented |
 | `tend.explain` | Explain a check failure with repro command | ReadOnly | Implemented |
 
 ### Tend Schema

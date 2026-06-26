@@ -98,13 +98,13 @@
       },
       {
         "id": "tend-explain-cli-exists",
-        "description": "tend CLI has an Explain command",
+        "description": "tend CLI has an Explain command with implementation",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
         "command": [
           "bash", "-c",
-          "if grep -q 'Explain' phenix-tools/crates/tend-cli/src/main.rs; then echo 'Explain command found'; else echo 'ERROR: Explain command missing from tend CLI'; exit 1; fi"
+          "if ! grep -q 'Explain' phenix-tools/crates/tend-cli/src/main.rs; then echo 'ERROR: Explain enum missing'; exit 1; fi; if ! grep -q 'fn cmd_explain' phenix-tools/crates/tend-cli/src/main.rs; then echo 'ERROR: cmd_explain implementation missing'; exit 1; fi; echo 'tend explain exists and is implemented.'"
         ],
         "expect": { "status": 0 }
       },
@@ -129,6 +129,42 @@
         "command": [
           "bash", "-c",
           "for f in docs/agents/tool-routing.md docs/workflows/agent-check-flow.md docs/workflows/agent-commit-flow.md docs/mcp/contracts.md; do [ -f \"$f\" ] || { echo \"Missing: $f\"; exit 1; }; done; echo \"All MCP routing docs present.\""
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "mcp-contracts-tend-run-not-commit",
+        "description": "MCP contracts must not classify tend.run as CreatesCommit",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q '`tend.run`.*CreatesCommit' docs/mcp/contracts.md; then echo 'ERROR: tend.run is incorrectly classified as CreatesCommit'; exit 1; fi; echo 'tend.run mutation classification is clean.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "stitch-commit-does-not-call-execute-sync",
+        "description": "stitch commit must use local commit wrappers, not visible sync execution",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if awk '/fn cmd_commit/,/^}/' phenix-tools/crates/stitch-cli/src/main.rs | grep -q 'execute_sync'; then echo 'ERROR: cmd_commit still calls execute_sync directly'; exit 1; fi; echo 'cmd_commit uses local commit execution.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "stitch-commit-help-no-sync-language",
+        "description": "stitch commit help must not describe sync/update/push behavior",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -n 'Create DAG-wide sync commits\\|update dependent flake inputs\\|push in dependency order' phenix-tools/crates/stitch-cli/src/main.rs; then echo 'ERROR: stitch commit help still describes sync/push behavior'; exit 1; fi; echo 'stitch commit help is clean.'"
         ],
         "expect": { "status": 0 }
       }
