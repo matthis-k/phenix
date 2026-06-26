@@ -28,8 +28,46 @@ independently.
 | node      | a tree container that owns local tasks and children    |
 | task      | an executable or built-in action                       |
 | phase     | task intent: verify, fix, generate, build, test, etc.  |
-| profile   | named workflow preset (e.g. gate)                      |
-| mode      | applicability behavior: changed, full, force           |
+| profile   | named workflow preset selecting which tasks run        |
+| mode      | applicability behavior: changed, staged, full, force   |
+
+## Check execution model
+
+Tend uses profiles to select which tasks run in which context.
+`git-hooks.nix` installs Tend as the single source of truth for all checks.
+It does not duplicate task definitions.
+
+- `git commit` → installed pre-commit hook → `tend check --profile git-hook --staged`
+- `git push` → installed pre-push hook → `tend check --profile pre-push`
+- `nix flake check` → `tend check --profile nix-check --offline --locked`
+- Developers: `repo-check` (manual), `repo-fix` (fix), `repo-hook` (git-hook), `repo-pushgate` (pre-push)
+- `stitch commit` relies on Git hooks (not direct Tend calls)
+- `stitch commit --sync` uses a validated Tend preflight token
+
+### Anti-recursion rule
+
+The `nix-check` profile must never include a task that calls `nix flake check`.
+This is enforced by `tend validate --profiles`.
+
+### Anti-duplication rule
+
+`git-hooks.nix` installs and invokes Tend.  It does not duplicate Tend task
+definitions.  All check logic lives in `.tend.json` task definitions.
+
+## Profiles
+
+| Profile       | Caller                         | Command                                        | Purpose                                    |
+|---------------|--------------------------------|------------------------------------------------|--------------------------------------------|
+| git-hook      | `git commit` / `stitch commit` | `tend check --profile git-hook --staged`       | Fast staged safety gate                    |
+| pre-push      | `git push`                     | `tend check --profile pre-push`                | Medium-cost publish gate                   |
+| nix-check     | `nix flake check`              | `tend check --profile nix-check --offline --locked` | Authoritative reproducible automation gate |
+| manual        | dev shell                      | `tend check --profile manual` or `repo-check`  | Developer full local gate                  |
+| fix           | dev shell                      | `tend check --profile fix` or `repo-fix`       | Mutating format/fix commands               |
+| stitch-sync   | `stitch commit --sync`         | `tend check --profile stitch-sync --affected-dag` | One preflight for DAG/sync commits       |
+
+Tasks declare their profiles explicitly.  A task with no profiles defaults to
+`manual` only.  Tasks without the requested profile are skipped before any
+change detection occurs.
 
 ## Phases
 
@@ -118,7 +156,12 @@ auto-discovery.  May be specified multiple times.
   `cleanup`
 - `kind` — one of: `command`, `filesExist`, `filesAbsent`, `forbidText`,
   `requireText`
+- `profiles` — list of profile names that select this task
 - `mutates` — override default mutability
+- `interactive` — if true, task requires a TTY
+- `network` — if true, task requires network access
+- `sandbox_safe` — if true, task can run in a Nix build sandbox
+- `tags` — categorization tags (e.g. "test", "slow", "network", "rust")
 - `when.changed.paths` — glob conditions
 - `always` — run even in full mode without changed files
 - `before` / `after` — lists of steps
@@ -215,22 +258,56 @@ Modes:
 ## CLI
 
 ```
+# Discovery and listing
 tend tree                          # display composed task tree
 tend list                          # list all tasks
 
+# Planning (read-only, no execution)
 tend plan                          # show which checks would run (preview)
+tend plan --profile git-hook       # plan for a specific profile
+tend plan --profile nix-check --json  # JSON output for automation
+
+# High-level profile-based check commands
+tend check --profile git-hook --staged    # git-hook: fast staged safety gate
+tend check --profile pre-push             # pre-push: medium publish gate
+tend check --profile nix-check --offline --locked  # nix-check: automation gate
+tend check --profile manual               # manual: full local gate
+tend check --profile fix                  # fix: mutating fixes
+
+# Low-level commands (agent-friendly)
 tend run --phase verify --mode changed   # execute checks (agent-friendly)
 tend explain                       # run checks and explain failures
 
-tend verify changed                # convenience: non-mutating, changed files
-tend verify full                   # convenience: non-mutating, all tasks
-tend gate                          # convenience: alias for `verify changed`
-tend fix changed                   # convenience: mutating, changed files
+# Convenience aliases
+tend verify changed                # non-mutating, changed files
+tend verify full                   # non-mutating, all tasks
+tend gate                          # alias for `verify changed`
+tend fix changed                   # mutating, changed files
 
+# Validation
+tend validate --profiles           # validate profile safety rules
+
+# Preflight tokens (for stitch sync)
+tend preflight create --profile git-hook --staged    # create token
+tend preflight validate --profile git-hook --token <token>  # validate token
+
+# Config options
 tend --root <path> tree            # override discovery root
 tend --config <path> plan          # explicit config file(s)
 tend -c <path> run --phase verify  # shorthand
 ```
+
+## Profile Validation Rules
+
+`tend validate --profiles` enforces:
+
+1. A task that invokes `nix flake check` must not be in profile `nix-check`.
+2. A mutating task must not be in profile `nix-check` or `git-hook`.
+3. An interactive task must not be in profile `nix-check` or `git-hook`.
+4. A task tagged `test` must not be in profile `git-hook`.
+5. A task tagged `slow` must not be in profile `git-hook`.
+6. A task tagged `network` must not be in profile `nix-check` or `git-hook`.
+7. Tasks with no profiles default to `manual` only.
 
 ## Exit Codes
 

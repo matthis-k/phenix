@@ -61,6 +61,18 @@ See:
 - `docs/workflows/agent-commit-flow.md`
 - `docs/mcp/contracts.md`
 
+## Check execution model
+
+- `git commit` runs `tend check --profile git-hook --staged`.
+- `git push` runs `tend check --profile pre-push`.
+- `nix flake check` runs `tend check --profile nix-check --offline --locked`.
+- Developers can run `repo-check` for the full local gate.
+- Developers can run `repo-fix` for mutating fixes.
+- `stitch commit` relies on Git hooks.
+- `stitch commit --sync` may use a Tend preflight token to avoid duplicate hook runs.
+
+See `docs/tend.md` for the full profile specification and validation rules.
+
 ## Foundation boundary
 
 The foundation phase may create:

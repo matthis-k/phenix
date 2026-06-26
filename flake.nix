@@ -22,6 +22,8 @@
     phenix-tools.url = "git+file:./phenix-tools";
     # phenix-tools.url = "github:matthis-k/phenix-tools";
     # phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
+
+    git-hooks-nix.url = "github:cachix/git-hooks.nix";
   };
 
   outputs = inputs@{ flake-parts, ... }:
@@ -34,16 +36,80 @@
         inputs.phenix-nvim.flakeModules.default
         inputs.phenix-hosts.flakeModules.default
         inputs.phenix-tools.flakeModules.default
+        inputs.git-hooks-nix.flakeModule
       ];
 
-      perSystem = { system, pkgs, lib, phenixPackages, ... }: {
+      perSystem = { system, pkgs, lib, config, ... }:
+      let
+        tendPkg = inputs.phenix-tools.packages.${system}.tend;
+        stitchPkg = inputs.phenix-tools.packages.${system}.stitch;
+        rustToolchain = [ pkgs.cargo pkgs.rustc pkgs.rustfmt pkgs.clippy ];
+      in {
         packages.opencode = pkgs.opencode;
 
         apps.tend = inputs.phenix-tools.apps.${system}.tend;
         apps.stitch = inputs.phenix-tools.apps.${system}.stitch;
         apps.default = inputs.phenix-tools.apps.${system}.stitch;
 
+        pre-commit = {
+          check.enable = true;
+
+          settings = {
+            hooks = {
+              tend-pre-commit = {
+                enable = true;
+                name = "tend pre-commit";
+                description = "Run fast Tend checks on staged changes";
+                entry = "${tendPkg}/bin/tend check --profile git-hook --staged";
+                pass_filenames = false;
+                always_run = true;
+                stages = [ "pre-commit" ];
+              };
+
+              tend-pre-push = {
+                enable = true;
+                name = "tend pre-push";
+                description = "Run medium Tend checks before push";
+                entry = "${tendPkg}/bin/tend check --profile pre-push";
+                pass_filenames = false;
+                always_run = true;
+                stages = [ "pre-push" ];
+              };
+            };
+          };
+        };
+
+        checks = {
+          tend-nix-check = pkgs.runCommand "tend-nix-check"
+            {
+              nativeBuildInputs = [
+                tendPkg
+                pkgs.git
+              ] ++ rustToolchain;
+            }
+            ''
+              cp -r ${lib.cleanSource ./.} source
+              chmod -R u+w source
+
+              # Merge submodule content from the flake input
+              cp -rT ${inputs.phenix-tools} source/phenix-tools
+              chmod -R u+w source/phenix-tools
+
+              cd source
+
+              ${tendPkg}/bin/tend validate --profiles
+
+              ${tendPkg}/bin/tend check --profile nix-check --offline --locked
+
+              touch $out
+            '';
+        };
+
         devShells.default = pkgs.mkShell {
+          inputsFrom = [
+            config.pre-commit.devShell
+          ];
+
           packages = with pkgs; [
             git
             gh
@@ -54,14 +120,39 @@
             deadnix
             nixfmt-rfc-style
             opencode
-            inputs.phenix-tools.packages.${system}.tend
-            inputs.phenix-tools.packages.${system}.stitch
-          ];
+            tendPkg
+            stitchPkg
+          ] ++ rustToolchain;
+
           shellHook = ''
+            ${config.pre-commit.installationScript}
+
+            repo-hook() {
+              ${tendPkg}/bin/tend check --profile git-hook --staged "$@"
+            }
+
+            repo-pushgate() {
+              ${tendPkg}/bin/tend check --profile pre-push "$@"
+            }
+
+            repo-check() {
+              ${tendPkg}/bin/tend check --profile manual "$@"
+            }
+
+            repo-fix() {
+              ${tendPkg}/bin/tend check --profile fix "$@"
+            }
+
+            export -f repo-hook repo-pushgate repo-check repo-fix 2>/dev/null || true
+
             echo "Phenix development shell"
             echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode"
             echo "  tend: distributed maintenance/check harness"
             echo "  stitch: coordinated multi-repo git tool"
+            echo "  repo-hook      -> tend check --profile git-hook --staged"
+            echo "  repo-pushgate  -> tend check --profile pre-push"
+            echo "  repo-check     -> tend check --profile manual"
+            echo "  repo-fix       -> tend check --profile fix"
           '';
         };
       };
