@@ -37,14 +37,14 @@
         "expect": { "status": 0 }
       },
       {
-        "id": "no-legacy-gate-runner",
-        "description": "Gate runner does not use pt-compat copied implementation",
+        "id": "no-pt-compat-crate",
+        "description": "pt-compat crate has been removed entirely",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
         "command": [
           "bash", "-c",
-          "if grep -q 'struct CheckResult' phenix-tools/crates/pt-compat/src/gate.rs 2>/dev/null; then echo 'ERROR: pt-compat/gate.rs still contains copied gate implementation'; exit 1; fi; echo 'pt-compat is a clean shim.'"
+          "if [ -d phenix-tools/crates/pt-compat ]; then echo 'ERROR: pt-compat crate still exists'; exit 1; fi; if grep -q 'pt-compat' phenix-tools/Cargo.toml; then echo 'ERROR: pt-compat still in workspace'; exit 1; fi; echo 'pt-compat fully removed.'"
         ],
         "expect": { "status": 0 }
       },
@@ -62,25 +62,49 @@
       },
       {
         "id": "no-legacy-nix-gate-export",
-        "description": "phenix-tools flake does not export packages.gate or apps.gate",
+        "description": "No Nix file exports gate packages or apps",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
         "command": [
           "bash", "-c",
-          "if grep -q 'packages\\.gate\\|apps\\.gate\\|\"gate\"' phenix-tools/modules/standalone.nix; then echo 'ERROR: gate still exported from Nix'; exit 1; fi; echo 'No gate Nix export.'"
+          "for f in phenix-tools/modules/standalone.nix phenix-tools/modules/default.nix flake.nix; do if grep -q 'packages\\.gate\\|apps\\.gate\\|\"gate\"' \"$f\" 2>/dev/null; then echo \"ERROR: gate still exported from $f\"; exit 1; fi; done; echo 'No gate Nix export.'"
         ],
         "expect": { "status": 0 }
       },
       {
-        "id": "no-root-flake-apps-gate",
-        "description": "Root flake does not expose apps.gate or toolsPkg gate",
+        "id": "no-legacy-commit-flags",
+        "description": "stitch commit has no legacy single-repo flags",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
         "command": [
           "bash", "-c",
-          "if grep -q 'apps\\.gate\\|toolsPkg' flake.nix; then echo 'ERROR: root flake still references gate'; exit 1; fi; echo 'Root flake clean.'"
+          "# Only check flags within the Commit command definition (enums before Push) for legacy flags; Diff uses 'staged' legitimately\ncommit_section=$(sed -n '/^    Commit {/,/^    Push {/p' phenix-tools/crates/stitch-cli/src/main.rs 2>/dev/null)\nfor flag in write_template no_tend; do\n  if echo \"$commit_section\" | grep -q \"$flag\"; then\n    echo \"ERROR: legacy flag '$flag' still in stitch commit\"; exit 1\n  fi\ndone\necho 'No legacy commit flags.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "stitch-sync-cli-exists",
+        "description": "stitch CLI has a Sync command",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q 'Sync' phenix-tools/crates/stitch-cli/src/main.rs; then echo 'Sync command found'; else echo 'ERROR: Sync command missing from stitch CLI'; exit 1; fi"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "tend-explain-cli-exists",
+        "description": "tend CLI has an Explain command",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q 'Explain' phenix-tools/crates/tend-cli/src/main.rs; then echo 'Explain command found'; else echo 'ERROR: Explain command missing from tend CLI'; exit 1; fi"
         ],
         "expect": { "status": 0 }
       },

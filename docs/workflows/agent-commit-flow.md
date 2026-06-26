@@ -23,25 +23,29 @@ Understand what is dirty and how repos depend on each other.
 Generate commit message templates for dirty repos:
 
 ```text
-stitch commit --write-template
+# MCP (recommended for agents):
+stitch.commit_template
+
+# CLI equivalent:
+stitch dag --mode commit --json
 ```
 
-This outputs a JSON structure keyed by repo name with `subject`, `body`, and `files` fields.
+Edit the messages and commit with them.
 
 ## Phase 3: Commit
 
-Commit with explicit messages:
+Commit in DAG dependency order (local commits only):
 
 ```text
-stitch commit --message "feat: add X" --repo <name>
-# or via JSON messages file:
-stitch commit --messages <file>.json --apply
+stitch commit --dry-run     # preview without mutating
+stitch commit --apply       # execute (required for safety)
 ```
 
-- `--dry-run` — preview without mutating
-- `--apply` — execute (required for safety)
-- `--no-push` — commit locally without pushing
-- `--staged` — use only staged files
+For per-repo messages, use `--messages`:
+
+```text
+stitch commit --messages .stitch/messages.json --apply
+```
 
 ## Phase 4: Push
 
@@ -50,6 +54,15 @@ stitch push
 ```
 
 Push committed changes in dependency order.
+
+## Phase 5: Sync
+
+Update flake inputs and push (if needed after dependency changes):
+
+```text
+stitch sync --dry-run       # preview sync actions
+stitch sync --apply         # update inputs, validate, push
+```
 
 ## Safety Rules
 
@@ -68,11 +81,12 @@ For AI agents using MCP:
 3. `stitch.dag` — plan commit order
 4. `stitch.commit_template` — generate message template
 5. `stitch.commit` with `apply: true` — execute
+6. `stitch.sync` — post-commit sync/push (planned)
 
 ## Deprecated
 
 Do NOT use:
 
-- `stitch changeset` subcommands — replaced by `stitch commit` / `stitch push`
+- `stitch changeset` subcommands — replaced by `stitch commit` / `stitch push` / `stitch sync`
 - Raw `git commit` in multiple repos — use `stitch commit` for coordinated commits
-- `sync.json` — retired
+- `sync.json` — retired; use `.tend.json` for checks

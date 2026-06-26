@@ -80,11 +80,10 @@ stitch repos              # list configured repos
 stitch status             # show workspace status (--json for agent)
 stitch diff               # show diffs across repos
 stitch dag                # show ordered operation DAG (--mode commit|sync|full)
-stitch commit             # DAG-wide commit with validation
-stitch commit --dry-run   # preview without mutating
-stitch commit --apply     # execute the commit plan
+stitch commit             # commit changed files in DAG dependency order (local only)
+stitch commit --apply     # execute the commit
 stitch push               # push committed changes in dependency order
-stitch sync               # pull/rebase/push across repos
+stitch sync               # sync/update/push (update flake inputs, validate, push)
 ```
 
 ## Agent-Friendly JSON
@@ -100,19 +99,20 @@ stitch sync               # pull/rebase/push across repos
 ### Multi-repo commit
 
 ```
-1. stitch status          # inspect workspace state
-2. stitch diff --repo X   # review changes in a repo
-3. stitch dag --mode commit  # plan commit order
-4. stitch commit --write-template  # generate message template
-5. stitch commit --apply          # execute the commit
-6. stitch push                     # push committed changes
+1. stitch status                    # inspect workspace state
+2. stitch diff --repo <name>        # review changes in a repo
+3. stitch dag --mode commit         # plan commit order
+4. stitch commit --dry-run          # preview what would be committed
+5. stitch commit --apply            # execute local commits
+6. stitch push                      # push committed changes
 ```
 
-### Sync/pull workflow
+### Sync/push workflow
 
 ```
-1. stitch dag --mode sync   # plan sync order
-2. stitch sync              # pull/rebase/push
+1. stitch dag --mode sync           # plan sync order
+2. stitch sync --dry-run            # preview sync actions
+3. stitch sync --apply              # update flake inputs, validate, push
 ```
 
 ## Safety Rules

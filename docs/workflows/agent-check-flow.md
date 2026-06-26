@@ -44,11 +44,7 @@ tend run --mode changed --phase generate
 If a check fails, understand why:
 
 ```text
-# MCP only (planned):
-# tend.explain --check-id <id>
-
-# CLI fallback:
-tend status --json   # show check results
+tend explain            # run checks and explain failures
 tend run --mode full --phase verify  # re-run with full output
 ```
 
@@ -59,13 +55,3 @@ tend run --mode full --phase verify  # re-run with full output
 3. `verify` phase refuses mutating tasks by default.
 4. `fix` / `generate` phases require explicit selection.
 5. Do not skip `verify` before committing.
-
-## Deprecated Workflow
-
-The old workflow used:
-
-```text
-tend verify changed    # was: tend gate / pt gate changed
-```
-
-This still works as a convenience alias but `plan → run → explain` is the preferred agent workflow because it gives better visibility into what will run and why.

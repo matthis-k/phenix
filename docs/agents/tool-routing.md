@@ -52,8 +52,9 @@ Do NOT route around the MCP safety layer. All mutations require explicit `apply:
 
 ## Deprecated / Do Not Use
 
-- `pt` / `phenix-tools` binary — replaced by `tend` and `stitch`
+- `pt` / `phenix-tools` binary — removed; use `tend` and `stitch`
 - `phenix sync` — replaced by `stitch commit` / `stitch sync`
 - `sync.json` — retired; use `.tend.json` for checks
-- `.phenix-checks.json` — migrating to `.tend.json`
-- `gate` as a separate concept — gate is now `tend verify changed`
+- `.phenix-checks.json` — migrated to `.tend.json`
+- `gate` as a separate concept — gate is now `tend verify changed` / `tend explain`
+- `stitch changeset` — replaced by `stitch commit` / `stitch push` / `stitch sync`

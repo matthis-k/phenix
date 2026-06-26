@@ -36,10 +36,10 @@ Every tool call is logged to `~/.local/share/phenix/audit/<server-name>/`.
 
 | Tool | Description | Mutation | Status |
 |------|-------------|----------|--------|
-| `tend.status` | Show config health and known checks | ReadOnly | Planned |
-| `tend.plan` | Show which checks would run and why | ReadOnly | Planned |
-| `tend.run` | Execute checks | CreatesCommit | Planned |
-| `tend.explain` | Explain a check failure with repro command | ReadOnly | Planned |
+| `tend.status` | Show config health and known checks | ReadOnly | Implemented |
+| `tend.plan` | Show which checks would run and why | ReadOnly | Implemented |
+| `tend.run` | Execute checks | CreatesCommit | Implemented |
+| `tend.explain` | Explain a check failure with repro command | ReadOnly | Implemented |
 
 ### Tend Schema
 

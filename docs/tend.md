@@ -218,21 +218,18 @@ Modes:
 tend tree                          # display composed task tree
 tend list                          # list all tasks
 
-tend verify changed                # non-mutating, changed files only
-tend verify full                   # non-mutating, all tasks
-tend verify force                  # non-mutating, ignore conditions
+tend plan                          # show which checks would run (preview)
+tend run --phase verify --mode changed   # execute checks (agent-friendly)
+tend explain                       # run checks and explain failures
 
-tend fix changed                   # mutating, changed files only
-tend fix all                       # mutating, all applicable
-
-tend generate changed              # mutating generation, changed files
-tend generate all                  # mutating generation, all
-
-tend gate                          # non-mutating gate (verify changed)
+tend verify changed                # convenience: non-mutating, changed files
+tend verify full                   # convenience: non-mutating, all tasks
+tend gate                          # convenience: alias for `verify changed`
+tend fix changed                   # convenience: mutating, changed files
 
 tend --root <path> tree            # override discovery root
-tend --config <path> verify full   # explicit config file(s)
-tend -c <path> verify full         # shorthand
+tend --config <path> plan          # explicit config file(s)
+tend -c <path> run --phase verify  # shorthand
 ```
 
 ## Exit Codes
@@ -247,13 +244,13 @@ tend -c <path> verify full         # shorthand
 
 ## Agent Workflow
 
-For agents, the recommended workflow is:
+The recommended workflow for agents (and humans) is:
 
 1. **Plan**: `tend plan` — preview which checks will run and why.
 2. **Run**: `tend run --mode changed --phase verify` — execute checks.
-3. **Explain**: Use `tend explain` (MCP) or `tend status --json` to understand failures.
+3. **Explain**: `tend explain` — run checks and describe any failures.
 
-Convenience aliases (human-friendly, not recommended for agent automation):
+Convenience aliases (human-friendly, but `plan → run → explain` is preferred):
 
 - `tend verify changed` — same as `tend run --mode changed --phase verify`
 - `tend gate` — same as `tend verify changed`
