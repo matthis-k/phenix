@@ -1,3 +1,5 @@
 .cache/
 .stitch/
 opencode.json
+.pre-commit-config.yaml
+result
