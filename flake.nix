@@ -42,6 +42,8 @@
       let
         tendPkg = inputs.phenix-tools.packages.${system}.tend;
         stitchPkg = inputs.phenix-tools.packages.${system}.stitch;
+        tendMcpPkg = inputs.phenix-tools.packages.${system}."tend-mcp";
+        stitchMcpPkg = inputs.phenix-tools.packages.${system}."stitch-mcp";
         rustToolchain = [ pkgs.cargo pkgs.rustc pkgs.rustfmt pkgs.clippy ];
       in {
         packages.opencode = pkgs.opencode;
@@ -58,8 +60,8 @@
               tend-pre-commit = {
                 enable = true;
                 name = "tend pre-commit";
-                description = "Run fast Tend checks on staged changes";
-                entry = "${tendPkg}/bin/tend check --profile git-hook --staged";
+                description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
+                entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
                 pass_filenames = false;
                 always_run = true;
                 stages = [ "pre-commit" ];
@@ -68,11 +70,21 @@
               tend-pre-push = {
                 enable = true;
                 name = "tend pre-push";
-                description = "Run medium Tend checks before push";
-                entry = "${tendPkg}/bin/tend check --profile pre-push";
+                description = "Run medium Tend checks before push (inside Nix dev shell)";
+                entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push";
                 pass_filenames = false;
                 always_run = true;
                 stages = [ "pre-push" ];
+              };
+
+              commit-msg-check = {
+                enable = true;
+                name = "commit msg check";
+                description = "Validate commit message format";
+                entry = "nix develop .#default --command bash -c 'cat \"$1\" | head -1 | grep -qE \"^(feat|fix|chore|docs|refactor|test|ci|perf|style|build|revert)(\\(.+\\))?: .+\" || { echo \"FAIL: commit message must start with conventional commit prefix\"; exit 1; }; ! grep -qiF \"phenix-sync\" \"$1\" || { echo \"FAIL: commit message contains obsolete phenix-sync wording\"; exit 1; }' _";
+                pass_filenames = false;
+                always_run = true;
+                stages = [ "commit-msg" ];
               };
             };
           };
@@ -141,7 +153,7 @@
             ripgrep
             tendPkg
             stitchPkg
-          ];
+          ] ++ rustToolchain;
         };
 
         devShells.default = pkgs.mkShell {
@@ -161,10 +173,34 @@
             opencode
             tendPkg
             stitchPkg
+            tendMcpPkg
+            stitchMcpPkg
           ] ++ rustToolchain;
 
           shellHook = ''
             ${config.pre-commit.installationScript}
+
+            # Generate correct opencode.json with Nix store paths
+            # Replaces the static dev-mode file on dev shell entry
+            cat > opencode.json << 'JSON'
+            {
+              "$schema": "https://opencode.ai/config.json",
+              "mcp": {
+                "tend-mcp": {
+                  "type": "local",
+                  "command": ["${tendMcpPkg}/bin/tend-mcp"],
+                  "enabled": true
+                },
+                "stitch-mcp": {
+                  "type": "local",
+                  "command": ["${stitchMcpPkg}/bin/stitch-mcp"],
+                  "enabled": true
+                }
+              }
+            }
+            JSON
+            echo "  opencode MCP: tend-mcp=${tendMcpPkg}/bin/tend-mcp"
+            echo "  opencode MCP: stitch-mcp=${stitchMcpPkg}/bin/stitch-mcp"
 
             repo-hook() {
               ${tendPkg}/bin/tend check --profile git-hook --staged "$@"

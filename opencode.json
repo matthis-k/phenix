@@ -3,12 +3,12 @@
   "mcp": {
     "tend-mcp": {
       "type": "local",
-      "command": ["./phenix-tools/target/debug/tend-mcp"],
+      "command": ["/nix/store/jyx7ygx97b3xfn9bjs6nxy0wbljzyxc9-tend-mcp-0.1.0/bin/tend-mcp"],
       "enabled": true
     },
     "stitch-mcp": {
       "type": "local",
-      "command": ["./phenix-tools/target/debug/stitch-mcp"],
+      "command": ["/nix/store/4g1l1jrfdh6shvmhwm4da9vbxfwdcbib-stitch-mcp-0.1.0/bin/stitch-mcp"],
       "enabled": true
     }
   }
