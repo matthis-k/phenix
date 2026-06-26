@@ -41,7 +41,7 @@ Every tool call is logged to `~/.local/share/phenix/audit/<server-name>/`.
 |------|-------------|----------|--------|
 | `tend.status` | Show config health and known checks | ReadOnly | Implemented |
 | `tend.plan` | Show which checks would run and why | ReadOnly | Implemented |
-| `tend.run` | Execute tasks/checks | Phase-dependent: `verify` = ReadOnly; `fix`/`generate`/`setup`/`cleanup` = WritesWorktree; never CreatesCommit | Implemented |
+| `tend.run` | Execute tasks/checks | Phase-dependent: `verify` = ReadOnly; `fix`/`generate`/`setup`/`cleanup` = WritesWorktree; never creates commits | Implemented |
 | `tend.explain` | Explain a check failure with repro command | ReadOnly | Implemented |
 
 ### Tend Schema
@@ -56,8 +56,10 @@ Tend uses `.tend.json` files for configuration. See `docs/tend.md` for the full 
 | `stitch.diff` | Show diffs across repos | ReadOnly | Implemented |
 | `stitch.dag` | Show ordered operation DAG | ReadOnly | Implemented |
 | `stitch.commit_template` | Generate commit message template | ReadOnly | Implemented |
-| `stitch.commit` | DAG-wide commit with validation | CreatesCommit | Implemented |
+| `stitch.commit` | Local exact-file commits across configured repos | CreatesCommit | Implemented |
 | `stitch.sync` | Pull/rebase/push across repos | Network | Planned |
+
+`stitch.commit` does not update flake inputs and does not push. Sync/update/push behavior is owned by `stitch.sync` and `stitch.push`.
 
 ### Stitch Schema
 
