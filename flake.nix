@@ -3,25 +3,24 @@
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
-    nixpkgs.follows = "phenix-pins/nixpkgs";
-    phenix-pins.url = "github:matthis-k/phenix-pins";
 
-    phenix-packages.url = "github:matthis-k/phenix-packages";
+    phenix-pins.url = "git+file:./flakes/00-pins/phenix-pins";
+    nixpkgs.follows = "phenix-pins/nixpkgs";
+
+    phenix-packages.url = "git+file:./flakes/04-pkgs/phenix-packages";
     phenix-packages.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-de.url = "github:matthis-k/phenix-de";
-    phenix-de.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-tools.url = "git+file:./flakes/02-producers/phenix-tools";
+    phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-nvim.url = "github:matthis-k/phenix-nvim";
+    phenix-nvim.url = "git+file:./flakes/02-producers/phenix-nvim";
     phenix-nvim.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-hosts.url = "github:matthis-k/phenix-hosts";
-    phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-de.url = "git+file:./flakes/05-consumers/phenix-de";
+    phenix-de.inputs.phenix-pins.follows = "phenix-pins";
 
-    # TODO: switch back to github: when both repos are pushed
-    phenix-tools.url = "git+file:./flakes/02-producers/phenix-tools";
-    # phenix-tools.url = "github:matthis-k/phenix-tools";
-    # phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-hosts.url = "git+file:./flakes/05-consumers/phenix-hosts";
+    phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
   };
@@ -94,15 +93,37 @@
               cp -r ${lib.cleanSource ./.} source
               chmod -R u+w source
 
-              # Merge submodule content from the flake input
+              # Materialize all local flake inputs into the workspace copy
+              rm -rf source/flakes/00-pins/phenix-pins
+              rm -rf source/flakes/02-producers/phenix-tools
+              rm -rf source/flakes/02-producers/phenix-nvim
+              rm -rf source/flakes/04-pkgs/phenix-packages
+              rm -rf source/flakes/05-consumers/phenix-de
+              rm -rf source/flakes/05-consumers/phenix-hosts
+
+              mkdir -p source/flakes/00-pins
+              mkdir -p source/flakes/02-producers
+              mkdir -p source/flakes/04-pkgs
+              mkdir -p source/flakes/05-consumers
+
+              cp -rT ${inputs.phenix-pins} source/flakes/00-pins/phenix-pins
               cp -rT ${inputs.phenix-tools} source/flakes/02-producers/phenix-tools
-              chmod -R u+w source/flakes/02-producers/phenix-tools
+              cp -rT ${inputs.phenix-nvim} source/flakes/02-producers/phenix-nvim
+              cp -rT ${inputs.phenix-packages} source/flakes/04-pkgs/phenix-packages
+              cp -rT ${inputs.phenix-de} source/flakes/05-consumers/phenix-de
+              cp -rT ${inputs.phenix-hosts} source/flakes/05-consumers/phenix-hosts
+
+              chmod -R u+w source
 
               cd source
 
               ${tendPkg}/bin/tend validate --profiles
 
-              ${stitchPkg}/bin/stitch graph verify --source locks --workspace . --metadata stitch.workspace.json
+              ${stitchPkg}/bin/stitch graph verify \
+                --source locks \
+                --workspace . \
+                --metadata .stitch/topology.json \
+                --strict
 
               ${tendPkg}/bin/tend check --profile nix-check --offline --locked
 

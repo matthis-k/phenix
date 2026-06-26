@@ -44,7 +44,17 @@ A flake may depend on flakes in lower-numbered directories. It must not depend o
 
 ## Validation
 
-Run `stitch topology check` to validate the published flake-input topology.
+Run:
+
+```sh
+stitch graph verify \
+  --source locks \
+  --workspace . \
+  --metadata .stitch/topology.json \
+  --strict
+```
+
+to validate the published flake-input topology.
 
 Rules enforced:
 

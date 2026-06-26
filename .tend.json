@@ -239,7 +239,7 @@
       },
       {
         "id": "topology-check",
-        "description": "Validate flake dependency topology matches layer model",
+        "description": "Validate flake dependency topology matches the Phenix layer model",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
@@ -247,8 +247,32 @@
         "profiles": ["git-hook", "pre-push", "manual", "nix-check"],
         "tags": ["topology", "fast"],
         "command": [
-          "bash", "-c",
-          "cd /home/matthisk/phenix && cfg=.stitch/topology.json && [ -f \"$cfg\" ] || { echo \"Missing $cfg\"; exit 1; } && echo \"=== Topology validation ===\" && for row in $(jq -r '.repos[] | @base64' \"$cfg\"); do _jq() { echo \"$row\" | base64 -d | jq -r \"$1\"; }; name=$(_jq '.name'); role=$(_jq '.role'); layer=$(_jq '.layer'); path=$(_jq '.localPath'); if [ \"$path\" != \".\" ]; then [ -d \"$path\" ] || { echo \"FAIL: $name path $path missing\"; exit 1; }; [ -f \"$path/flake.nix\" ] || { echo \"FAIL: $name has no flake.nix at $path\"; exit 1; }; fi; echo \"  OK $name (role=$role layer=$layer)\"; done && echo \"=== Layer ordering ===\" && for row in $(jq -r '.repos[] | select(.localPath != \".\") | @base64' \"$cfg\"); do _jq() { echo \"$row\" | base64 -d | jq -r \"$1\"; }; name=$(_jq '.name'); role=$(_jq '.role'); layer=$(_jq '.layer'); path=$(_jq '.localPath'); dir_layer=$(echo \"$path\" | sed 's|\\./flakes/\\([0-9]\\+\\)\\(-.*\\)/.*|\\1|'); dir_layer_num=$((10#$dir_layer)); if [ \"$dir_layer_num\" -ne \"$layer\" ]; then echo \"FAIL: $name at $path has folder layer $dir_layer but config layer $layer\"; exit 1; fi; done && echo \"  Layer-prefix checks pass\" && echo \"=== Root dependency check ===\" && for dir in flakes/*/*/; do f=\"$dir/flake.nix\"; [ -f \"$f\" ] || continue; if grep -q 'github:matthis-k/phenix\"' \"$f\" 2>/dev/null || grep -q 'github:matthis-k/phenix\\s' \"$f\" 2>/dev/null; then echo \"FAIL: child flake $f depends on root phenix\"; exit 1; fi; done && echo \"  No root deps in children\" && echo \"=== All topology checks passed ===\""
+          "stitch",
+          "graph",
+          "verify",
+          "--source",
+          "locks",
+          "--workspace",
+          ".",
+          "--metadata",
+          ".stitch/topology.json",
+          "--strict"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "topology-doc-up-to-date",
+        "description": "Generated topology diagram is up to date",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["pre-push", "manual", "nix-check"],
+        "tags": ["topology", "docs"],
+        "command": [
+          "bash",
+          "-c",
+          "stitch topology graph --config .stitch/topology.json --format mermaid > /tmp/current-topology.mmd && diff -u docs/architecture/current-topology.mmd /tmp/current-topology.mmd"
         ],
         "expect": { "status": 0 }
       },
@@ -289,7 +313,8 @@
           "--workspace",
           ".",
           "--metadata",
-          "stitch.workspace.json"
+          ".stitch/topology.json",
+          "--strict"
         ],
         "expect": { "status": 0 }
       },
@@ -311,7 +336,8 @@
           "--workspace",
           ".",
           "--metadata",
-          "stitch.workspace.json"
+          ".stitch/topology.json",
+          "--strict"
         ],
         "expect": { "status": 0 }
       }

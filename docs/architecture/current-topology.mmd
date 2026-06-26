@@ -1,43 +1,20 @@
 flowchart TD
-  Pins["0 phenix-pins
-  pins layer"]
+  phenix[phenix<br/>layer 6<br/>workspaceRoot]
+  phenix_de[phenix-de<br/>layer 5<br/>hostConsumer]
+  phenix_hosts[phenix-hosts<br/>layer 5<br/>hostConsumer]
+  phenix_nvim[phenix-nvim<br/>layer 2<br/>toolProvider]
+  phenix_packages[phenix-packages<br/>layer 4<br/>packageProvider]
+  phenix_pins[phenix-pins<br/>layer 0<br/>pins]
+  phenix_tools[phenix-tools<br/>layer 2<br/>toolProvider]
+  phenix --> phenix_de
+  phenix --> phenix_hosts
+  phenix --> phenix_nvim
+  phenix --> phenix_packages
+  phenix --> phenix_pins
+  phenix --> phenix_tools
+  phenix_de --> phenix_pins
+  phenix_hosts --> phenix_pins
+  phenix_nvim --> phenix_pins
+  phenix_packages --> phenix_pins
+  phenix_tools --> phenix_pins
 
-  Tools["2 phenix-tools
-  producer"]
-
-  Nvim["2 phenix-nvim
-  producer"]
-
-  Pkgs["4 phenix-packages
-  pkgs-aggregator"]
-
-  DE["5 phenix-de
-  consumer"]
-
-  Hosts["5 phenix-hosts
-  consumer"]
-
-  Root["6 phenix
-  root aggregator"]
-
-  Pins --> Tools
-  Pins --> Nvim
-  Pins --> Pkgs
-  Pins --> DE
-  Pins --> Hosts
-
-  Tools --> Pkgs
-  Nvim --> Pkgs
-
-  Tools --> DE
-  Pkgs --> DE
-
-  Pkgs --> Hosts
-  DE --> Hosts
-
-  Pins --> Root
-  Tools --> Root
-  Nvim --> Root
-  Pkgs --> Root
-  DE --> Root
-  Hosts --> Root
