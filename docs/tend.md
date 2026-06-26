@@ -144,6 +144,8 @@ auto-discovery.  May be specified multiple times.
 - `tags` — categorization
 - `when.changed.paths` — globs that trigger this node
 - `context.workdir` — working directory override
+- `context.env` — environment variable map
+- `context.shell` — Nix dev shell config (see below)
 - `before` — list of steps run before tasks
 - `tasks` — list of task definitions
 - `after` — list of steps run after tasks
@@ -156,6 +158,7 @@ auto-discovery.  May be specified multiple times.
   `cleanup`
 - `kind` — one of: `command`, `filesExist`, `filesAbsent`, `forbidText`,
   `requireText`
+- `context` — task-level context overrides/augments node-level context
 - `profiles` — list of profile names that select this task
 - `mutates` — override default mutability
 - `interactive` — if true, task requires a TTY
@@ -219,6 +222,67 @@ auto-discovery.  May be specified multiple times.
   "kind": "requireText",
   "paths": ["docs/guardrails.md"],
   "patterns": ["This document describes the intended Phenix workflow"]
+}
+```
+
+## Shell-Aware Execution
+
+Tasks can request execution inside a Nix dev shell via `context.shell`.
+
+When a shell is configured, Tend wraps the command with `nix develop`:
+
+```json
+{
+  "context": {
+    "workdir": ".",
+    "shell": {
+      "flake": ".",
+      "name": "test"
+    }
+  },
+  "command": ["stitch", "graph", "verify", "--source", "locks"]
+}
+```
+
+This becomes: `nix develop .#test --command stitch graph verify --source locks`
+
+### ShellConfig fields
+
+| Field               | Default   | Description                          |
+|---------------------|-----------|--------------------------------------|
+| `flake`             | `"."`     | Flake reference for `nix develop`   |
+| `name`              | `"default"` | Dev shell name                     |
+| `impure`            | `false`   | Pass `--impure` to `nix develop`     |
+| `accept_flake_config` | `false` | Pass `--accept-flake-config`       |
+| `extra_args`        | `[]`      | Extra args before `--command`        |
+
+### Merge semantics
+
+Task-level `context` merges over node-level `context`:
+
+- **workdir**: task overrides node
+- **env**: task overlays on top of node (task keys win)
+- **shell**: task shell replaces node shell as a whole (no deep merge)
+
+### Nix build sandbox note
+
+Inside a Nix build sandbox (`nix flake check`), `nix develop` may not be
+available.  For such profiles, define a direct task without shell wrapping
+or ensure the tool is on PATH.
+
+Example: two tasks for different profiles:
+
+```json
+{
+  "id": "dag-verify-shell",
+  "profiles": ["pre-push", "manual"],
+  "context": { "shell": { "flake": ".", "name": "test" } },
+  "command": ["stitch", "graph", "verify"]
+},
+{
+  "id": "dag-verify-direct",
+  "profiles": ["nix-check"],
+  "command": ["stitch", "graph", "verify"]
 }
 ```
 

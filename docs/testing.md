@@ -219,6 +219,37 @@ Summary:
 * No expected-failing checks in the default gate.
 * Future desired checks belong in `roadmap.md`, not as failing gates.
 
+## Test Shell
+
+The workspace provides a deterministic test shell:
+
+```sh
+nix develop .#test
+```
+
+This shell contains:
+- `git`, `nix`, `jq`, `ripgrep`
+- `tend` and `stitch` binaries
+
+Use this shell for CI/runtime task execution.  Tend can enter it automatically
+via `context.shell` (see [tend.md](tend.md)).
+
+### Workspace DAG verification
+
+```sh
+# Via the test shell directly
+nix develop .#test --command stitch graph verify --source locks --workspace . --metadata stitch.workspace.json
+
+# Via tend (automatic shell entry)
+tend check --profile pre-push
+```
+
+Both commands must succeed.  The root `.tend.json` defines two verification
+tasks:
+
+- `workspace-dag-valid-shell` — uses `nix develop` (profiles: pre-push, manual)
+- `workspace-dag-valid-nix-check` — direct execution (profile: nix-check)
+
 ## Initial useful checks
 
 The first gate set should cover simple presence or static checks only, unless deeper checks are already passable:

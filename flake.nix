@@ -84,7 +84,10 @@
             {
               nativeBuildInputs = [
                 tendPkg
+                stitchPkg
                 pkgs.git
+                pkgs.nix
+                pkgs.jq
               ] ++ rustToolchain;
             }
             ''
@@ -99,10 +102,25 @@
 
               ${tendPkg}/bin/tend validate --profiles
 
+              ${stitchPkg}/bin/stitch graph verify --source locks --workspace . --metadata stitch.workspace.json
+
               ${tendPkg}/bin/tend check --profile nix-check --offline --locked
 
               touch $out
             '';
+        };
+
+        devShells.test = pkgs.mkShell {
+          name = "phenix-test";
+
+          packages = with pkgs; [
+            git
+            nix
+            jq
+            ripgrep
+            tendPkg
+            stitchPkg
+          ];
         };
 
         devShells.default = pkgs.mkShell {

@@ -84,6 +84,10 @@ stitch commit             # commit changed files in DAG dependency order (local 
 stitch commit --apply     # execute the commit
 stitch push               # push committed changes in dependency order
 stitch sync               # sync/update/push (update flake inputs, validate, push)
+stitch graph derive       # derive workspace graph from flake.lock files
+stitch graph verify       # validate workspace graph topology
+stitch graph order        # show provider-before-consumer topological order
+stitch graph print        # print workspace graph (default format: mermaid)
 ```
 
 ## Agent-Friendly JSON
@@ -114,6 +118,60 @@ stitch sync               # sync/update/push (update flake inputs, validate, pus
 2. stitch sync --dry-run            # preview sync actions
 3. stitch sync --apply              # update flake inputs, validate, push
 ```
+
+## Graph Subsystem
+
+Stitch can reconstruct the workspace dependency graph by reading `flake.lock`
+files.  Edge direction is **consumer -> provider** (e.g., `phenix-hosts -> phenix-pins`).
+
+For sync execution order, providers must be processed before consumers.  Use
+`stitch graph order` to get the provider-before-consumer topological order.
+
+### Edge direction
+
+```
+consumer -> provider
+```
+
+So if `phenix-hosts` depends on `phenix-pins`, the edge is:
+
+```
+phenix-hosts -> phenix-pins
+```
+
+### Graph commands
+
+```
+stitch graph derive --source locks --workspace . --metadata stitch.workspace.json
+stitch graph verify --source locks --workspace . --metadata stitch.workspace.json
+stitch graph order  --source locks --workspace . --metadata stitch.workspace.json
+stitch graph print  --source locks --workspace . --metadata stitch.workspace.json --format mermaid
+```
+
+### Graph source
+
+- `locks` (default): derive edges from `flake.lock` files
+- `json`: use explicit edge list from metadata file (fallback/manual mode)
+
+### Validation rules
+
+1. **Cycles**: forbidden between workspace nodes (cycles inside one node are allowed).
+2. **Layer rule**: for edge `consumer -> provider`, `provider.layer <= consumer.layer`.
+3. **Root rule**: no non-root node may depend on the workspace root.
+4. **Provider/consumer rule**: providers must not depend on consumers.
+5. **Duplicate edges**: warned.
+6. **Missing flake.lock**: warned by default, error with `--strict`.
+
+### Layer model
+
+| Layer | Kind               | Example node       |
+|-------|--------------------|--------------------|
+| 0     | pins               | phenix-pins        |
+| 1     | providers          | phenix-packages    |
+| 1     | providers          | phenix-tools       |
+| 2     | desktop providers  | phenix-de          |
+| 3     | host consumers     | phenix-hosts       |
+| 4     | workspace root     | phenix             |
 
 ## Safety Rules
 

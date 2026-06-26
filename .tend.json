@@ -263,6 +263,57 @@
         "sandbox_safe": false,
         "mutates": false,
         "interactive": false
+      },
+      {
+        "id": "workspace-dag-valid-shell",
+        "description": "Workspace lock-derived DAG has no cycles or topology violations (via shell)",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": false,
+        "profiles": ["pre-push", "manual"],
+        "tags": ["stitch", "dag", "nix", "workspace"],
+        "context": {
+          "workdir": ".",
+          "shell": {
+            "flake": ".",
+            "name": "test"
+          }
+        },
+        "command": [
+          "stitch",
+          "graph",
+          "verify",
+          "--source",
+          "locks",
+          "--workspace",
+          ".",
+          "--metadata",
+          "stitch.workspace.json"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "workspace-dag-valid-nix-check",
+        "description": "Workspace lock-derived DAG has no cycles or topology violations (direct)",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["nix-check"],
+        "tags": ["stitch", "dag", "workspace"],
+        "command": [
+          "stitch",
+          "graph",
+          "verify",
+          "--source",
+          "locks",
+          "--workspace",
+          ".",
+          "--metadata",
+          "stitch.workspace.json"
+        ],
+        "expect": { "status": 0 }
       }
     ]
   }
