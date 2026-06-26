@@ -53,7 +53,7 @@
         "tags": ["migration", "fast"],
         "command": [
           "bash", "-c",
-          "if [ -d phenix-tools/crates/pt-compat ]; then echo 'ERROR: pt-compat crate still exists'; exit 1; fi; if grep -q 'pt-compat' phenix-tools/Cargo.toml; then echo 'ERROR: pt-compat still in workspace'; exit 1; fi; echo 'pt-compat fully removed.'"
+          "if [ -d flakes/02-producers/phenix-tools/crates/pt-compat ]; then echo 'ERROR: pt-compat crate still exists'; exit 1; fi; if grep -q 'pt-compat' flakes/02-producers/phenix-tools/Cargo.toml; then echo 'ERROR: pt-compat still in workspace'; exit 1; fi; echo 'pt-compat fully removed.'"
         ],
         "expect": { "status": 0 }
       },
@@ -68,7 +68,7 @@
         "tags": ["migration", "fast"],
         "command": [
           "bash", "-c",
-          "if grep -r 'sync.json' phenix-tools/crates/stitch/src/ --include='*.rs' | grep -v 'test' | grep -v 'docs'; then echo 'ERROR: stitch still reads sync.json'; exit 1; fi; echo 'No sync.json consumption found.'"
+          "if grep -r 'sync.json' flakes/02-producers/phenix-tools/crates/stitch/src/ --include='*.rs' | grep -v 'test' | grep -v 'docs'; then echo 'ERROR: stitch still reads sync.json'; exit 1; fi; echo 'No sync.json consumption found.'"
         ],
         "expect": { "status": 0 }
       },
@@ -83,7 +83,7 @@
         "tags": ["migration", "fast"],
         "command": [
           "bash", "-c",
-          "for f in phenix-tools/modules/standalone.nix phenix-tools/modules/default.nix flake.nix; do if grep -q 'packages\\.gate\\|apps\\.gate\\|\"gate\"' \"$f\" 2>/dev/null; then echo \"ERROR: gate still exported from $f\"; exit 1; fi; done; echo 'No gate Nix export.'"
+          "for f in flakes/02-producers/phenix-tools/modules/standalone.nix flakes/02-producers/phenix-tools/modules/default.nix flake.nix; do if grep -q 'packages\\.gate\\|apps\\.gate\\|\"gate\"' \"$f\" 2>/dev/null; then echo \"ERROR: gate still exported from $f\"; exit 1; fi; done; echo 'No gate Nix export.'"
         ],
         "expect": { "status": 0 }
       },
@@ -98,7 +98,7 @@
         "tags": ["migration", "fast"],
         "command": [
           "bash", "-c",
-          "# Only check deprecated commit surfaces within the Commit command definition.\ncommit_section=$(sed -n '/^    Commit {/,/^    Push {/p' phenix-tools/crates/stitch-cli/src/main.rs 2>/dev/null)\nfor flag in no_tend no_push cmd_sync_commit; do\n  if echo \"$commit_section\" | grep -q \"$flag\"; then\n    echo \"ERROR: deprecated commit surface '$flag' still in stitch commit\"; exit 1\n  fi\ndone\necho 'No deprecated commit flags.'"
+          "# Only check deprecated commit surfaces within the Commit command definition.\ncommit_section=$(sed -n '/^    Commit {/,/^    Push {/p' flakes/02-producers/phenix-tools/crates/stitch-cli/src/main.rs 2>/dev/null)\nfor flag in no_tend no_push cmd_sync_commit; do\n  if echo \"$commit_section\" | grep -q \"$flag\"; then\n    echo \"ERROR: deprecated commit surface '$flag' still in stitch commit\"; exit 1\n  fi\ndone\necho 'No deprecated commit flags.'"
         ],
         "expect": { "status": 0 }
       },
@@ -113,7 +113,7 @@
         "tags": ["stitch", "fast"],
         "command": [
           "bash", "-c",
-          "if grep -q 'Sync' phenix-tools/crates/stitch-cli/src/main.rs; then echo 'Sync command found'; else echo 'ERROR: Sync command missing from stitch CLI'; exit 1; fi"
+          "if grep -q 'Sync' flakes/02-producers/phenix-tools/crates/stitch-cli/src/main.rs; then echo 'Sync command found'; else echo 'ERROR: Sync command missing from stitch CLI'; exit 1; fi"
         ],
         "expect": { "status": 0 }
       },
@@ -128,7 +128,7 @@
         "tags": ["tend", "fast"],
         "command": [
           "bash", "-c",
-          "if ! grep -q 'Explain' phenix-tools/crates/tend-cli/src/main.rs; then echo 'ERROR: Explain enum missing'; exit 1; fi; if ! grep -q 'fn cmd_explain' phenix-tools/crates/tend-cli/src/main.rs; then echo 'ERROR: cmd_explain implementation missing'; exit 1; fi; echo 'tend explain exists and is implemented.'"
+          "if ! grep -q 'Explain' flakes/02-producers/phenix-tools/crates/tend-cli/src/main.rs; then echo 'ERROR: Explain enum missing'; exit 1; fi; if ! grep -q 'fn cmd_explain' flakes/02-producers/phenix-tools/crates/tend-cli/src/main.rs; then echo 'ERROR: cmd_explain implementation missing'; exit 1; fi; echo 'tend explain exists and is implemented.'"
         ],
         "expect": { "status": 0 }
       },
@@ -143,7 +143,7 @@
         "tags": ["stitch", "fast"],
         "command": [
           "bash", "-c",
-          "if grep -q 'commit_sync\\|StitchCommitSyncTool' phenix-tools/crates/stitch-mcp/src/tools.rs; then echo 'ERROR: stitch.commit_sync still defined'; exit 1; fi; echo 'No commit_sync alias.'"
+          "if grep -q 'commit_sync\\|StitchCommitSyncTool' flakes/02-producers/phenix-tools/crates/stitch-mcp/src/tools.rs; then echo 'ERROR: stitch.commit_sync still defined'; exit 1; fi; echo 'No commit_sync alias.'"
         ],
         "expect": { "status": 0 }
       },
@@ -188,7 +188,7 @@
         "tags": ["stitch", "fast"],
         "command": [
           "bash", "-c",
-          "if awk '/fn cmd_commit/,/^}/' phenix-tools/crates/stitch-cli/src/main.rs | grep -q 'execute_sync'; then echo 'ERROR: cmd_commit still calls execute_sync directly'; exit 1; fi; echo 'cmd_commit uses local commit execution.'"
+          "if awk '/fn cmd_commit/,/^}/' flakes/02-producers/phenix-tools/crates/stitch-cli/src/main.rs | grep -q 'execute_sync'; then echo 'ERROR: cmd_commit still calls execute_sync directly'; exit 1; fi; echo 'cmd_commit uses local commit execution.'"
         ],
         "expect": { "status": 0 }
       },
@@ -203,7 +203,7 @@
         "tags": ["stitch", "fast"],
         "command": [
           "bash", "-c",
-          "commit_section=$(sed -n '/^    Commit {/,/^    Push {/p' phenix-tools/crates/stitch-cli/src/main.rs 2>/dev/null); if echo \"$commit_section\" | grep -n 'Create DAG-wide sync commits\\|update dependent flake inputs\\|push in dependency order'; then echo 'ERROR: stitch commit help still describes sync/push behavior'; exit 1; fi; echo 'stitch commit help is clean.'"
+          "commit_section=$(sed -n '/^    Commit {/,/^    Push {/p' flakes/02-producers/phenix-tools/crates/stitch-cli/src/main.rs 2>/dev/null); if echo \"$commit_section\" | grep -n 'Create DAG-wide sync commits\\|update dependent flake inputs\\|push in dependency order'; then echo 'ERROR: stitch commit help still describes sync/push behavior'; exit 1; fi; echo 'stitch commit help is clean.'"
         ],
         "expect": { "status": 0 }
       },
@@ -233,7 +233,7 @@
         "tags": ["stitch", "fast"],
         "command": [
           "bash", "-c",
-          "if ! grep -q 'get(\"messages\")' phenix-tools/crates/stitch-cli/src/main.rs; then echo 'ERROR: stitch messages parser does not accept wrapped { messages: ... } format'; exit 1; fi; echo 'stitch messages parser accepts wrapped format.'"
+          "if ! grep -q 'get(\"messages\")' flakes/02-producers/phenix-tools/crates/stitch-cli/src/main.rs; then echo 'ERROR: stitch messages parser does not accept wrapped { messages: ... } format'; exit 1; fi; echo 'stitch messages parser accepts wrapped format.'"
         ],
         "expect": { "status": 0 }
       },
