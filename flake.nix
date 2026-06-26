@@ -25,16 +25,22 @@
     phenix-hosts.url = ./flakes/05-consumers/phenix-hosts;
     phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-opencode.url = ./flakes/02-producers/phenix-opencode;
-    phenix-opencode.inputs.phenix-pins.follows = "phenix-pins";
-    phenix-opencode.inputs.phenix-tools.follows = "phenix-tools";
+    phenix-opencode = {
+      url = ./flakes/02-producers/phenix-opencode;
+      inputs.phenix-pins.follows = "phenix-pins";
+      inputs.phenix-tools.follows = "phenix-tools";
+    };
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
   };
 
-  outputs = inputs@{ flake-parts, ... }:
+  outputs =
+    inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       imports = [
         ./phenix-module.nix
         ./phenix-wrappers.nix
@@ -47,172 +53,166 @@
         inputs.git-hooks-nix.flakeModule
       ];
 
-      perSystem = { system, pkgs, lib, config, ... }:
-      let
-        tendPkg = inputs.phenix-tools.packages.${system}.tend;
-        stitchPkg = inputs.phenix-tools.packages.${system}.stitch;
-        rustToolchain = [ pkgs.cargo pkgs.rustc pkgs.rustfmt pkgs.clippy ];
-      in {
-        packages.opencode = config.phenixWrapped.opencode;
+      perSystem =
+        {
+          system,
+          pkgs,
+          lib,
+          config,
+          ...
+        }:
+        let
+          tendPkg = inputs.phenix-tools.packages.${system}.tend;
+          stitchPkg = inputs.phenix-tools.packages.${system}.stitch;
+          rustToolchain = [
+            pkgs.cargo
+            pkgs.rustc
+            pkgs.rustfmt
+            pkgs.clippy
+          ];
+        in
+        {
+          packages.opencode = config.phenixWrapped.opencode;
 
-        apps.tend = inputs.phenix-tools.apps.${system}.tend;
-        apps.stitch = inputs.phenix-tools.apps.${system}.stitch;
-        apps.default = inputs.phenix-tools.apps.${system}.stitch;
+          apps = {
+            tend = inputs.phenix-tools.apps.${system}.tend;
+            stitch = inputs.phenix-tools.apps.${system}.stitch;
+            default = inputs.phenix-tools.apps.${system}.stitch;
+          };
 
-        pre-commit = {
-          check.enable = false;
+          pre-commit = {
+            check.enable = false;
 
-          settings = {
-            hooks = {
-              tend-pre-commit = {
-                enable = true;
-                name = "tend pre-commit";
-                description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
-                entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
-                pass_filenames = false;
-                always_run = true;
-                stages = [ "pre-commit" ];
-              };
+            settings = {
+              hooks = {
+                tend-pre-commit = {
+                  enable = true;
+                  name = "tend pre-commit";
+                  description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
+                  entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
+                  pass_filenames = false;
+                  always_run = true;
+                  stages = [ "pre-commit" ];
+                };
 
-              tend-pre-push = {
-                enable = true;
-                name = "tend pre-push";
-                description = "Run medium Tend checks before push (inside Nix dev shell)";
-                entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push";
-                pass_filenames = false;
-                always_run = true;
-                stages = [ "pre-push" ];
-              };
+                tend-pre-push = {
+                  enable = true;
+                  name = "tend pre-push";
+                  description = "Run medium Tend checks before push (inside Nix dev shell)";
+                  entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push";
+                  pass_filenames = false;
+                  always_run = true;
+                  stages = [ "pre-push" ];
+                };
 
-              commit-msg-check = {
-                enable = true;
-                name = "commit msg check";
-                description = "Validate commit message format";
-                entry = "${pkgs.nix}/bin/nix develop .#default --command bash -c 'cat \"$1\" | head -1 | grep -qE \"^(feat|fix|chore|docs|refactor|test|ci|perf|style|build|revert)(\\(.+\\))?: .+\" || { echo \"FAIL: commit message must start with conventional commit prefix\"; exit 1; }; ! grep -qiF \"phenix-sync\" \"$1\" || { echo \"FAIL: commit message contains obsolete phenix-sync wording\"; exit 1; }' _";
-                pass_filenames = false;
-                always_run = true;
-                stages = [ "commit-msg" ];
+                commit-msg-check = {
+                  enable = true;
+                  name = "commit msg check";
+                  description = "Validate commit message format";
+                  entry = "${pkgs.nix}/bin/nix develop .#default --command bash -c 'cat \"$1\" | head -1 | grep -qE \"^(feat|fix|chore|docs|refactor|test|ci|perf|style|build|revert)(\\(.+\\))?: .+\" || { echo \"FAIL: commit message must start with conventional commit prefix\"; exit 1; }; ! grep -qiF \"phenix-sync\" \"$1\" || { echo \"FAIL: commit message contains obsolete phenix-sync wording\"; exit 1; }' _";
+                  pass_filenames = false;
+                  always_run = true;
+                  stages = [ "commit-msg" ];
+                };
               };
             };
           };
-        };
 
-        checks = {
-          tend-nix-check = pkgs.runCommand "tend-nix-check"
-            {
-              nativeBuildInputs = [
+          checks = {
+            tend-nix-check =
+              pkgs.runCommand "tend-nix-check"
+                {
+                  nativeBuildInputs = [
+                    tendPkg
+                    pkgs.git
+                    pkgs.nix
+                    pkgs.nixfmt
+                    pkgs.statix
+                    pkgs.deadnix
+                  ]
+                  ++ rustToolchain;
+                }
+                ''
+                  cp -r ${lib.cleanSource ./.} source
+                  chmod -R u+w source
+                  cd source
+
+                  ${tendPkg}/bin/tend validate --profiles
+                  ${tendPkg}/bin/tend check --profile nix-check --offline --locked
+
+                  touch $out
+                '';
+          };
+
+          devShells.test = pkgs.mkShell {
+            name = "phenix-test";
+
+            packages =
+              with pkgs;
+              [
+                git
+                nix
+                jq
+                ripgrep
                 tendPkg
                 stitchPkg
-                pkgs.git
-                pkgs.nix
-                pkgs.jq
-              ] ++ rustToolchain;
-            }
-            ''
-              cp -r ${lib.cleanSource ./.} source
-              chmod -R u+w source
+              ]
+              ++ rustToolchain;
+          };
 
-              # Materialize all local flake inputs into the workspace copy
-              rm -rf source/flakes/00-pins/phenix-pins
-              rm -rf source/flakes/02-producers/phenix-tools
-              rm -rf source/flakes/02-producers/phenix-nvim
-              rm -rf source/flakes/04-pkgs/phenix-packages
-              rm -rf source/flakes/05-consumers/phenix-de
-              rm -rf source/flakes/05-consumers/phenix-hosts
+          devShells.default = pkgs.mkShell {
+            inputsFrom = [
+              config.pre-commit.devShell
+            ];
 
-              mkdir -p source/flakes/00-pins
-              mkdir -p source/flakes/02-producers
-              mkdir -p source/flakes/04-pkgs
-              mkdir -p source/flakes/05-consumers
+            packages =
+              with pkgs;
+              [
+                git
+                gh
+                jq
+                ripgrep
+                fd
+                statix
+                deadnix
+                nixfmt
+                config.phenixWrapped.opencode
+                tendPkg
+                stitchPkg
+              ]
+              ++ rustToolchain;
 
-              cp -rT ${inputs.phenix-pins} source/flakes/00-pins/phenix-pins
-              cp -rT ${inputs.phenix-tools} source/flakes/02-producers/phenix-tools
-              cp -rT ${inputs.phenix-nvim} source/flakes/02-producers/phenix-nvim
-              cp -rT ${inputs.phenix-packages} source/flakes/04-pkgs/phenix-packages
-              cp -rT ${inputs.phenix-de} source/flakes/05-consumers/phenix-de
-              cp -rT ${inputs.phenix-hosts} source/flakes/05-consumers/phenix-hosts
+            shellHook = ''
+              ${config.pre-commit.installationScript}
 
-              chmod -R u+w source
+              repo-hook() {
+                ${tendPkg}/bin/tend check --profile git-hook --staged "$@"
+              }
 
-              cd source
+              repo-pushgate() {
+                ${tendPkg}/bin/tend check --profile pre-push "$@"
+              }
 
-              ${tendPkg}/bin/tend validate --profiles
+              repo-check() {
+                ${tendPkg}/bin/tend check --profile manual "$@"
+              }
 
-              ${stitchPkg}/bin/stitch graph verify \
-                --source locks \
-                --workspace . \
-                --metadata .stitch/topology.json \
-                --strict
+              repo-fix() {
+                ${tendPkg}/bin/tend check --profile fix "$@"
+              }
 
-              ${tendPkg}/bin/tend check --profile nix-check --offline --locked
+              export -f repo-hook repo-pushgate repo-check repo-fix 2>/dev/null || true
 
-              touch $out
+              echo "Phenix development shell"
+              echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt nixfmt-rfc-style opencode"
+              echo "  tend: distributed maintenance/check harness"
+              echo "  stitch: coordinated multi-repo git tool"
+              echo "  repo-hook      -> tend check --profile git-hook --staged"
+              echo "  repo-pushgate  -> tend check --profile pre-push"
+              echo "  repo-check     -> tend check --profile manual"
+              echo "  repo-fix       -> tend check --profile fix"
             '';
+          };
         };
-
-        devShells.test = pkgs.mkShell {
-          name = "phenix-test";
-
-          packages = with pkgs; [
-            git
-            nix
-            jq
-            ripgrep
-            tendPkg
-            stitchPkg
-          ] ++ rustToolchain;
-        };
-
-        devShells.default = pkgs.mkShell {
-          inputsFrom = [
-            config.pre-commit.devShell
-          ];
-
-          packages = with pkgs; [
-            git
-            gh
-            jq
-            ripgrep
-            fd
-            statix
-            deadnix
-            nixfmt-rfc-style
-            config.phenixWrapped.opencode
-            tendPkg
-            stitchPkg
-          ] ++ rustToolchain;
-
-          shellHook = ''
-            ${config.pre-commit.installationScript}
-
-            repo-hook() {
-              ${tendPkg}/bin/tend check --profile git-hook --staged "$@"
-            }
-
-            repo-pushgate() {
-              ${tendPkg}/bin/tend check --profile pre-push "$@"
-            }
-
-            repo-check() {
-              ${tendPkg}/bin/tend check --profile manual "$@"
-            }
-
-            repo-fix() {
-              ${tendPkg}/bin/tend check --profile fix "$@"
-            }
-
-            export -f repo-hook repo-pushgate repo-check repo-fix 2>/dev/null || true
-
-            echo "Phenix development shell"
-            echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode"
-            echo "  tend: distributed maintenance/check harness"
-            echo "  stitch: coordinated multi-repo git tool"
-            echo "  repo-hook      -> tend check --profile git-hook --staged"
-            echo "  repo-pushgate  -> tend check --profile pre-push"
-            echo "  repo-check     -> tend check --profile manual"
-            echo "  repo-fix       -> tend check --profile fix"
-          '';
-        };
-      };
     };
 }

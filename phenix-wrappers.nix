@@ -1,10 +1,12 @@
-{ lib, ... }: let
+{ lib, ... }:
+let
   inherit (lib) types;
-in {
-  perSystem = { ... }: {
+in
+{
+  perSystem = _: {
     options.phenixWrapped = lib.mkOption {
       type = types.attrsOf types.package;
-      default = {};
+      default = { };
       description = "Wrapped/packaged tools with embedded configuration";
     };
   };
