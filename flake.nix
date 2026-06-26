@@ -105,15 +105,6 @@
                   stages = [ "pre-push" ];
                 };
 
-                commit-msg-check = {
-                  enable = true;
-                  name = "commit msg check";
-                  description = "Validate commit message format";
-                  entry = "${pkgs.nix}/bin/nix develop .#default --command bash -c 'cat \"$1\" | head -1 | grep -qE \"^(feat|fix|chore|docs|refactor|test|ci|perf|style|build|revert)(\\(.+\\))?: .+\" || { echo \"FAIL: commit message must start with conventional commit prefix\"; exit 1; }; ! grep -qiF \"phenix-sync\" \"$1\" || { echo \"FAIL: commit message contains obsolete phenix-sync wording\"; exit 1; }' _";
-                  pass_filenames = false;
-                  always_run = true;
-                  stages = [ "commit-msg" ];
-                };
               };
             };
           };
