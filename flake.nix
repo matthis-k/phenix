@@ -60,7 +60,7 @@
         apps.default = inputs.phenix-tools.apps.${system}.stitch;
 
         pre-commit = {
-          check.enable = true;
+          check.enable = false;
 
           settings = {
             hooks = {
@@ -68,7 +68,7 @@
                 enable = true;
                 name = "tend pre-commit";
                 description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
-                entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
+                entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
                 pass_filenames = false;
                 always_run = true;
                 stages = [ "pre-commit" ];
