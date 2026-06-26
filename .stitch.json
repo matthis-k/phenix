@@ -7,10 +7,6 @@
       "path": "."
     },
     {
-      "name": "phenixos",
-      "path": "phenixos"
-    },
-    {
       "name": "phenix-tools",
       "path": "phenix-tools"
     },
@@ -19,20 +15,20 @@
       "path": "phenix-packages"
     },
     {
-      "name": "phenix-modules",
-      "path": "phenix-modules"
-    },
-    {
       "name": "phenix-hosts",
       "path": "phenix-hosts"
     },
     {
-      "name": "phenix-shell",
-      "path": "phenix-shell"
-    },
-    {
       "name": "phenix-pins",
       "path": "phenix-pins"
+    },
+    {
+      "name": "phenix-de",
+      "path": "phenix-de"
+    },
+    {
+      "name": "phenix-nvim",
+      "path": "phenix-nvim"
     }
   ]
 }
