@@ -1033,17 +1033,17 @@
         "phenix-pins": "phenix-pins_2"
       },
       "locked": {
-        "lastModified": 1782479016,
-        "narHash": "sha256-JNKct1rINfoZ3A6HR1JhwyA+5io2bL5tFgq2kySE26Y=",
+        "lastModified": 1782465787,
+        "narHash": "sha256-rG22EXBjCusvE6O5rfhEUkV821rahzC7fkXnGYu1jt4=",
         "ref": "refs/heads/main",
-        "rev": "fcd3060c9ccf1aa3d2e559a7972cf06c50d6e7cf",
-        "revCount": 45,
+        "rev": "59cbcecd512c3930ad9db6122a42d23e73ea552b",
+        "revCount": 44,
         "type": "git",
-        "url": "file:./flakes/02-producers/phenix-tools"
+        "url": "file:./phenix-tools"
       },
       "original": {
         "type": "git",
-        "url": "file:./flakes/02-producers/phenix-tools"
+        "url": "file:./phenix-tools"
       }
     },
     "pre-commit-hooks": {
