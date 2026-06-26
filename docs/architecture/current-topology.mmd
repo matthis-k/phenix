@@ -1,0 +1,43 @@
+flowchart TD
+  Pins["0 phenix-pins
+  pins layer"]
+
+  Tools["2 phenix-tools
+  producer"]
+
+  Nvim["2 phenix-nvim
+  producer"]
+
+  Pkgs["4 phenix-packages
+  pkgs-aggregator"]
+
+  DE["5 phenix-de
+  consumer"]
+
+  Hosts["5 phenix-hosts
+  consumer"]
+
+  Root["6 phenix
+  root aggregator"]
+
+  Pins --> Tools
+  Pins --> Nvim
+  Pins --> Pkgs
+  Pins --> DE
+  Pins --> Hosts
+
+  Tools --> Pkgs
+  Nvim --> Pkgs
+
+  Tools --> DE
+  Pkgs --> DE
+
+  Pkgs --> Hosts
+  DE --> Hosts
+
+  Pins --> Root
+  Tools --> Root
+  Nvim --> Root
+  Pkgs --> Root
+  DE --> Root
+  Hosts --> Root

@@ -13,12 +13,13 @@ This documentation is an **ought-state** documentation set. It defines how the w
 ## Reading order
 
 1. `guardrails.md`
-2. `opencode.md`
-3. `stitch.md`
-4. `tend.md`
-5. `testing.md`
-6. `migration.md`
-7. `roadmap.md`
+2. `architecture/flake-topology.md`
+3. `opencode.md`
+4. `stitch.md`
+5. `tend.md`
+6. `testing.md`
+7. `migration.md`
+8. `roadmap.md`
 
 ## Core idea
 

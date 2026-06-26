@@ -19,7 +19,7 @@
     phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
     # TODO: switch back to github: when both repos are pushed
-    phenix-tools.url = "git+file:./phenix-tools";
+    phenix-tools.url = "git+file:./flakes/02-producers/phenix-tools";
     # phenix-tools.url = "github:matthis-k/phenix-tools";
     # phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
 
@@ -92,8 +92,8 @@
               chmod -R u+w source
 
               # Merge submodule content from the flake input
-              cp -rT ${inputs.phenix-tools} source/phenix-tools
-              chmod -R u+w source/phenix-tools
+              cp -rT ${inputs.phenix-tools} source/flakes/02-producers/phenix-tools
+              chmod -R u+w source/flakes/02-producers/phenix-tools
 
               cd source
 
