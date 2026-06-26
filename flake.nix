@@ -1,25 +1,28 @@
 {
   description = "Phenix workspace superflake aggregating all subflakes";
 
+  # Enable submodule support so path: inputs into submodule dirs work
+  inputs.self.submodules = true;
+
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
 
-    phenix-pins.url = "git+file:./flakes/00-pins/phenix-pins";
+    phenix-pins.url = ./flakes/00-pins/phenix-pins;
     nixpkgs.follows = "phenix-pins/nixpkgs";
 
-    phenix-packages.url = "git+file:./flakes/04-pkgs/phenix-packages";
+    phenix-packages.url = ./flakes/04-pkgs/phenix-packages;
     phenix-packages.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-tools.url = "git+file:./flakes/02-producers/phenix-tools";
+    phenix-tools.url = ./flakes/02-producers/phenix-tools;
     phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-nvim.url = "git+file:./flakes/02-producers/phenix-nvim";
+    phenix-nvim.url = ./flakes/02-producers/phenix-nvim;
     phenix-nvim.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-de.url = "git+file:./flakes/05-consumers/phenix-de";
+    phenix-de.url = ./flakes/05-consumers/phenix-de;
     phenix-de.inputs.phenix-pins.follows = "phenix-pins";
 
-    phenix-hosts.url = "git+file:./flakes/05-consumers/phenix-hosts";
+    phenix-hosts.url = ./flakes/05-consumers/phenix-hosts;
     phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
