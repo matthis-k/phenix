@@ -68,7 +68,7 @@
                 enable = true;
                 name = "tend pre-commit";
                 description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
-                entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
+                entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
                 pass_filenames = false;
                 always_run = true;
                 stages = [ "pre-commit" ];
@@ -78,7 +78,7 @@
                 enable = true;
                 name = "tend pre-push";
                 description = "Run medium Tend checks before push (inside Nix dev shell)";
-                entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push";
+                entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push";
                 pass_filenames = false;
                 always_run = true;
                 stages = [ "pre-push" ];
@@ -88,7 +88,7 @@
                 enable = true;
                 name = "commit msg check";
                 description = "Validate commit message format";
-                entry = "nix develop .#default --command bash -c 'cat \"$1\" | head -1 | grep -qE \"^(feat|fix|chore|docs|refactor|test|ci|perf|style|build|revert)(\\(.+\\))?: .+\" || { echo \"FAIL: commit message must start with conventional commit prefix\"; exit 1; }; ! grep -qiF \"phenix-sync\" \"$1\" || { echo \"FAIL: commit message contains obsolete phenix-sync wording\"; exit 1; }' _";
+                entry = "${pkgs.nix}/bin/nix develop .#default --command bash -c 'cat \"$1\" | head -1 | grep -qE \"^(feat|fix|chore|docs|refactor|test|ci|perf|style|build|revert)(\\(.+\\))?: .+\" || { echo \"FAIL: commit message must start with conventional commit prefix\"; exit 1; }; ! grep -qiF \"phenix-sync\" \"$1\" || { echo \"FAIL: commit message contains obsolete phenix-sync wording\"; exit 1; }' _";
                 pass_filenames = false;
                 always_run = true;
                 stages = [ "commit-msg" ];
