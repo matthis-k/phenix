@@ -36,12 +36,9 @@
         inputs.phenix-tools.flakeModules.default
       ];
 
-      perSystem = { system, pkgs, lib, phenixPackages, ... }: let
-        toolsPkg = inputs.phenix-tools.packages.${system}.gate;
-      in {
+      perSystem = { system, pkgs, lib, phenixPackages, ... }: {
         packages.opencode = pkgs.opencode;
 
-        apps.gate = inputs.phenix-tools.apps.${system}.gate;
         apps.tend = inputs.phenix-tools.apps.${system}.tend;
         apps.stitch = inputs.phenix-tools.apps.${system}.stitch;
         apps.default = inputs.phenix-tools.apps.${system}.stitch;
@@ -57,13 +54,14 @@
             deadnix
             nixfmt-rfc-style
             opencode
-          ] ++ lib.optional (toolsPkg.meta.position or "" != "") toolsPkg;
+            inputs.phenix-tools.packages.${system}.tend
+            inputs.phenix-tools.packages.${system}.stitch
+          ];
           shellHook = ''
             echo "Phenix development shell"
             echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode"
-            echo "  phenix-tools: available via 'pt' / 'phenix-tools'"
-            echo "  stitch: coordinated multi-repo changeset tool"
             echo "  tend: distributed maintenance/check harness"
+            echo "  stitch: coordinated multi-repo git tool"
           '';
         };
       };

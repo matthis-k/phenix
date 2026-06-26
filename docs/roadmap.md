@@ -92,28 +92,30 @@ Make the repo safe for agentic work before any migration.
 - [x] `nix develop` works
 - [ ] common tools are available
 - [ ] `opencode` is available if intended
-- [x] `phenix` tool is available via `nix run .#gate` or `nix run .#stitch`
+- [x] `tend` and `stitch` tools are available via `nix run .#tend` / `nix run .#stitch`
 
 ## Phase 2: Testing and gate tooling
 
 Goal:
 Make correctness deterministic enough that future agents can be constrained by checks.
 
-### Gate command
+### Check runner (migrated to `tend`)
 
-- [x] `phenix gate` exists as `phenix-tools gate`
-- [x] `phenix gate list`
-- [x] `phenix gate all`
-- [x] `phenix gate changed`
-- [x] `phenix gate id <id>`
+- [x] `tend plan` — show which checks would run
+- [x] `tend run` — execute checks
+- [x] `tend explain` — explain failures (MCP)
+- [x] `tend status` — config health
 
-### Distributed check files
+Legacy `pt gate` / `phenix-tools gate` replaced.
 
-- [x] Canonical file name documented: `.phenix-checks.json`
+### Distributed check files (migrated to `.tend.json`)
+
+- [x] Canonical file name documented: `.tend.json`
 - [x] Recursive discovery
 - [x] Explicit `--config` / `-c`
 - [x] Deterministic merge order
 - [x] Duplicate ID detection
+- [x] `.phenix-checks.json` retired (migration note in place)
 
 ### Basic schema
 
@@ -142,11 +144,16 @@ Make correctness deterministic enough that future agents can be constrained by c
 - [x] pass/fail/skipped summary
 - [x] useful exit codes
 
-### Initial checks
+### Initial checks (migrated to `.tend.json`)
 
-- [x] docs presence
+- [x] docs presence (includes MCP routing docs)
 - [x] OpenCode config presence
-- [x] gate runner self-test
+- [x] no-legacy-gate-runner guard
+- [x] no-sync-json-consumption guard
+- [x] no-legacy-nix-gate-export guard
+- [x] no-root-flake-apps-gate guard
+- [x] no-mcp-stub-commit-sync guard
+- [x] mcp-routing-docs-exist guard
 - [ ] Nix formatting if already passable
 - [ ] Nix static analysis if already passable
 - [ ] flake check if already passable

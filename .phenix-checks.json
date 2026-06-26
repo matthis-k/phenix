@@ -1,47 +1,6 @@
 {
-  "$schema": "https://phenix.local/schemas/phenix-checks.schema.json",
   "version": 1,
-  "scope": {
-    "root": "config",
-    "workdir": "config"
-  },
-  "checks": [
-    {
-      "id": "docs-presence",
-      "description": "All required docs exist",
-      "group": "docs",
-      "tags": ["docs", "foundation"],
-      "command": [
-        "bash", "-c",
-        "for f in docs/README.md docs/guardrails.md docs/opencode.md docs/testing.md docs/migration.md docs/roadmap.md; do [ -f \"$f\" ] || { echo \"Missing: $f\"; exit 1; }; done; echo \"All docs present.\""
-      ],
-      "expect": { "status": 0 }
-    },
-    {
-      "id": "opencode-config-presence",
-      "description": "All OpenCode agents, commands, and skills exist",
-      "group": "opencode",
-      "tags": ["opencode", "foundation"],
-      "when": {
-        "paths": [".opencode/**"]
-      },
-      "command": [
-        "bash", "-c",
-        "for f in \\\n  .opencode/agents/phenix-coordinator.md \\\n  .opencode/agents/phenix-explorer.md \\\n  .opencode/agents/phenix-architect.md \\\n  .opencode/agents/phenix-toolsmith.md \\\n  .opencode/agents/phenix-gatekeeper.md \\\n  .opencode/agents/phenix-reviewer.md \\\n  .opencode/agents/phenix-simplifier.md \\\n  .opencode/commands/phenix-foundation.md \\\n  .opencode/commands/phenix-task.md \\\n  .opencode/skills/phenix-architecture/SKILL.md \\\n  .opencode/skills/phenix-tooling/SKILL.md; do \\\n  [ -f \"$f\" ] || { echo \"Missing: $f\"; exit 1; }; \\\ndone; echo \"All OpenCode config files present.\""
-      ],
-      "expect": { "status": 0 }
-    },
-    {
-      "id": "gate-runner-present",
-      "description": "Gate runner binary compiles and responds",
-      "group": "gate",
-      "tags": ["gate", "self-test"],
-      "workdir": "repo",
-      "when": {
-        "paths": ["phenix-tools/**"]
-      },
-      "command": ["bash", "-c", "test -f phenix-tools/target/release/pt || test -f phenix-tools/target/debug/pt"],
-      "expect": { "status": 0 }
-    }
-  ]
+  "description": "This file is retired. Checks migrated to .tend.json.",
+  "migration": "See .tend.json in the repository root.",
+  "retired": true
 }

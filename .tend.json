@@ -1,0 +1,113 @@
+{
+  "$schema": "https://phenix.local/schemas/tend.schema.json",
+  "version": 1,
+  "node": {
+    "id": "root",
+    "description": "Root workspace checks (migrated from .phenix-checks.json)",
+    "tags": ["workspace", "foundation"],
+    "context": {
+      "workdir": "."
+    },
+    "tasks": [
+      {
+        "id": "docs-presence",
+        "description": "All required docs exist",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "for f in docs/README.md docs/guardrails.md docs/opencode.md docs/testing.md docs/migration.md docs/roadmap.md docs/stitch.md docs/tend.md docs/agents/tool-routing.md docs/workflows/agent-check-flow.md docs/workflows/agent-commit-flow.md docs/mcp/contracts.md; do [ -f \"$f\" ] || { echo \"Missing: $f\"; exit 1; }; done; echo \"All docs present.\""
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "opencode-config-presence",
+        "description": "All OpenCode agents, commands, and skills exist",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "when": {
+          "changed": { "paths": [".opencode/**"] }
+        },
+        "command": [
+          "bash", "-c",
+          "for f in \\\n  .opencode/agents/phenix-coordinator.md \\\n  .opencode/agents/phenix-explorer.md \\\n  .opencode/agents/phenix-architect.md \\\n  .opencode/agents/phenix-toolsmith.md \\\n  .opencode/agents/phenix-gatekeeper.md \\\n  .opencode/agents/phenix-reviewer.md \\\n  .opencode/agents/phenix-simplifier.md \\\n  .opencode/commands/phenix-foundation.md \\\n  .opencode/commands/phenix-task.md \\\n  .opencode/skills/phenix-architecture/SKILL.md \\\n  .opencode/skills/phenix-tooling/SKILL.md; do \\\n  [ -f \"$f\" ] || { echo \"Missing: $f\"; exit 1; }; \\\ndone; echo \"All OpenCode config files present.\""
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "no-legacy-gate-runner",
+        "description": "Gate runner does not use pt-compat copied implementation",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q 'struct CheckResult' phenix-tools/crates/pt-compat/src/gate.rs 2>/dev/null; then echo 'ERROR: pt-compat/gate.rs still contains copied gate implementation'; exit 1; fi; echo 'pt-compat is a clean shim.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "no-sync-json-consumption",
+        "description": "stitch does not read sync.json for validation or dependency resolution",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -r 'sync.json' phenix-tools/crates/stitch/src/ --include='*.rs' | grep -v 'test' | grep -v 'docs'; then echo 'ERROR: stitch still reads sync.json'; exit 1; fi; echo 'No sync.json consumption found.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "no-legacy-nix-gate-export",
+        "description": "phenix-tools flake does not export packages.gate or apps.gate",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q 'packages\\.gate\\|apps\\.gate\\|\"gate\"' phenix-tools/modules/standalone.nix; then echo 'ERROR: gate still exported from Nix'; exit 1; fi; echo 'No gate Nix export.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "no-root-flake-apps-gate",
+        "description": "Root flake does not expose apps.gate or toolsPkg gate",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q 'apps\\.gate\\|toolsPkg' flake.nix; then echo 'ERROR: root flake still references gate'; exit 1; fi; echo 'Root flake clean.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "no-mcp-stub-commit-sync",
+        "description": "stitch MCP does not expose stitch.commit_sync alias",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "if grep -q 'commit_sync\\|StitchCommitSyncTool' phenix-tools/crates/stitch-mcp/src/tools.rs; then echo 'ERROR: stitch.commit_sync still defined'; exit 1; fi; echo 'No commit_sync alias.'"
+        ],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "mcp-routing-docs-exist",
+        "description": "MCP routing docs referenced by README exist",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "command": [
+          "bash", "-c",
+          "for f in docs/agents/tool-routing.md docs/workflows/agent-check-flow.md docs/workflows/agent-commit-flow.md docs/mcp/contracts.md; do [ -f \"$f\" ] || { echo \"Missing: $f\"; exit 1; }; done; echo \"All MCP routing docs present.\""
+        ],
+        "expect": { "status": 0 }
+      }
+    ]
+  }
+}

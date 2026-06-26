@@ -247,9 +247,16 @@ tend -c <path> verify full         # shorthand
 
 ## Agent Workflow
 
-For agents, recommended usage:
+For agents, the recommended workflow is:
 
-1. Always run `tend verify changed` before making changes.
-2. After changes, run `tend fix changed` to apply fix/generate tasks.
-3. Before committing, run `tend gate` as the final check.
-4. Use `tend --root <workspace> tree` to understand the composed task tree.
+1. **Plan**: `tend plan` — preview which checks will run and why.
+2. **Run**: `tend run --mode changed --phase verify` — execute checks.
+3. **Explain**: Use `tend explain` (MCP) or `tend status --json` to understand failures.
+
+Convenience aliases (human-friendly, not recommended for agent automation):
+
+- `tend verify changed` — same as `tend run --mode changed --phase verify`
+- `tend gate` — same as `tend verify changed`
+- `tend fix changed` — same as `tend run --mode changed --phase fix`
+
+Use `tend --root <workspace> tree` to understand the composed task tree.
