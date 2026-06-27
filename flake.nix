@@ -72,7 +72,7 @@
           ];
         in
         {
-          packages.opencode = config.phenixWrapped.opencode;
+          packages.opencode = inputs.phenix-opencode.packages.${system}.default;
 
           apps = {
             tend = inputs.phenix-tools.apps.${system}.tend;
@@ -89,7 +89,7 @@
                   enable = true;
                   name = "tend pre-commit";
                   description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
-                  entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged";
+                  entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged --affected-dag";
                   pass_filenames = false;
                   always_run = true;
                   stages = [ "pre-commit" ];
@@ -167,7 +167,7 @@
                 statix
                 deadnix
                 nixfmt
-                config.phenixWrapped.opencode
+                inputs.phenix-opencode.packages.${system}.default
                 tendPkg
                 stitchPkg
               ]

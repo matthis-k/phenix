@@ -40,3 +40,46 @@ rather than brittle file-existence assertions.
 - The `tend --affected-dag` flag exists to scope checks to downstream nodes.
   Ensure any verification workflow that can affect multiple DAG nodes passes this
   flag so that downstream consumers are verified too.
+
+## Agent workflow
+
+The Phenix workspace uses a structured agent workflow:
+
+```text
+request
+  -> planner
+  -> architect plan check
+  -> implementer
+  -> verifier
+      -> mechanical verification
+      -> plan-conformance verification
+      -> architectural verification
+  -> done if all pass
+```
+
+On failure:
+
+```text
+verifier failed
+  -> failure-analyzer
+  -> planner
+  -> architect if plan/design/test strategy changes
+  -> implementer
+  -> verifier again
+```
+
+Architecture is checked twice: as **design admission control** before implementation, and as **final repo integrity verification** after implementation. The final verifier also checks plan conformance — whether the implementation matches the accepted plan and change list.
+
+## Workflow prompts and commands
+
+The workflow agent prompts and commands are packaged in the `phenix-opencode` submodule wrapper (`flakes/02-producers/phenix-opencode/`). They are available automatically when using the wrapped opencode binary from the Nix dev shell.
+
+These prompts are generic — they discover project-specific contracts from `AGENTS.md`, `docs/*`, `CLAUDE.md`, or `knowledge/` at runtime rather than hardcoding them.
+
+## Codebase memory MCP
+
+This workspace configures `codebase-memory-mcp` as a local OpenCode MCP server via the Nix flake.
+
+Use it for cheap structural codebase context (architecture overview, module discovery, call graphs, impact analysis, dead-code checks) before expensive file-by-file exploration.
+
+The planner, architect, verifier, and failure-analyzer agents have access to `codebase_memory_*` tools. The implementer may use them for navigation only when explicitly approved.
