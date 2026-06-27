@@ -177,7 +177,7 @@
               ${config.pre-commit.installationScript}
 
               repo-hook() {
-                ${tendPkg}/bin/tend check --profile git-hook --staged "$@"
+                ${tendPkg}/bin/tend check --profile git-hook --staged --affected-dag "$@"
               }
 
               repo-pushgate() {
@@ -192,16 +192,26 @@
                 ${tendPkg}/bin/tend check --profile fix "$@"
               }
 
-              export -f repo-hook repo-pushgate repo-check repo-fix 2>/dev/null || true
+              repo-hooks-plan() {
+                ${stitchPkg}/bin/stitch hooks plan --all "$@"
+              }
+
+              repo-install-all-hooks() {
+                ${stitchPkg}/bin/stitch hooks install --all "$@"
+              }
+
+              export -f repo-hook repo-pushgate repo-check repo-fix repo-hooks-plan repo-install-all-hooks 2>/dev/null || true
 
               echo "Phenix development shell"
               echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt nixfmt-rfc-style opencode"
               echo "  tend: distributed maintenance/check harness"
               echo "  stitch: coordinated multi-repo git tool"
-              echo "  repo-hook      -> tend check --profile git-hook --staged"
-              echo "  repo-pushgate  -> tend check --profile pre-push"
-              echo "  repo-check     -> tend check --profile manual"
-              echo "  repo-fix       -> tend check --profile fix"
+              echo "  repo-hook           -> tend check --profile git-hook --staged --affected-dag"
+              echo "  repo-pushgate       -> tend check --profile pre-push --affected-dag"
+              echo "  repo-check          -> tend check --profile manual"
+              echo "  repo-fix            -> tend check --profile fix"
+              echo "  repo-hooks-plan     -> stitch hooks plan --all"
+              echo "  repo-install-all-hooks -> stitch hooks install --all"
             '';
           };
         };
