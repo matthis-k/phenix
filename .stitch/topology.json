@@ -25,6 +25,13 @@
       "url": "git@github.com:matthis-k/phenix-nvim.git"
     },
     {
+      "name": "phenix-opencode",
+      "role": "producer",
+      "layer": 2,
+      "path": "flakes/02-producers/phenix-opencode",
+      "url": "git@github.com:matthis-k/phenix-opencode.git"
+    },
+    {
       "name": "phenix-packages",
       "role": "pkgs-aggregator",
       "layer": 4,

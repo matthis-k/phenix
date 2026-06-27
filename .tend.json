@@ -70,18 +70,6 @@
         "expect": { "status": 0 }
       },
       {
-        "id": "affected-dag-verify",
-        "description": "Run affected-dag scoped checks on changed nodes",
-        "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": false,
-        "profiles": ["pre-push", "manual", "nix-check"],
-        "tags": ["dag", "downstream"],
-        "command": ["tend", "run", "--mode", "changed", "--affected-dag"],
-        "expect": { "status": 0 }
-      },
-      {
         "id": "nix-flake-check",
         "description": "Full Nix flake evaluation check",
         "phase": "verify",

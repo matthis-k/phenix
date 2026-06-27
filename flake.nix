@@ -98,8 +98,8 @@
                 tend-pre-push = {
                   enable = true;
                   name = "tend pre-push";
-                  description = "Run medium Tend checks before push (inside Nix dev shell)";
-                  entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push";
+                  description = "Run medium Tend checks with affected-DAG before push (inside Nix dev shell)";
+                  entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push --affected-dag";
                   pass_filenames = false;
                   always_run = true;
                   stages = [ "pre-push" ];
@@ -181,7 +181,7 @@
               }
 
               repo-pushgate() {
-                ${tendPkg}/bin/tend check --profile pre-push "$@"
+                ${tendPkg}/bin/tend check --profile pre-push --affected-dag "$@"
               }
 
               repo-check() {
