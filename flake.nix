@@ -44,12 +44,12 @@
       imports = [
         ./phenix-module.nix
         ./phenix-wrappers.nix
-        inputs.phenix-opencode.flakeModules.default
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
         inputs.phenix-hosts.flakeModules.default
         inputs.phenix-tools.flakeModules.default
+        inputs.phenix-opencode.flakeModules.default
         inputs.git-hooks-nix.flakeModule
       ];
 

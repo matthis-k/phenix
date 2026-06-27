@@ -23,7 +23,7 @@
       },
       {
         "id": "nixfmt-check",
-        "description": "Check Nix files are formatted correctly",
+        "description": "Check root Nix files are formatted correctly",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
@@ -35,7 +35,7 @@
       },
       {
         "id": "statix-check",
-        "description": "Lint Nix files with statix",
+        "description": "Lint root Nix files with statix (skipping submodules)",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
@@ -47,7 +47,7 @@
       },
       {
         "id": "deadnix-check",
-        "description": "Find and report dead Nix code",
+        "description": "Find and report dead Nix code in root files",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
@@ -55,6 +55,30 @@
         "profiles": ["git-hook", "pre-push", "manual", "nix-check"],
         "tags": ["nix", "cleanup"],
         "command": ["bash", "-c", "find . -maxdepth 1 -name '*.nix' -print0 | xargs -0 -r deadnix --fail --no-lambda-arg --no-lambda-pattern-names"],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "submodule-tend-json-check",
+        "description": "Verify each submodule has a .tend.json with appropriate checks",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["pre-push", "manual"],
+        "tags": ["submodule", "consistency"],
+        "command": ["bash", "-c", "for dir in flakes/*/*/; do if [ -f \"$dir/flake.nix\" ] && [ ! -f \"$dir/.tend.json\" ]; then echo \"MISSING: $dir.tend.json\"; exit 1; fi; done; echo \"All submodules have .tend.json\""],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "affected-dag-verify",
+        "description": "Run affected-dag scoped checks on changed nodes",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": false,
+        "profiles": ["pre-push", "manual", "nix-check"],
+        "tags": ["dag", "downstream"],
+        "command": ["tend", "run", "--mode", "changed", "--affected-dag"],
         "expect": { "status": 0 }
       },
       {

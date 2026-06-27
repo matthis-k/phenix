@@ -16,3 +16,6 @@
 [submodule "phenix-de"]
 	path = flakes/05-consumers/phenix-de
 	url = git@github.com:matthis-k/phenix-de.git
+[submodule "phenix-opencode"]
+	path = flakes/02-producers/phenix-opencode
+	url = git@github.com:matthis-k/phenix-opencode.git
