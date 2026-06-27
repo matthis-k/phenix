@@ -26,9 +26,9 @@
     },
     {
       "name": "phenix-opencode",
-      "role": "producer",
-      "layer": 2,
-      "path": "flakes/02-producers/phenix-opencode",
+      "role": "integration",
+      "layer": 3,
+      "path": "flakes/03-integrations/phenix-opencode",
       "url": "git@github.com:matthis-k/phenix-opencode.git"
     },
     {

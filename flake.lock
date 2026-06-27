@@ -959,7 +959,11 @@
           "phenix-pins",
           "nixpkgs"
         ],
-        "nixpkgs-unstable": "nixpkgs-unstable",
+        "nixpkgs-unstable": [
+          "phenix-opencode",
+          "phenix-pins",
+          "nixpkgs-unstable"
+        ],
         "phenix-pins": [
           "phenix-pins"
         ],
@@ -968,11 +972,11 @@
         ]
       },
       "locked": {
-        "path": "flakes/02-producers/phenix-opencode",
+        "path": "flakes/03-integrations/phenix-opencode",
         "type": "path"
       },
       "original": {
-        "path": "flakes/02-producers/phenix-opencode",
+        "path": "flakes/03-integrations/phenix-opencode",
         "type": "path"
       },
       "parent": []
@@ -1003,7 +1007,8 @@
       "inputs": {
         "flake-parts": "flake-parts_7",
         "nixpkgs": "nixpkgs_2",
-        "nixpkgs-stable": "nixpkgs-stable"
+        "nixpkgs-stable": "nixpkgs-stable",
+        "nixpkgs-unstable": "nixpkgs-unstable"
       },
       "locked": {
         "path": "flakes/00-pins/phenix-pins",

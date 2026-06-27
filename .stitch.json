@@ -32,7 +32,7 @@
     },
     {
       "name": "phenix-opencode",
-      "path": "flakes/02-producers/phenix-opencode"
+      "path": "flakes/03-integrations/phenix-opencode"
     }
   ]
 }

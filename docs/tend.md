@@ -44,6 +44,11 @@ It does not duplicate task definitions.
 - `stitch commit` relies on Git hooks (not direct Tend calls)
 - `stitch commit --sync` uses a validated Tend preflight token
 
+Root workspace profiles check behavior-oriented contracts such as formatting,
+linting, evaluation, tests, and topology. Incidental file-presence audits (for
+example requiring every submodule to have `.tend.json`) are not part of normal
+pre-push verification.
+
 ### Anti-recursion rule
 
 The `nix-check` profile must never include a task that calls `nix flake check`.

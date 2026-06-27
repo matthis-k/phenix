@@ -44,8 +44,8 @@ Invalid:
 
 ```mermaid
 flowchart LR
-  Root["phenixos / root"] --> Shell["phenix-shell"]
-  Shell --> Root
+  Root["phenixos / root"] --> Child["child flake"]
+  Child --> Root
 ```
 
 Root is an aggregator. It is not a dependency provider for children.
@@ -98,20 +98,14 @@ flowchart TD
   Wrappers["2 phenix-wrappers
   packaged wrappers"]
 
-  ShellPkgs["2 phenix-shell-pkgs
-  quickshell package/runtime assets"]
-
   Apps["2 phenix-apps
   custom packages/scripts"]
 
-  Integrations["3 phenix-integrations
-  adapters, bundles, combined packages"]
+  Integrations["3 integrations
+  phenix-opencode and other adapters/bundles"]
 
   Pkgs["4 phenix-pkgs
   aggregated local package set"]
-
-  Shell["5 phenix-shell
-  shell config/runtime composition"]
 
   DE["5 phenix-de
   Hyprland/desktop environment"]
@@ -137,55 +131,40 @@ flowchart TD
   BasePkgs --> Tools
   BasePkgs --> Assets
   BasePkgs --> Wrappers
-  BasePkgs --> ShellPkgs
   BasePkgs --> Apps
 
   Lib --> Tools
   Lib --> Wrappers
-  Lib --> ShellPkgs
-
   Protocols --> Tools
-  Protocols --> ShellPkgs
   Protocols --> Apps
 
   Tools --> Integrations
   Assets --> Integrations
   Wrappers --> Integrations
-  ShellPkgs --> Integrations
   Apps --> Integrations
 
   Tools --> Pkgs
   Assets --> Pkgs
   Wrappers --> Pkgs
-  ShellPkgs --> Pkgs
   Apps --> Pkgs
   Integrations --> Pkgs
   BasePkgs --> Pkgs
 
-  Pkgs --> Shell
-  Tools --> Shell
-  ShellPkgs --> Shell
-  Assets --> Shell
-
   Pkgs --> DE
-  Shell --> DE
   Assets --> DE
 
   Pkgs --> Home
   Wrappers --> Home
-  Shell --> Home
   DE --> Home
 
   Pkgs --> Hosts
   Home --> Hosts
   DE --> Hosts
-  Shell --> Hosts
   Secrets --> Hosts
 
   Pins --> Root
   Pkgs --> Root
   Tools --> Root
-  Shell --> Root
   DE --> Root
   Home --> Root
   Hosts --> Root
@@ -246,7 +225,7 @@ build fixes
 shared package overrides
 ```
 
-It must not include local packages from `phenix-tools`, `phenix-shell-pkgs`, `phenix-wrappers`, or other package producers.
+It must not include local packages from `phenix-tools`, `phenix-wrappers`, or other package producers.
 
 This split is important:
 
@@ -282,7 +261,6 @@ Examples:
 phenix-tools
 phenix-assets
 phenix-wrappers
-phenix-shell-pkgs
 phenix-apps
 ```
 
@@ -299,7 +277,6 @@ They must not depend on:
 
 ```text
 phenix-pkgs
-phenix-shell
 phenix-de
 phenix-home
 phenix-hosts
@@ -326,6 +303,9 @@ MCP configs referencing multiple packages
 
 Integrations may depend on multiple package producers.
 
+In the current workspace, `phenix-opencode` is a layer-3 integration because it
+wraps Opencode configuration together with `phenix-tools` commands and MCPs.
+
 Package producers must not depend on integrations.
 
 ### `phenix-pkgs`
@@ -351,7 +331,6 @@ It must not be used by package producers.
 Examples:
 
 ```text
-phenix-shell
 phenix-de
 phenix-home
 phenix-hosts
@@ -437,7 +416,7 @@ flowchart TD
 Example:
 
 ```text
-phenix-tools and phenix-shell-pkgs both need a Tend status JSON schema.
+phenix-tools and another package producer both need a Tend status JSON schema.
 ```
 
 Do not make tools and shell packages depend on each other.
@@ -446,7 +425,7 @@ Instead:
 
 ```text
 phenix-protocols -> phenix-tools
-phenix-protocols -> phenix-shell-pkgs
+phenix-protocols -> other-producer
 ```
 
 ## Pattern 2: put runtime wiring in a higher integration layer
@@ -477,8 +456,8 @@ Example:
 
 ```text
 phenix-tools provides tend/stitch.
-phenix-shell-pkgs provides quickshell runtime assets.
-phenix-integrations provides a shell-with-tools bundle or shell action adapter.
+another producer provides runtime assets.
+phenix-integrations provides an adapter bundle.
 ```
 
 ## Pattern 3: make host/plugin direction explicit

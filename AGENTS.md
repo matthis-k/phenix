@@ -3,6 +3,8 @@
 This repository is the root Phenix workspace. It aggregates the Phenix subflakes
 as Git submodules under `flakes/**`.
 
+For workflow terminology, see [`docs/glossary.md`](docs/glossary.md).
+
 Root-level actions are workspace actions. They may inspect, verify, commit, push,
 or synchronize multiple submodules together. Do not treat the root repository as
 an isolated flake.
@@ -72,7 +74,7 @@ Architecture is checked twice: as **design admission control** before implementa
 
 ## Workflow prompts and commands
 
-The workflow agent prompts and commands are packaged in the `phenix-opencode` submodule wrapper (`flakes/02-producers/phenix-opencode/`). They are available automatically when using the wrapped opencode binary from the Nix dev shell.
+The workflow agent prompts and commands are packaged in the `phenix-opencode` submodule wrapper (`flakes/03-integrations/phenix-opencode/`). They are available automatically when using the wrapped opencode binary from the Nix dev shell.
 
 These prompts are generic — they discover project-specific contracts from `AGENTS.md`, `docs/*`, `CLAUDE.md`, or `knowledge/` at runtime rather than hardcoding them.
 

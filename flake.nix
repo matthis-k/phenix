@@ -26,7 +26,7 @@
     phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
 
     phenix-opencode = {
-      url = ./flakes/02-producers/phenix-opencode;
+      url = ./flakes/03-integrations/phenix-opencode;
       inputs.phenix-pins.follows = "phenix-pins";
       inputs.phenix-tools.follows = "phenix-tools";
     };
@@ -116,6 +116,7 @@
                   nativeBuildInputs = [
                     tendPkg
                     pkgs.git
+                    pkgs.jq
                     pkgs.nix
                     pkgs.nixfmt
                     pkgs.statix

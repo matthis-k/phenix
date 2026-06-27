@@ -34,7 +34,7 @@ Expected workspace layout:
   phenix-packages/   # packages and runtime wrappers
   phenix-modules/    # reusable NixOS/Home Manager modules
   phenix-hosts/      # actual host definitions
-  phenix-shell/      # quickshell/newshell and shell UI
+  phenix-de/         # desktop environment (phenix-shell, phenix-apps, and DE composition)
   phenix-pins/       # pin/input policy, if kept separate
   newxos/            # old source repo used only for migration reference
 ```

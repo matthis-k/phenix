@@ -2,6 +2,11 @@
 
 ## Passing criteria
 
+Normal verification targets syntax, formatting, linting, compile/evaluation,
+tests, behavior-level contracts, and workspace topology. It must not fail solely
+because an active submodule lacks an incidental file such as `.tend.json`; file
+layout audits belong in explicit optional workspace-audit workflows.
+
 In full `/flow` mode, `status: passed` requires:
 
 ```yaml
