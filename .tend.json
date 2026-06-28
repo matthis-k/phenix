@@ -18,7 +18,7 @@
         "sandbox_safe": true,
         "profiles": ["git-hook", "pre-push", "manual"],
         "tags": ["tend", "validate"],
-        "command": ["tend", "validate", "--profiles"],
+        "command": ["bash", "-c", "if command -v tend >/dev/null 2>&1; then tend validate --profiles; else nix run .#tend -- validate --profiles; fi"],
         "expect": { "status": 0 }
       },
       {

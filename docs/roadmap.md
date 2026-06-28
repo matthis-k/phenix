@@ -244,6 +244,36 @@ These must remain true throughout the project:
 - [x] Implemented
 - [x] Enforced by gate
 
+### Durable workflow blackboard and ledgers
+
+- [x] Documented
+- [ ] Implemented
+- [ ] Enforced by gate
+
+### Workflow-depth routing
+
+- [x] Documented
+- [ ] Implemented
+- [ ] Enforced by gate
+
+### Optional specialist critics
+
+- [x] Documented
+- [ ] Implemented
+- [ ] Enforced by gate
+
+### Stitch commit/sync coordinator policy
+
+- [x] Documented
+- [x] Implemented
+- [ ] Enforced by gate
+
+### Partitioned implementer handoffs
+
+- [x] Documented
+- [ ] Implemented
+- [ ] Enforced by gate
+
 ### Roadmap remains updated
 
 - [x] Documented

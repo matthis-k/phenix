@@ -39,6 +39,30 @@ Do NOT use raw `bash`, `git`, or standalone lint scripts. Route through `tend`.
 
 Do NOT use raw `git commit` / `git push` across repos. Route through `stitch`.
 
+In workflow runs, commit coordination belongs to `stitch commit`. Sync, update,
+pull/rebase, and push coordination belong to `stitch sync` / `stitch push`.
+The workflow orchestrator and agents must not invent ad hoc multi-repo Git
+sequences when these Stitch routes are available.
+
+## Workflow control plane
+
+`.opencodestate/` is the durable workflow blackboard for full `/flow` runs. It
+stores original request, plan, architecture, implementation, verification,
+failure-analysis, run-ledger, decision-ledger, artifact-ledger, and
+verification-ledger artifacts. Tool routing decisions should be recorded there
+when they affect scope, verification, commit coordination, or failure analysis.
+
+Workflow-depth routing is a planning/orchestration decision, not a tool bypass:
+nontrivial, architectural, workflow/config, submodule, or multi-file tracked
+changes still require the full planner -> architect -> implementer -> verifier
+gates. Optional specialist critics may provide advisory feedback, but they do
+not replace architect acceptance or verifier success.
+
+Partitioned implementers are allowed only when the accepted plan divides work by
+planned change ID, repo/submodule, allowed files, allowed operations, and
+verification expectations. The final combined diff remains subject to normal
+verification.
+
 ## Shared Shell — `phenix-mcp-core`
 
 The MCP servers (`tend-mcp`, `stitch-mcp`) share a framework crate that provides:

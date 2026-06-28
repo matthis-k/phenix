@@ -63,7 +63,12 @@ Verification has three mandatory phases in full workflow mode:
 
 Verification is based on original upstream artifacts, not reconstructed summaries.
 
-Every full `/flow` run must maintain:
+Every full `/flow` run must maintain `.opencodestate/` as the durable workflow
+blackboard. It stores current request, plan, architecture, implementation,
+verification, failure-analysis, and ledger artifacts so agents coordinate from
+original records instead of lossy chat summaries.
+
+Required artifacts include:
 
 ```text
 .opencodestate/request.md
@@ -73,7 +78,20 @@ Every full `/flow` run must maintain:
 .opencodestate/architecture-review.yaml
 .opencodestate/architecture-contract.yaml
 .opencodestate/implementation-summary.yaml
+.opencodestate/verification-report.yaml
+.opencodestate/failure-analysis.yaml
+.opencodestate/run-ledger.yaml
+.opencodestate/decision-ledger.yaml
+.opencodestate/artifact-ledger.yaml
+.opencodestate/verification-ledger.yaml
 ```
+
+Ledger intent:
+
+* run ledger: workflow transitions, selected depth, and handoff timestamps;
+* decision ledger: planner and architect decisions that affect scope;
+* artifact ledger: files, evidence, and generated handoff artifacts;
+* verification ledger: planned and completed checks with outcomes.
 
 The verifier uses these artifacts to check:
 
@@ -109,6 +127,35 @@ Checks whether the final diff preserves:
 If a full `/flow` reaches verification without the original plan artifacts, verification must fail.
 
 Standalone `/verify` may run without workflow artifacts, but it must explicitly state that accepted-plan verification was unavailable.
+
+## Workflow depth routing
+
+Workflow depth may vary by risk:
+
+* shallow: read-only exploration, clarification, or no tracked implementation;
+* standard: bounded low-risk tracked edits with explicit planning and
+  verification;
+* full: nontrivial changes, architecture-sensitive changes, workflow/config
+  changes, submodule or multi-file changes, and any task with an accepted
+  architecture contract.
+
+Full workflow mode still requires planner output, architect acceptance before
+implementation, implementer execution against the accepted plan, and verifier
+success across mechanical, plan-conformance, and architecture phases.
+
+## Optional specialist critics
+
+Specialist critics may be requested for domain-specific advisory feedback. They
+are optional and subordinate to the core gates. A critic cannot replace the
+architect plan check or the verifier's final architecture verification.
+
+## Partitioned implementers
+
+When planning explicitly permits parallel or partitioned implementation, each
+handoff must name the planned change IDs, repo/submodule ownership, allowed
+files, allowed operations, verification expectations, and forbidden expansions
+for that partition. The combined final diff remains subject to one verifier
+plan-conformance and architecture-contract check.
 
 ## Transition table
 

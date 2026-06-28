@@ -34,6 +34,12 @@ Do not report `passed` if:
 * tests freeze incidental architecture;
 * useful verification was removed.
 
+Full workflow verification must read the original `.opencodestate/` blackboard
+artifacts and ledgers where present. The ledgers provide run history, decisions,
+artifact provenance, and verification evidence; they supplement but do not
+replace the accepted implementation plan, planned changes, architecture review,
+and architecture contract.
+
 ## Plan-conformance verification
 
 The verifier must compare the final diff against:
@@ -42,6 +48,7 @@ The verifier must compare the final diff against:
 .opencodestate/implementation-plan.yaml
 .opencodestate/planned-changes.yaml
 .opencodestate/implementation-summary.yaml
+.opencodestate/artifact-ledger.yaml
 ```
 
 It must fail if implementation substantially deviates from the original plan and no replan occurred.
@@ -53,6 +60,7 @@ The verifier must compare the final diff against:
 ```text
 .opencodestate/architecture-review.yaml
 .opencodestate/architecture-contract.yaml
+.opencodestate/decision-ledger.yaml
 ```
 
 It must fail if implementation passes tests but violates the accepted architecture contract.
@@ -82,5 +90,14 @@ The verifier should use:
 - `.opencodestate/architecture-contract.yaml`
 - repo docs
 - codebase memory tools for structural context
+- `.opencodestate/run-ledger.yaml` and `.opencodestate/verification-ledger.yaml`
+  when present for workflow transition and check evidence
 
 Architecture verification should fail if the implementation passes tests but violates the intended repo shape or deviates from the accepted architecture contract.
+
+## Tool routing
+
+Use `tend` for verification planning and execution. Use `stitch` for multi-repo
+Git status, diff, commit, push, and sync coordination. Verification should not
+be made to pass by routing around these tools with ad hoc raw shell or Git
+workflows when the documented route exists.
