@@ -84,7 +84,8 @@ For each migrated concern, decide:
 | reusable module       | `phenix-modules`  |
 | host enablement       | `phenix-hosts`    |
 | shell/UI              | `phenix-shell`    |
-| stitch/tend/gate tooling | `phenix-tools`    |
+| tend/check tooling   | `phenix-tend`     |
+| stitch/sync tooling  | `phenix-stitch`   |
 | root orchestration    | `phenixos`        |
 
 ## Wrapper-first migration

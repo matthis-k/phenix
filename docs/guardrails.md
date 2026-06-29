@@ -30,7 +30,8 @@ Expected workspace layout:
 ```text
 ~/phenix/
   phenixos/          # root orchestration workspace
-  phenix-tools/      # stitch, tend, gate, test runner, helper CLIs
+  phenix-tend/       # tend checks and MCP
+  phenix-stitch/     # stitch multi-repo coordination and MCP
   phenix-packages/   # packages and runtime wrappers
   phenix-modules/    # reusable NixOS/Home Manager modules
   phenix-hosts/      # actual host definitions

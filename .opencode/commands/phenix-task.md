@@ -9,7 +9,7 @@ General entrypoint for Phenix work.
 3. **Ownership decision** — which repo does this belong to?
 4. **Change contract** — write before editing
 5. **Implementation** — smallest complete slice
-6. **Gate execution** — run `phenix-tools gate`
+6. **Gate execution** — run `tend`
 7. **Invariant review** — check against guardrails
 8. **Simplification review** — check for debt/copying
 9. **Final report** — summary, files, checks, roadmap

@@ -89,8 +89,11 @@ flowchart TD
   Protocols["1 phenix-protocols
   schemas, DTOs, IPC/MCP contracts"]
 
-  Tools["2 phenix-tools
-  tend, stitch, MCPs"]
+  Tend["2 phenix-tend
+  tend CLI and MCP"]
+
+  Stitch["2 phenix-stitch
+  stitch CLI and MCP"]
 
   Assets["2 phenix-assets
   wallpapers, icons, static assets"]
@@ -128,22 +131,26 @@ flowchart TD
 
   Lib --> BasePkgs
 
-  BasePkgs --> Tools
+  BasePkgs --> Tend
+  BasePkgs --> Stitch
   BasePkgs --> Assets
   BasePkgs --> Wrappers
   BasePkgs --> Apps
 
-  Lib --> Tools
+  Lib --> Tend
   Lib --> Wrappers
-  Protocols --> Tools
+  Protocols --> Tend
   Protocols --> Apps
 
-  Tools --> Integrations
+  Tend --> Stitch
+  Tend --> Integrations
+  Stitch --> Integrations
   Assets --> Integrations
   Wrappers --> Integrations
   Apps --> Integrations
 
-  Tools --> Pkgs
+  Tend --> Pkgs
+  Stitch --> Pkgs
   Assets --> Pkgs
   Wrappers --> Pkgs
   Apps --> Pkgs
@@ -164,7 +171,8 @@ flowchart TD
 
   Pins --> Root
   Pkgs --> Root
-  Tools --> Root
+  Tend --> Root
+  Stitch --> Root
   DE --> Root
   Home --> Root
   Hosts --> Root
@@ -225,7 +233,7 @@ build fixes
 shared package overrides
 ```
 
-It must not include local packages from `phenix-tools`, `phenix-wrappers`, or other package producers.
+It must not include local packages from `phenix-tend`, `phenix-stitch`, `phenix-wrappers`, or other package producers.
 
 This split is important:
 
@@ -258,7 +266,8 @@ Package producers build independently and feed the aggregate package set.
 Examples:
 
 ```text
-phenix-tools
+phenix-tend
+phenix-stitch
 phenix-assets
 phenix-wrappers
 phenix-apps
@@ -304,7 +313,7 @@ MCP configs referencing multiple packages
 Integrations may depend on multiple package producers.
 
 In the current workspace, `phenix-opencode` is a layer-3 integration because it
-wraps Opencode configuration together with `phenix-tools` commands and MCPs.
+wraps Opencode configuration together with `phenix-tend` and `phenix-stitch` commands and MCPs.
 
 Package producers must not depend on integrations.
 
@@ -416,7 +425,7 @@ flowchart TD
 Example:
 
 ```text
-phenix-tools and another package producer both need a Tend status JSON schema.
+phenix-tend and another package producer both need a Tend status JSON schema.
 ```
 
 Do not make tools and shell packages depend on each other.
@@ -424,7 +433,7 @@ Do not make tools and shell packages depend on each other.
 Instead:
 
 ```text
-phenix-protocols -> phenix-tools
+phenix-protocols -> phenix-tend
 phenix-protocols -> other-producer
 ```
 
@@ -455,7 +464,7 @@ flowchart TD
 Example:
 
 ```text
-phenix-tools provides tend/stitch.
+phenix-tend and phenix-stitch provide workflow tools.
 another producer provides runtime assets.
 phenix-integrations provides an adapter bundle.
 ```
@@ -572,8 +581,8 @@ Example:
   inputs = {
     phenix-pins.url = "github:matthis-k/phenix-pins";
 
-    phenix-tools.url = "github:matthis-k/phenix-tools";
-    phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-tend.url = "github:matthis-k/phenix-tend";
+    phenix-tend.inputs.phenix-pins.follows = "phenix-pins";
   };
 }
 ```

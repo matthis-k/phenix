@@ -12,17 +12,17 @@ nix develop
 
 ## Gate runner
 
-- Command: `phenix-tools gate`
+- Command: `tend`
 - Check files: `.phenix-checks.json`
 - Discovery: recursive from workspace root
 - Merge: deterministic, sorted by path, duplicate IDs are errors
 
 ## Subcommands
 
-- `phenix-tools gate list` — list all known checks
-- `phenix-tools gate all` — run all checks
-- `phenix-tools gate changed` — run checks affected by changed files
-- `phenix-tools gate id <id>` — run a specific check by ID
+- `tend status` — list known checks and config health
+- `tend run --mode all` — run all checks
+- `tend run --mode changed` — run checks affected by changed files
+- `tend run --mode selected --targets <id>` — run a specific check by ID
 
 ## Key principle
 

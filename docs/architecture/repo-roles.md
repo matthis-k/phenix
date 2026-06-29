@@ -13,7 +13,8 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 | Repo | Role | Layer | Allowed inputs |
 |---|---:|---:|---|
 | `phenix-pins` | pins | 0 | external only |
-| `phenix-tools` | producer | 2 | pins, lib, protocols, pkgs-base |
+| `phenix-tend` | producer | 2 | pins |
+| `phenix-stitch` | producer | 2 | pins, phenix-tend |
 | `phenix-nvim` | producer | 2 | pins, lib, protocols, pkgs-base |
 | `phenix-opencode` | integration | 3 | pins, producers |
 | `phenix-packages` | pkgs-aggregator | 4 | pins, pkgs-base, producers, integrations |
@@ -31,7 +32,8 @@ flakes/
     phenix-pins/
   01-foundation/     layer 1 — lib, protocols, pkgs-base (future)
   02-producers/      layer 2 — package producers
-    phenix-tools/
+    phenix-tend/
+    phenix-stitch/
     phenix-nvim/
   03-integrations/   layer 3 — cross-producer wiring (future)
     phenix-opencode/
@@ -45,7 +47,7 @@ flakes/
 A flake may depend on flakes in lower-numbered directories. It must not depend on flakes in same-numbered or higher-numbered directories.
 
 `phenix-opencode` lives in layer 3 because its wrapped Opencode configuration
-integrates with `phenix-tools`. `phenix-de` remains a layer-5 consumer; any
+integrates with `phenix-tend` and `phenix-stitch`. `phenix-de` remains a layer-5 consumer; any
 package or overlay outputs there are consumer-local desktop-environment
 composition, not a reusable lower-layer provider API. The current root workspace
 is `phenix`; the former shell role has been absorbed into `phenix-de`.
@@ -68,7 +70,7 @@ Rules enforced:
 
 1. No non-root repo may depend on root.
 2. No published internal edge may point to same or higher layer.
-3. No producer may depend on another producer.
+3. Producer-to-producer edges are limited to approved lower tooling-provider edges such as `phenix-stitch` consuming `phenix-tend`.
 4. No producer may depend on a pkgs-aggregator.
 5. Root may depend on any internal repo.
 6. Local path edges are allowed only in root/workspace mode.

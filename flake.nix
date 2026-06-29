@@ -10,25 +10,43 @@
     phenix-pins.url = ./flakes/00-pins/phenix-pins;
     nixpkgs.follows = "phenix-pins/nixpkgs";
 
-    phenix-packages.url = ./flakes/04-pkgs/phenix-packages;
-    phenix-packages.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-packages = {
+      url = ./flakes/04-pkgs/phenix-packages;
+      inputs.phenix-pins.follows = "phenix-pins";
+    };
 
-    phenix-tools.url = ./flakes/02-producers/phenix-tools;
-    phenix-tools.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-tend = {
+      url = ./flakes/02-producers/phenix-tend;
+      inputs.phenix-pins.follows = "phenix-pins";
+    };
+    phenix-stitch = {
+      url = ./flakes/02-producers/phenix-stitch;
+      inputs.phenix-pins.follows = "phenix-pins";
+      inputs.phenix-tend.follows = "phenix-tend";
+    };
 
-    phenix-nvim.url = ./flakes/02-producers/phenix-nvim;
-    phenix-nvim.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-nvim = {
+      url = ./flakes/02-producers/phenix-nvim;
+      inputs.phenix-pins.follows = "phenix-pins";
+    };
 
-    phenix-de.url = ./flakes/05-consumers/phenix-de;
-    phenix-de.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-de = {
+      url = ./flakes/05-consumers/phenix-de;
+      inputs.phenix-pins.follows = "phenix-pins";
+    };
 
-    phenix-hosts.url = ./flakes/05-consumers/phenix-hosts;
-    phenix-hosts.inputs.phenix-pins.follows = "phenix-pins";
+    phenix-hosts = {
+      url = ./flakes/05-consumers/phenix-hosts;
+      inputs.phenix-pins.follows = "phenix-pins";
+    };
 
     phenix-opencode = {
       url = ./flakes/03-integrations/phenix-opencode;
-      inputs.phenix-pins.follows = "phenix-pins";
-      inputs.phenix-tools.follows = "phenix-tools";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
+        phenix-stitch.follows = "phenix-stitch";
+      };
     };
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
@@ -48,7 +66,8 @@
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
         inputs.phenix-hosts.flakeModules.default
-        inputs.phenix-tools.flakeModules.default
+        inputs.phenix-tend.flakeModules.default
+        inputs.phenix-stitch.flakeModules.default
         inputs.phenix-opencode.flakeModules.default
         inputs.git-hooks-nix.flakeModule
       ];
@@ -62,8 +81,8 @@
           ...
         }:
         let
-          tendPkg = inputs.phenix-tools.packages.${system}.tend;
-          stitchPkg = inputs.phenix-tools.packages.${system}.stitch;
+          tendPkg = inputs.phenix-tend.packages.${system}.tend;
+          stitchPkg = inputs.phenix-stitch.packages.${system}.stitch;
           rustToolchain = [
             pkgs.cargo
             pkgs.rustc
@@ -75,9 +94,9 @@
           packages.opencode = inputs.phenix-opencode.packages.${system}.default;
 
           apps = {
-            tend = inputs.phenix-tools.apps.${system}.tend;
-            stitch = inputs.phenix-tools.apps.${system}.stitch;
-            default = inputs.phenix-tools.apps.${system}.stitch;
+            tend = inputs.phenix-tend.apps.${system}.tend;
+            stitch = inputs.phenix-stitch.apps.${system}.stitch;
+            default = inputs.phenix-stitch.apps.${system}.stitch;
           };
 
           pre-commit = {

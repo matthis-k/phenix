@@ -7,8 +7,12 @@
       "path": "."
     },
     {
-      "name": "phenix-tools",
-      "path": "flakes/02-producers/phenix-tools"
+      "name": "phenix-tend",
+      "path": "flakes/02-producers/phenix-tend"
+    },
+    {
+      "name": "phenix-stitch",
+      "path": "flakes/02-producers/phenix-stitch"
     },
     {
       "name": "phenix-packages",

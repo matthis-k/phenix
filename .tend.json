@@ -18,7 +18,7 @@
         "sandbox_safe": true,
         "profiles": ["git-hook", "pre-push", "manual"],
         "tags": ["tend", "validate"],
-        "command": ["bash", "-c", "if command -v tend >/dev/null 2>&1; then tend validate --profiles; else nix run .#tend -- validate --profiles; fi"],
+        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command tend validate --profiles; elif command -v tend >/dev/null 2>&1; then tend validate --profiles; else echo 'Error: tend not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
         "expect": { "status": 0 }
       },
       {
@@ -150,6 +150,30 @@
         "tags": ["nix", "lint", "fix"],
         "sandbox_safe": false,
         "mutates": true
+      },
+      {
+        "id": "hooks-plan",
+        "description": "Preview which git hooks would be installed across all workspace repos",
+        "phase": "setup",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["setup", "manual"],
+        "tags": ["hooks", "git", "workspace"],
+        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch hooks plan --all; elif command -v stitch >/dev/null 2>&1; then stitch hooks plan --all; else echo 'Error: stitch not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "hooks-install",
+        "description": "Install pre-commit and pre-push git hooks for all workspace repos",
+        "phase": "setup",
+        "kind": "command",
+        "mutates": true,
+        "sandbox_safe": true,
+        "profiles": ["setup", "manual"],
+        "tags": ["hooks", "git", "workspace"],
+        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch hooks install --all; elif command -v stitch >/dev/null 2>&1; then stitch hooks install --all; else echo 'Error: stitch not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
+        "expect": { "status": 0 }
       }
     ]
   }

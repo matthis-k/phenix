@@ -25,7 +25,7 @@ in
             default = false;
             description = ''
               Use local debug binaries for MCP servers instead of Nix store paths.
-              When true, commands point to ./phenix-tools/target/debug/ binaries.
+              When true, commands point to local tend/stitch target/debug binaries.
               When false (default), commands point to Nix store paths.
             '';
           };

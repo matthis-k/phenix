@@ -22,7 +22,7 @@ Must not migrate real `newxos` features.
 2. Understand what foundation piece is needed
 3. Write change contract
 4. Implement smallest complete slice
-5. Run gates (via `phenix-tools gate`)
+5. Run gates (via `tend`)
 6. Review invariants
 7. Update `docs/roadmap.md`
 8. End with final report

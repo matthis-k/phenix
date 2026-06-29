@@ -64,8 +64,9 @@ Managed-By: stitch
   "version": 1,
   "workspace": "phenix",
   "repos": [
-    { "name": "phenix-tools", "path": "phenix-tools" },
-    { "name": "phenixos",     "path": "phenixos" }
+    { "name": "phenix-tend",   "path": "flakes/02-producers/phenix-tend" },
+    { "name": "phenix-stitch", "path": "flakes/02-producers/phenix-stitch" },
+    { "name": "phenix",        "path": "." }
   ]
 }
 ```
@@ -168,7 +169,8 @@ stitch graph print  --source locks --workspace . --metadata stitch.workspace.jso
 |-------|--------------------|--------------------|
 | 0     | pins               | phenix-pins        |
 | 1     | providers          | phenix-packages    |
-| 1     | providers          | phenix-tools       |
+| 1     | providers          | phenix-tend        |
+| 1     | providers          | phenix-stitch      |
 | 2     | desktop providers  | phenix-de          |
 | 3     | host consumers     | phenix-hosts       |
 | 4     | workspace root     | phenix             |

@@ -10,12 +10,16 @@
 [submodule "phenix-hosts"]
 	path = flakes/05-consumers/phenix-hosts
 	url = git@github.com:matthis-k/phenix-hosts.git
-[submodule "phenix-tools"]
-	path = flakes/02-producers/phenix-tools
-	url = git@github.com:matthis-k/phenix-tools.git
+[submodule "phenix-tend"]
+	path = flakes/02-producers/phenix-tend
+	url = git@github.com:matthis-k/phenix-tend.git
+[submodule "phenix-stitch"]
+	path = flakes/02-producers/phenix-stitch
+	url = git@github.com:matthis-k/phenix-stitch.git
 [submodule "phenix-de"]
 	path = flakes/05-consumers/phenix-de
 	url = git@github.com:matthis-k/phenix-de.git
 [submodule "phenix-opencode"]
 	path = flakes/03-integrations/phenix-opencode
 	url = git@github.com:matthis-k/phenix-opencode.git
+

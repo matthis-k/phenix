@@ -5,16 +5,22 @@ flowchart TD
   phenix_nvim[phenix-nvim<br/>layer 2<br/>toolProvider]
   phenix_packages[phenix-packages<br/>layer 4<br/>packageProvider]
   phenix_pins[phenix-pins<br/>layer 0<br/>pins]
-  phenix_tools[phenix-tools<br/>layer 2<br/>toolProvider]
+  phenix_tend[phenix-tend<br/>layer 2<br/>toolProvider]
+  phenix_stitch[phenix-stitch<br/>layer 2<br/>toolProvider]
+  phenix_opencode[phenix-opencode<br/>layer 3<br/>integration]
   phenix --> phenix_de
   phenix --> phenix_hosts
   phenix --> phenix_nvim
   phenix --> phenix_packages
   phenix --> phenix_pins
-  phenix --> phenix_tools
+  phenix --> phenix_tend
+  phenix --> phenix_stitch
+  phenix --> phenix_opencode
   phenix_de --> phenix_pins
   phenix_hosts --> phenix_pins
   phenix_nvim --> phenix_pins
   phenix_packages --> phenix_pins
-  phenix_tools --> phenix_pins
-
+  phenix_tend --> phenix_pins
+  phenix_stitch --> phenix_pins
+  phenix_opencode --> phenix_tend
+  phenix_opencode --> phenix_stitch
