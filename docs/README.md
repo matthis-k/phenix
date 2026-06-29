@@ -58,6 +58,7 @@ Agents should use the Phenix MCP tools rather than reconstructing workflows from
 See:
 
 - `docs/agents/tool-routing.md`
+- `docs/agent-workflow.md`
 - `docs/workflows/agent-check-flow.md`
 - `docs/workflows/agent-commit-flow.md`
 - `docs/mcp/contracts.md`

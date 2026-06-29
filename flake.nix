@@ -22,7 +22,6 @@
     phenix-stitch = {
       url = ./flakes/02-producers/phenix-stitch;
       inputs.phenix-pins.follows = "phenix-pins";
-      inputs.phenix-tend.follows = "phenix-tend";
     };
 
     phenix-nvim = {
@@ -86,6 +85,7 @@
           rustToolchain = [
             pkgs.cargo
             pkgs.rustc
+            # These provide cargo-fmt and cargo-clippy subcommands for Tend.
             pkgs.rustfmt
             pkgs.clippy
           ];

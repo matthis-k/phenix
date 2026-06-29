@@ -102,7 +102,7 @@
         "sandbox_safe": true,
         "profiles": ["pre-push", "manual"],
         "tags": ["stitch", "topology", "workspace"],
-        "command": ["bash", "-c", "if command -v stitch >/dev/null 2>&1; then stitch graph verify; else echo 'stitch unavailable; skipping topology check'; exit 0; fi"],
+        "command": ["bash", "-c", "if command -v stitch >/dev/null 2>&1; then stitch topology check --workspace . --config .stitch/topology.json; elif command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch topology check --workspace . --config .stitch/topology.json; else echo 'Error: stitch unavailable for topology check. Install nix and run nix develop first.' >&2; exit 1; fi"],
         "expect": { "status": 0 }
       },
       {

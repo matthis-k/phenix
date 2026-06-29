@@ -14,7 +14,7 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 |---|---:|---:|---|
 | `phenix-pins` | pins | 0 | external only |
 | `phenix-tend` | producer | 2 | pins |
-| `phenix-stitch` | producer | 2 | pins, phenix-tend |
+| `phenix-stitch` | producer | 2 | pins |
 | `phenix-nvim` | producer | 2 | pins, lib, protocols, pkgs-base |
 | `phenix-opencode` | integration | 3 | pins, producers |
 | `phenix-packages` | pkgs-aggregator | 4 | pins, pkgs-base, producers, integrations |
@@ -70,7 +70,7 @@ Rules enforced:
 
 1. No non-root repo may depend on root.
 2. No published internal edge may point to same or higher layer.
-3. Producer-to-producer edges are limited to approved lower tooling-provider edges such as `phenix-stitch` consuming `phenix-tend`.
+3. Producer-to-producer published flake-input edges are not allowed within the same layer; cross-tool orchestration belongs in root/workspace or higher integration layers.
 4. No producer may depend on a pkgs-aggregator.
 5. Root may depend on any internal repo.
 6. Local path edges are allowed only in root/workspace mode.

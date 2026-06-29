@@ -1066,9 +1066,6 @@
         ],
         "phenix-pins": [
           "phenix-pins"
-        ],
-        "phenix-tend": [
-          "phenix-tend"
         ]
       },
       "locked": {
