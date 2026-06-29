@@ -204,7 +204,7 @@
               export -f repo-hook repo-pushgate repo-check repo-fix repo-hooks-plan repo-install-all-hooks 2>/dev/null || true
 
               echo "Phenix development shell"
-              echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt nixfmt-rfc-style opencode"
+              echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode"
               echo "  tend: distributed maintenance/check harness"
               echo "  stitch: coordinated multi-repo git tool"
               echo "  repo-hook           -> tend check --profile git-hook --staged --affected-dag"

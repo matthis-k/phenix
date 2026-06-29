@@ -1,3 +1,9 @@
+---
+title: repo-goals
+type: note
+permalink: newxos/repo-goals
+---
+
 # Repo Goals
 
 ## Primary purpose

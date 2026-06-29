@@ -1,3 +1,9 @@
+---
+title: verification
+type: note
+permalink: newxos/verification
+---
+
 # Verification
 
 ## Passing criteria

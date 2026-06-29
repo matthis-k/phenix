@@ -1,3 +1,9 @@
+---
+title: agent-workflow
+type: note
+permalink: newxos/agent-workflow
+---
+
 # Agent Workflow
 
 ## State machine
@@ -21,8 +27,12 @@ stateDiagram-v2
     PlanConformanceVerification --> ArchitectureContractVerification: plan conformance passed
     PlanConformanceVerification --> FailureAnalysis: plan conformance failed
 
-    ArchitectureContractVerification --> Done: architecture checks passed
+    ArchitectureContractVerification --> Done: architecture checks passed / no commit requested
+    ArchitectureContractVerification --> OptionalCommit: architecture checks passed / explicit commit policy
     ArchitectureContractVerification --> FailureAnalysis: architecture checks failed
+
+    OptionalCommit --> Done: Stitch-safe commit completed
+    OptionalCommit --> FailureAnalysis: commit gate blocked
 
     FailureAnalysis --> Plan: corrections produced
 
@@ -58,6 +68,39 @@ Verification has three mandatory phases in full workflow mode:
    * module boundaries preserved
    * allowed/forbidden API changes respected
    * no forbidden architecture drift
+
+## Optional post-verification commit
+
+The workflow does not commit by default. A commit stage is an optional terminal
+stage after verifier success. It may run only after mechanical,
+plan-conformance, and architecture-contract verification have all passed.
+
+Two routes are allowed:
+
+1. direct workflow commit with an explicit commit policy and Stitch-safe tooling;
+2. delegated `review-committer` final review and commit, also after verifier
+   success and with an explicit commit policy.
+
+Commit policy follows the glossary: `local commit` does not push; `commit` and
+`commit and push` may push the current node; `sync`, `sync commit`, and
+`synced commit` are DAG-aware propagation and push routes.
+
+### External-change commit-inclusion
+
+When the working tree contains pre-existing or user-authored dirty files outside
+the accepted planned changes, they may be included in a requested commit only
+through an explicit gated pipeline:
+
+1. User acknowledgement of each external change.
+2. Classification by type (config, documentation, generated artifact, etc.).
+3. Secret/credential review.
+4. Verifier evidence (mechanical checks) or scoped evidence (manual review).
+5. Commit-summary enumeration of all external changes.
+6. Stitch-only commit routing.
+
+This gate runs after verifier success and before the commit route executes.
+External changes that fail any gate item must block the commit. Agent-authored
+changes remain subject to strict plan-conformance regardless of external changes.
 
 ## Original plan artifacts
 
@@ -173,7 +216,10 @@ plan-conformance and architecture-contract check.
 | PlanConformanceVerification    | ArchitectureContractVerification | Plan conformance passed                                   |
 | PlanConformanceVerification    | FailureAnalysis                | Plan conformance failed                                     |
 | ArchitectureContractVerification | Done                         | Architecture checks passed                                  |
+| ArchitectureContractVerification | OptionalCommit               | Architecture checks passed and explicit commit policy exists |
 | ArchitectureContractVerification | FailureAnalysis              | Architecture checks failed                                  |
+| OptionalCommit                  | Done                         | Stitch-safe commit route completed                          |
+| OptionalCommit                  | FailureAnalysis              | Commit gate blocked                                         |
 | FailureAnalysis                | Plan                           | Failure analyzer produced root causes and corrections       |
 
 ## Codebase memory use

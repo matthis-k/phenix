@@ -58,8 +58,8 @@
         "expect": { "status": 0 }
       },
       {
-        "id": "json-format-check",
-        "description": "Validate and format-check JSON files in the root workspace",
+        "id": "json-validate-check",
+        "description": "Validate JSON files in the root workspace",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
@@ -91,6 +91,18 @@
         "profiles": ["pre-push", "manual"],
         "tags": ["lua", "format"],
         "command": ["bash", "-c", "files=$(find . -path './flakes' -prune -o -path './.git' -prune -o -name '*.lua' -type f -print); if [ -z \"$files\" ]; then echo 'No Lua files'; exit 0; fi; if ! command -v stylua >/dev/null 2>&1; then echo 'stylua unavailable; skipping'; exit 0; fi; printf '%s\n' \"$files\" | xargs stylua --check"],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "stitch-topology-check",
+        "description": "Validate workspace DAG topology via stitch graph verify",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["pre-push", "manual"],
+        "tags": ["stitch", "topology", "workspace"],
+        "command": ["bash", "-c", "if command -v stitch >/dev/null 2>&1; then stitch graph verify; else echo 'stitch unavailable; skipping topology check'; exit 0; fi"],
         "expect": { "status": 0 }
       },
       {

@@ -172,7 +172,16 @@ auto-discovery.  May be specified multiple times.
 - `tags` — categorization tags (e.g. "test", "slow", "network", "rust")
 - `when.changed.paths` — glob conditions
 - `always` — run even in full mode without changed files
+- `requires` — first-class task prerequisites, distinct from `before`/`after`
 - `before` / `after` — lists of steps
+
+`requires` accepts a same-node task id string, `{ "task": "task-id" }`, or
+`{ "node": "node-id-or-path", "task": "task-id" }`. Root task selection still
+honors `when.changed`; selected prerequisites are expanded recursively and run
+before dependents regardless of their own `when.changed`, subject to safety
+validation. Strict profiles do not allow mutating tasks by tag alone; a
+`generated-source` generate task is allowed only when reached through an
+explicit safe prerequisite edge.
 
 ### Task kinds
 
@@ -294,6 +303,9 @@ Example: two tasks for different profiles:
 ## Before and After
 
 Nodes and tasks may define `before` and `after` step lists.
+These are local hooks, not task dependencies. Use `requires` when one task must
+run before another task and should be represented in planning, ordering, and
+failure reporting as a prerequisite.
 
 For a task:
 ```
@@ -364,6 +376,14 @@ tend preflight validate --profile git-hook --token <token>  # validate token
 tend --root <path> tree            # override discovery root
 tend --config <path> plan          # explicit config file(s)
 tend -c <path> run --phase verify  # shorthand
+```
+
+Flake maintenance commands:
+
+```
+tend flake status                    # read-only generated flake status
+tend flake check                     # read-only generated flake validation
+tend flake write                     # write missing generated flake files
 ```
 
 ## Profile Validation Rules

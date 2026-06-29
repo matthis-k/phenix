@@ -1,3 +1,9 @@
+---
+title: codebase-memory
+type: note
+permalink: newxos/codebase-memory
+---
+
 # Codebase Memory MCP
 
 This repository configures `codebase-memory-mcp` as a local OpenCode MCP server.

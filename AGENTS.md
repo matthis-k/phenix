@@ -3,7 +3,7 @@
 This repository is the root Phenix workspace. It aggregates the Phenix subflakes
 as Git submodules under `flakes/**`.
 
-For workflow terminology, see [`docs/glossary.md`](docs/glossary.md).
+Phenix commit terminology and workflow glossary terms are baked into the OpenCode configuration and available in any repository.
 
 Root-level actions are workspace actions. They may inspect, verify, commit, push,
 or synchronize multiple submodules together. Do not treat the root repository as
@@ -39,7 +39,7 @@ rather than brittle file-existence assertions.
   verification scope.
 - When working inside a submodule, operate from that submodule's directory and
   run its own verification (`tend run` or its shell hooks) before committing.
-- The `tend --affected-dag` flag exists to scope checks to downstream nodes.
+- Use `--affected-dag` on `tend check` / `tend run` where available to scope checks to downstream nodes.
   Ensure any verification workflow that can affect multiple DAG nodes passes this
   flag so that downstream consumers are verified too.
 
