@@ -39,8 +39,8 @@
       inputs.phenix-pins.follows = "phenix-pins";
     };
 
-    phenix-opencode = {
-      url = ./flakes/03-integrations/phenix-opencode;
+    phenix-agent-harness = {
+      url = ./flakes/03-integrations/phenix-agent-harness;
       inputs = {
         phenix-pins.follows = "phenix-pins";
         phenix-tend.follows = "phenix-tend";
@@ -67,7 +67,7 @@
         inputs.phenix-hosts.flakeModules.default
         inputs.phenix-tend.flakeModules.default
         inputs.phenix-stitch.flakeModules.default
-        inputs.phenix-opencode.flakeModules.default
+        inputs.phenix-agent-harness.flakeModules.default
         inputs.git-hooks-nix.flakeModule
       ];
 
@@ -91,7 +91,10 @@
           ];
         in
         {
-          packages.opencode = inputs.phenix-opencode.packages.${system}.default;
+          packages.opencode =
+            inputs.phenix-agent-harness.packages.${system}.opencode
+              or inputs.phenix-agent-harness.packages.${system}.default;
+          packages.pi = inputs.phenix-agent-harness.packages.${system}.pi;
 
           apps = {
             tend = inputs.phenix-tend.apps.${system}.tend;
@@ -187,7 +190,8 @@
                 statix
                 deadnix
                 nixfmt
-                inputs.phenix-opencode.packages.${system}.default
+                inputs.phenix-agent-harness.packages.${system}.opencode
+                inputs.phenix-agent-harness.packages.${system}.pi
                 tendPkg
                 stitchPkg
               ]
@@ -223,7 +227,7 @@
               export -f repo-hook repo-pushgate repo-check repo-fix repo-hooks-plan repo-install-all-hooks 2>/dev/null || true
 
               echo "Phenix development shell"
-              echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode"
+              echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode pi"
               echo "  tend: distributed maintenance/check harness"
               echo "  stitch: coordinated multi-repo git tool"
               echo "  repo-hook           -> tend check --profile git-hook --staged --affected-dag"

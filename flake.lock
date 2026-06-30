@@ -674,7 +674,7 @@
     "nix-wrapper-modules": {
       "inputs": {
         "nixpkgs": [
-          "phenix-nvim",
+          "phenix-agent-harness",
           "phenix-pins",
           "nixpkgs"
         ]
@@ -696,7 +696,7 @@
     "nix-wrapper-modules_2": {
       "inputs": {
         "nixpkgs": [
-          "phenix-opencode",
+          "phenix-nvim",
           "phenix-pins",
           "nixpkgs"
         ]
@@ -914,9 +914,43 @@
         "type": "github"
       }
     },
-    "phenix-de": {
+    "phenix-agent-harness": {
       "inputs": {
         "flake-parts": "flake-parts_2",
+        "nix-wrapper-modules": "nix-wrapper-modules",
+        "nixpkgs": [
+          "phenix-agent-harness",
+          "phenix-pins",
+          "nixpkgs"
+        ],
+        "nixpkgs-unstable": [
+          "phenix-agent-harness",
+          "phenix-pins",
+          "nixpkgs-unstable"
+        ],
+        "phenix-pins": [
+          "phenix-pins"
+        ],
+        "phenix-stitch": [
+          "phenix-stitch"
+        ],
+        "phenix-tend": [
+          "phenix-tend"
+        ]
+      },
+      "locked": {
+        "path": "flakes/03-integrations/phenix-agent-harness",
+        "type": "path"
+      },
+      "original": {
+        "path": "flakes/03-integrations/phenix-agent-harness",
+        "type": "path"
+      },
+      "parent": []
+    },
+    "phenix-de": {
+      "inputs": {
+        "flake-parts": "flake-parts_3",
         "hyprland": "hyprland",
         "nixpkgs": [
           "phenix-de",
@@ -940,7 +974,7 @@
     "phenix-hosts": {
       "inputs": {
         "disko": "disko",
-        "flake-parts": "flake-parts_3",
+        "flake-parts": "flake-parts_4",
         "nixpkgs": [
           "phenix-hosts",
           "phenix-pins",
@@ -962,8 +996,8 @@
     },
     "phenix-nvim": {
       "inputs": {
-        "flake-parts": "flake-parts_4",
-        "nix-wrapper-modules": "nix-wrapper-modules",
+        "flake-parts": "flake-parts_5",
+        "nix-wrapper-modules": "nix-wrapper-modules_2",
         "nixpkgs": [
           "phenix-nvim",
           "phenix-pins",
@@ -979,40 +1013,6 @@
       },
       "original": {
         "path": "flakes/02-producers/phenix-nvim",
-        "type": "path"
-      },
-      "parent": []
-    },
-    "phenix-opencode": {
-      "inputs": {
-        "flake-parts": "flake-parts_5",
-        "nix-wrapper-modules": "nix-wrapper-modules_2",
-        "nixpkgs": [
-          "phenix-opencode",
-          "phenix-pins",
-          "nixpkgs"
-        ],
-        "nixpkgs-unstable": [
-          "phenix-opencode",
-          "phenix-pins",
-          "nixpkgs-unstable"
-        ],
-        "phenix-pins": [
-          "phenix-pins"
-        ],
-        "phenix-stitch": [
-          "phenix-stitch"
-        ],
-        "phenix-tend": [
-          "phenix-tend"
-        ]
-      },
-      "locked": {
-        "path": "flakes/03-integrations/phenix-opencode",
-        "type": "path"
-      },
-      "original": {
-        "path": "flakes/03-integrations/phenix-opencode",
         "type": "path"
       },
       "parent": []
@@ -1132,10 +1132,10 @@
           "phenix-pins",
           "nixpkgs"
         ],
+        "phenix-agent-harness": "phenix-agent-harness",
         "phenix-de": "phenix-de",
         "phenix-hosts": "phenix-hosts",
         "phenix-nvim": "phenix-nvim",
-        "phenix-opencode": "phenix-opencode",
         "phenix-packages": "phenix-packages",
         "phenix-pins": "phenix-pins",
         "phenix-stitch": "phenix-stitch",

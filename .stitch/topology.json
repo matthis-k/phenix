@@ -32,11 +32,11 @@
       "url": "git@github.com:matthis-k/phenix-nvim.git"
     },
     {
-      "name": "phenix-opencode",
+      "name": "phenix-agent-harness",
       "role": "integration",
       "layer": 3,
-      "path": "flakes/03-integrations/phenix-opencode",
-      "url": "git@github.com:matthis-k/phenix-opencode.git"
+      "path": "flakes/03-integrations/phenix-agent-harness",
+      "url": "git@github.com:matthis-k/phenix-agent-harness.git"
     },
     {
       "name": "phenix-packages",

@@ -35,8 +35,8 @@
       "path": "flakes/02-producers/phenix-nvim"
     },
     {
-      "name": "phenix-opencode",
-      "path": "flakes/03-integrations/phenix-opencode"
+      "name": "phenix-agent-harness",
+      "path": "flakes/03-integrations/phenix-agent-harness"
     }
   ]
 }

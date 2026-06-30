@@ -16,7 +16,7 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 | `phenix-tend` | producer | 2 | pins |
 | `phenix-stitch` | producer | 2 | pins |
 | `phenix-nvim` | producer | 2 | pins, lib, protocols, pkgs-base |
-| `phenix-opencode` | integration | 3 | pins, producers |
+| `phenix-agent-harness` | integration | 3 | pins, producers |
 | `phenix-packages` | pkgs-aggregator | 4 | pins, pkgs-base, producers, integrations |
 | `phenix-de` | consumer | 5 | pins, pkgs, integrations, selected producers |
 | `phenix-hosts` | consumer | 5 | pins, pkgs, de, home, secrets |
@@ -35,8 +35,8 @@ flakes/
     phenix-tend/
     phenix-stitch/
     phenix-nvim/
-  03-integrations/   layer 3 — cross-producer wiring (future)
-    phenix-opencode/
+  03-integrations/   layer 3 — cross-producer wiring
+    phenix-agent-harness/
   04-pkgs/           layer 4 — aggregated package set
     phenix-packages/
   05-consumers/      layer 5 — config and composition flakes
@@ -46,8 +46,8 @@ flakes/
 
 A flake may depend on flakes in lower-numbered directories. It must not depend on flakes in same-numbered or higher-numbered directories.
 
-`phenix-opencode` lives in layer 3 because its wrapped Opencode configuration
-integrates with `phenix-tend` and `phenix-stitch`. `phenix-de` remains a layer-5 consumer; any
+`phenix-agent-harness` lives in layer 3 because its wrapped OpenCode and Pi
+agent configuration integrates with `phenix-tend` and `phenix-stitch`. `phenix-de` remains a layer-5 consumer; any
 package or overlay outputs there are consumer-local desktop-environment
 composition, not a reusable lower-layer provider API. The current root workspace
 is `phenix`; the former shell role has been absorbed into `phenix-de`.

@@ -19,7 +19,6 @@
 [submodule "phenix-de"]
 	path = flakes/05-consumers/phenix-de
 	url = git@github.com:matthis-k/phenix-de.git
-[submodule "phenix-opencode"]
-	path = flakes/03-integrations/phenix-opencode
+[submodule "phenix-agent-harness"]
+	path = flakes/03-integrations/phenix-agent-harness
 	url = git@github.com:matthis-k/phenix-opencode.git
-

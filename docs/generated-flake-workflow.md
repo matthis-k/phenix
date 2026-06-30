@@ -33,7 +33,7 @@ before-hooks are not the primary workflow.
 ## Deferred partitions
 
 The remaining active-flake migrations are intentionally deferred from this
-subset: `phenix-nvim`, `phenix-opencode`, `phenix-packages`, `phenix-de`,
+subset: `phenix-nvim`, `phenix-agent-harness`, `phenix-packages`, `phenix-de`,
 `phenix-hosts`, and root generated-flake migration.  Those partitions must keep
 root as an aggregator, avoid same-layer/upward dependencies, preserve public
 outputs, and use affected-DAG verification.

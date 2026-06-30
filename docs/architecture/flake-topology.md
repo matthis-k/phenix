@@ -105,7 +105,7 @@ flowchart TD
   custom packages/scripts"]
 
   Integrations["3 integrations
-  phenix-opencode and other adapters/bundles"]
+  phenix-agent-harness and other adapters/bundles"]
 
   Pkgs["4 phenix-pkgs
   aggregated local package set"]
@@ -312,8 +312,8 @@ MCP configs referencing multiple packages
 
 Integrations may depend on multiple package producers.
 
-In the current workspace, `phenix-opencode` is a layer-3 integration because it
-wraps Opencode configuration together with `phenix-tend` and `phenix-stitch` commands and MCPs.
+In the current workspace, `phenix-agent-harness` is a layer-3 integration because it
+wraps OpenCode and Pi configuration together with `phenix-tend` and `phenix-stitch` commands and MCPs.
 
 Package producers must not depend on integrations.
 

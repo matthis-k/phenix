@@ -74,7 +74,7 @@ Architecture is checked twice: as **design admission control** before implementa
 
 ## Workflow prompts and commands
 
-The workflow agent prompts and commands are packaged in the `phenix-opencode` submodule wrapper (`flakes/03-integrations/phenix-opencode/`). They are available automatically when using the wrapped opencode binary from the Nix dev shell.
+The workflow agent prompts and commands are packaged in the `phenix-agent-harness` submodule wrapper (`flakes/03-integrations/phenix-agent-harness/`). They are available automatically when using the wrapped opencode binary from the Nix dev shell.
 
 These prompts are generic — they discover project-specific contracts from `AGENTS.md`, `docs/*`, `CLAUDE.md`, or `knowledge/` at runtime rather than hardcoding them.
 
