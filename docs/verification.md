@@ -40,7 +40,7 @@ Do not report `passed` if:
 * tests freeze incidental architecture;
 * useful verification was removed.
 
-Full workflow verification must read the original `.opencodestate/` blackboard
+Full workflow verification must read the original `.phenix-agent-state/` blackboard
 artifacts and ledgers where present. The ledgers provide run history, decisions,
 artifact provenance, and verification evidence; they supplement but do not
 replace the accepted implementation plan, planned changes, architecture review,
@@ -51,10 +51,10 @@ and architecture contract.
 The verifier must compare the final diff against:
 
 ```text
-.opencodestate/implementation-plan.yaml
-.opencodestate/planned-changes.yaml
-.opencodestate/implementation-summary.yaml
-.opencodestate/artifact-ledger.yaml
+.phenix-agent-state/implementation-plan.yaml
+.phenix-agent-state/planned-changes.yaml
+.phenix-agent-state/implementation-summary.yaml
+.phenix-agent-state/artifact-ledger.yaml
 ```
 
 It must fail if implementation substantially deviates from the original plan and no replan occurred.
@@ -64,16 +64,16 @@ It must fail if implementation substantially deviates from the original plan and
 The verifier must compare the final diff against:
 
 ```text
-.opencodestate/architecture-review.yaml
-.opencodestate/architecture-contract.yaml
-.opencodestate/decision-ledger.yaml
+.phenix-agent-state/architecture-review.yaml
+.phenix-agent-state/architecture-contract.yaml
+.phenix-agent-state/decision-ledger.yaml
 ```
 
 It must fail if implementation passes tests but violates the accepted architecture contract.
 
 ## Standalone verification
 
-Standalone `/verify` may pass mechanical and generic architecture checks without `.opencodestate/`.
+Standalone `/verify` may pass mechanical and generic architecture checks without `.phenix-agent-state/`.
 
 However, it must clearly report:
 
@@ -91,12 +91,12 @@ The verifier should use:
 
 - `git diff`
 - `git diff --stat`
-- `.opencodestate/planner-output.yaml`
-- `.opencodestate/architecture-review.yaml`
-- `.opencodestate/architecture-contract.yaml`
+- `.phenix-agent-state/planner-output.yaml`
+- `.phenix-agent-state/architecture-review.yaml`
+- `.phenix-agent-state/architecture-contract.yaml`
 - repo docs
 - codebase memory tools for structural context
-- `.opencodestate/run-ledger.yaml` and `.opencodestate/verification-ledger.yaml`
+- `.phenix-agent-state/run-ledger.yaml` and `.phenix-agent-state/verification-ledger.yaml`
   when present for workflow transition and check evidence
 
 Architecture verification should fail if the implementation passes tests but violates the intended repo shape or deviates from the accepted architecture contract.

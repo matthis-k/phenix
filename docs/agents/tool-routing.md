@@ -46,7 +46,7 @@ sequences when these Stitch routes are available.
 
 ## Workflow control plane
 
-`.opencodestate/` is the durable workflow blackboard for full `/flow` runs. It
+`.phenix-agent-state/` is the durable workflow blackboard for full `/flow` runs. It
 stores original request, plan, architecture, implementation, verification,
 failure-analysis, run-ledger, decision-ledger, artifact-ledger, and
 verification-ledger artifacts. Tool routing decisions should be recorded there

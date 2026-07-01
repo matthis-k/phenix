@@ -182,6 +182,11 @@ Preferred default posture:
 | `phenix-reviewer`    |  yes |   no | ask/read-only |            no |
 | `phenix-simplifier`  |  yes |   no | ask/read-only |            no |
 
+All workflow agents have the default `agent_state_write` capability for concise
+runtime state under `.phenix-agent-state/**`. This does not change their source
+edit posture: read-only agents remain unable to modify tracked source files, and
+Python is not treated as a special write permission boundary.
+
 ## Final report format
 
 Every OpenCode task should end with:

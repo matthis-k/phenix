@@ -8,6 +8,12 @@ permalink: newxos/agent-commit-flow
 
 The canonical agent workflow for multi-repo commits:
 
+Commit, push, sync, publish, deploy, tracked deletion, secrets/auth mutation, and
+permission-policy weakening are never inferred from dirty state. They require an
+explicit user request and an active WorkScope that allows the capability. DAG-aware
+sync/commit is `c4` release/control-plane work and must pass strict verifier
+evidence before execution.
+
 ## Phase 1: Inspect
 
 ```text
@@ -67,10 +73,15 @@ stitch sync --apply         # update inputs, validate, push
 ## Safety Rules
 
 1. Never auto-commit without an explicit commit message.
-2. Never push before all local commits succeeded.
-3. Never force-push by default.
-4. Never stage ignored files silently.
-5. Never mutate outside the configured workspace repos.
+2. Never commit, push, publish, deploy, or sync unless WorkScope capability and
+   explicit user approval are present.
+3. Never push before all local commits succeeded.
+4. Never force-push by default.
+5. Never stage ignored files silently.
+6. Never mutate outside the configured workspace repos.
+7. Never include unrelated dirty files unless the external-change gate documents
+   user acknowledgement, classification, secret review, verifier evidence, and
+   commit-summary inclusion.
 
 ## MCP Workflow
 

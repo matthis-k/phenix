@@ -8,6 +8,12 @@ permalink: newxos/agent-check-flow
 
 The canonical agent workflow for running checks:
 
+Checks are selected from the active WorkScope. `c1`/`c2` work uses minimal
+preflight and lightweight local evidence unless escalation or handoff needs more.
+`c3` uses planned verification. `c4` requires strict evidence, including
+WorkScope conformance, plan conformance, architecture checks when routed, and
+tend/stitch scope appropriate to the DAG.
+
 ## Phase 1: Plan
 
 Before making changes, understand what checks apply:
@@ -51,7 +57,10 @@ tend run --mode full --phase verify  # re-run with full output
 ## Safety Rules
 
 1. Always `tend plan` before `tend run` to preview the scope.
-2. Use `--mode changed` for local development, `--mode full` for CI.
+2. Use `--mode changed` for local c1/c2/c3 development, `--mode full` for CI or
+   c4/full confidence.
 3. `verify` phase refuses mutating tasks by default.
 4. `fix` / `generate` phases require explicit selection.
 5. Do not skip `verify` before committing.
+6. Fail checks on WorkScope invariant violations: unrelated changes, permission
+   weakening, secret/auth drift, undeclared public API or flake output changes.

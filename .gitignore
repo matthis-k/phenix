@@ -1,6 +1,7 @@
 .cache/
 .stitch/
 .opencodestate/
+.phenix-agent-state/
 opencode.json
 .pre-commit-config.yaml
 result

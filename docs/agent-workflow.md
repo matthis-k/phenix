@@ -14,6 +14,120 @@ delegation, escalation, and the final response. Internal execution is selected
 from the actual task shape; the agent topology is derived from the task DAG, not
 from a fixed sequence.
 
+## WorkScope routing model
+
+Every request is classified into one semantic `WorkScope`. WorkScope is the
+single model for task class, complexity, risk, capabilities, routing, invariants,
+boundaries, verification, and escalation; agents must not introduce separate
+lease classes or role-specific permission taxonomies.
+
+```yaml
+WorkScope:
+  class: inspect | maintenance | change | release
+  complexity: c0 | c1 | c2 | c3 | c4
+  risk: trivial | low | medium | high
+  capabilities:
+    inspect: true
+    edit: true | false
+    agent_state_write: true
+    delete_untracked: true | false
+    delete_tracked: false
+    run_commands: true | false
+    commit: false
+    push: false
+    publish: false
+  routing:
+    workflow: classify_and_dispatch
+    planner: skip | required
+    architect: skip | required
+    worker: direct | after_plan | after_architect | after_explicit_approval | skip
+    verifier: optional | required | required_strict
+    committer: only_after_explicit_user_request
+  invariants:
+    - no_secret_changes
+    - no_permission_weakening
+    - no_unrelated_changes
+    - no_public_api_change_unless_requested
+    - no_test_or_verification_removal_unless_requested
+    - preserve_repo_boundaries
+    - preserve_declared_flake_outputs
+  boundaries:
+    max_files_changed:
+    max_lines_changed:
+```
+
+Default routing:
+
+* `c0` inspect: read-only answers, diagnostics, review, or explanation. Minimal
+  preflight; no implementation subagent and no heavyweight `.phenix-agent-state/`
+  unless recovery or handoff needs it.
+* `c1` trivial maintenance: obvious one-file or small documentation/config
+  maintenance. Dispatch directly to worker after minimal preflight when a tracked
+  edit is requested and capabilities permit it.
+* `c2` mechanical maintenance: localized low-risk mechanical edit with clear
+  intent and no architecture, release, destructive, secrets/auth, or permission
+  trigger. Dispatch directly to worker after minimal preflight; verifier evidence
+  may be lightweight.
+* `c3` contained change: semantic behavior change, medium risk, cross-file edit,
+  or named ambiguity. Planner is required; architect is conditional.
+* `c4` high-risk/release/control-plane: workflow/control-plane, permission model,
+  public API/config, flake topology/output, CI/deployment, repo ownership
+  boundaries, release, commit/push/publish/deploy, tracked deletion,
+  secrets/auth, or high risk. Planner, architect, worker, and strict verifier are
+  required.
+
+Planner should not be invoked for c1/c2 mechanical maintenance absent a concrete
+ambiguity. Architect is limited to repo topology, public API/config semantics,
+flake outputs, permission model, agent routing/workflow semantics, CI/deployment,
+module ownership boundaries, or accepted architecture contracts. Cleanup,
+formatting, typo fixes, and simple references skip architecture review unless a
+boundary is named.
+
+Commit, push, publish, deploy, tracked deletion, secrets/auth changes, and
+permission weakening require explicit user approval and c4 handling.
+
+Every WorkScope grants `agent_state_write: true` by default. Agents may write
+runtime state, checkpoints, logs, handoff notes, and verification evidence under
+`.phenix-agent-state/**` without additional user confirmation. This permission is
+path-scoped and purpose-scoped: it does not grant source edits, tracked-file
+changes, secret writes, permission changes, commits, pushes, publishes, or writes
+outside `.phenix-agent-state/**`.
+
+State writes must stay inside `.phenix-agent-state` after canonicalization, reject
+path traversal and symlink escape, remain non-executable, avoid secrets, keep
+individual files at or below 1 MiB, keep total state at or below 50 MiB, and stay
+gitignored/non-committed by default. Any tool may write files only if the active
+WorkScope permits the target and operation; Python is not a permission boundary.
+
+For c1/c2 tasks, the workflow agent may write a compact WorkScope and dispatch
+note under `.phenix-agent-state/**`, then hand off directly to the worker. It must
+not create large DAG/checkpoint scaffolding unless the task spans multiple repos,
+fails once, or requires recovery.
+
+Examples:
+
+```yaml
+inspect:
+  edit: false
+  agent_state_write: true
+maintenance:
+  edit: true
+  agent_state_write: true
+change:
+  edit: true
+  agent_state_write: true
+release:
+  edit: false_by_default
+  agent_state_write: true
+```
+
+Allowed state paths include `.phenix-agent-state/tasks/123/workscope.yaml`,
+`.phenix-agent-state/tasks/123/log.md`, and
+`.phenix-agent-state/verification/tend.json`. Deny source writes such as
+`flake.nix` when `edit=false`, traversal like `../outside`, symlink escapes out
+of state, executable state files, and secret-like state files such as
+`.phenix-agent-state/secrets.env`.
+
 ```mermaid
 flowchart TD
     User[User] --> Frontend[phenix-workflow frontend]
@@ -83,7 +197,8 @@ flowchart LR
     T --> C[checkpoint]
 ```
 
-Use for localized single-repo changes with low architectural risk.
+Use for `c1`/`c2` localized single-repo changes with low architectural risk and
+clear WorkScope gates.
 
 ### Medium Verified Pipeline
 
@@ -110,8 +225,9 @@ flowchart LR
     V --> AV[phenix-architecture-verifier]
 ```
 
-Use for architecture, workflow, MCP, tend/stitch, flake topology, public API or
-config semantics, multi-repo behavior, and downstream risk.
+Use for `c4` architecture, workflow, MCP, tend/stitch, flake topology, public API
+or config semantics, multi-repo behavior, release/destructive/security actions,
+and downstream risk.
 
 ### Complex Decomposed Pipeline
 
@@ -212,12 +328,13 @@ Use actual supported command names from tend/stitch. For current tend CLI,
 
 ## State And Handoff Memory
 
-The existing `.opencodestate/` tree is the durable workflow blackboard. Stateful
-runs also store task-DAG state under `.opencodestate/tasks/<task-id>/`.
+The existing `.phenix-agent-state/` tree is the durable workflow blackboard.
+Stateful runs also store task-DAG state under
+`.phenix-agent-state/tasks/<task-id>/`.
 
 ```mermaid
 flowchart LR
-    State[.opencodestate/tasks/task-id] --> Task[task.yaml]
+    State[.phenix-agent-state/tasks/task-id] --> Task[task.yaml]
     State --> DAG[dag.yaml]
     State --> Decisions[decisions.md]
     State --> Handoff[handoff-memory.yaml]
@@ -271,6 +388,11 @@ flowchart TD
 Planners, architects, verifiers, architecture verifiers, and commit-sync agents
 are read-mostly. Workers can edit within lease scope. Commits, pushes,
 destructive operations, and sync operations remain guarded.
+
+The worker is the data-plane implementation role. For direct c1/c2 work it may
+proceed without repeated confirmation when the action is inside WorkScope,
+capabilities allow it, invariants and boundaries hold, and the work is reversible
+or verifiable. It must stop on escalation triggers instead of broadening scope.
 
 ## Escalation And DAG Rewrite
 
@@ -392,7 +514,7 @@ changes remain subject to strict plan-conformance regardless of external changes
 
 Verification is based on original upstream artifacts, not reconstructed summaries.
 
-Every full `/flow` run must maintain `.opencodestate/` as the durable workflow
+Every full `/flow` run must maintain `.phenix-agent-state/` as the durable workflow
 blackboard. It stores current request, plan, architecture, implementation,
 verification, failure-analysis, and ledger artifacts so agents coordinate from
 original records instead of lossy chat summaries.
@@ -400,19 +522,19 @@ original records instead of lossy chat summaries.
 Required artifacts include:
 
 ```text
-.opencodestate/request.md
-.opencodestate/planner-output.yaml
-.opencodestate/implementation-plan.yaml
-.opencodestate/planned-changes.yaml
-.opencodestate/architecture-review.yaml
-.opencodestate/architecture-contract.yaml
-.opencodestate/implementation-summary.yaml
-.opencodestate/verification-report.yaml
-.opencodestate/failure-analysis.yaml
-.opencodestate/run-ledger.yaml
-.opencodestate/decision-ledger.yaml
-.opencodestate/artifact-ledger.yaml
-.opencodestate/verification-ledger.yaml
+.phenix-agent-state/request.md
+.phenix-agent-state/planner-output.yaml
+.phenix-agent-state/implementation-plan.yaml
+.phenix-agent-state/planned-changes.yaml
+.phenix-agent-state/architecture-review.yaml
+.phenix-agent-state/architecture-contract.yaml
+.phenix-agent-state/implementation-summary.yaml
+.phenix-agent-state/verification-report.yaml
+.phenix-agent-state/failure-analysis.yaml
+.phenix-agent-state/run-ledger.yaml
+.phenix-agent-state/decision-ledger.yaml
+.phenix-agent-state/artifact-ledger.yaml
+.phenix-agent-state/verification-ledger.yaml
 ```
 
 Ledger intent:
@@ -459,14 +581,16 @@ Standalone `/verify` may run without workflow artifacts, but it must explicitly 
 
 ## Workflow depth routing
 
-Workflow depth may vary by risk:
+Workflow depth is derived from WorkScope risk and complexity:
 
-* shallow: read-only exploration, clarification, or no tracked implementation;
-* standard: bounded low-risk tracked edits with explicit planning and
-  verification;
-* full: nontrivial changes, architecture-sensitive changes, workflow/config
-  changes, submodule or multi-file changes, and any task with an accepted
-  architecture contract.
+* shallow (`c0`): read-only exploration, clarification, diagnostics, review, or
+  explanation;
+* direct trivial (`c1`): obvious mechanical maintenance;
+* direct local (`c2`): bounded low-risk tracked edits with minimal preflight and
+  no heavyweight state unless recovery/handoff is needed;
+* planned (`c3`): semantic or ambiguous work requiring a light plan;
+* full (`c4`): architecture-sensitive, workflow/config/control-plane, submodule,
+  release/destructive/security, or accepted architecture-contract work.
 
 Full workflow mode still requires planner output, architect acceptance before
 implementation, implementer execution against the accepted plan, and verifier

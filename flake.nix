@@ -150,6 +150,13 @@
                   cp -r ${lib.cleanSource ./.} source
                   chmod -R u+w source
                   cd source
+                  find . -name tend-shell.nix -delete
+
+                  export HOME=$TMPDIR/home
+                  mkdir -p $HOME
+                  export NIX_STATE_DIR=$TMPDIR/nix-state
+                  mkdir -p $NIX_STATE_DIR/profiles
+                  export NIX_PATH=nixpkgs=${pkgs.path}
 
                   ${tendPkg}/bin/tend validate --profiles
                   ${tendPkg}/bin/tend check --profile nix-check --offline --locked
