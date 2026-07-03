@@ -186,6 +186,15 @@ Prepare for migration without migrating real features during the foundation pass
 Goal:
 Start only after Phases 1 and 2 are usable.
 
+Current NewXOS adoption slice: API groundwork only. This slice adds shared
+provider pins, disabled/inert `phenix-hosts` module surfaces, and the
+`phenix-migration-info` status package. It does not enable host behavior or
+migrate NewXOS features.
+
+Deferred migration chunks remain: host enablement, Home Manager configuration,
+secrets/sops activation, Hyprland behavior, dev-tools, shell/browser/VPN/LLM/TTS
+features, live USB/hardware work, full Stylix/theming, and CLI/workflow scripts.
+
 - [ ] Select first migration slice
 - [ ] Inspect `newxos` source
 - [ ] Inspect Phenix target repo

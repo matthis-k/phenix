@@ -36,7 +36,11 @@
 
     phenix-hosts = {
       url = ./flakes/05-consumers/phenix-hosts;
-      inputs.phenix-pins.follows = "phenix-pins";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        home-manager.follows = "phenix-pins/home-manager";
+        sops-nix.follows = "phenix-pins/sops-nix";
+      };
     };
 
     phenix-agent-harness = {
