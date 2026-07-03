@@ -394,6 +394,143 @@ proceed without repeated confirmation when the action is inside WorkScope,
 capabilities allow it, invariants and boundaries hold, and the work is reversible
 or verifiable. It must stop on escalation triggers instead of broadening scope.
 
+### Permission lease system
+
+Permission leases reduce manual approval prompts by bundling related operations into a single session-level grant.
+
+#### Operation classes
+
+```yaml
+- RepoRead: ls, pwd, read file, git status, git diff, git log, git show, git rev-parse
+- RepoSearch: rg, grep, find-like inspection
+- WorkspacePatch: patch tracked files inside repo paths
+- WorkspaceCreateFile: create new files inside allowed paths
+- WorkspaceMkdir: mkdir -p inside allowed paths
+- FormatFix: nixfmt, statix fix, deadnix fix, treefmt fix
+- Verify: run tend verify/plan, nix flake check (read-only checks)
+- StageNewFiles: git add for new files needed by Nix flake source visibility
+- StageTrackedChanges: git add for tracked file changes
+- LocalCommit: git commit (with hooks)
+- LocalCommitNoVerify: git commit --no-verify (local DAG mode only)
+- LockUpdate: nix flake lock --update-input
+- SyncNoPush: stitch commit --no-push, git add + git commit
+- Push: git push, stitch sync with push
+- Dangerous: sudo, rm -rf tracked, chmod outside repo, force push, branch delete
+```
+
+#### Lease kinds
+
+```yaml
+- ReadOnly: RepoRead + RepoSearch only. Expected approvals: 0.
+- BoundedWorkspaceEdit: WorkspacePatch + WorkspaceCreateFile + WorkspaceMkdir + FormatFix + StageNewFiles + Verify. Expected approvals: 1.
+- Verification: RepoRead + Verify. Expected approvals: 0.
+- LocalCommit: StageTrackedChanges + LocalCommit + (LocalCommitNoVerify only in local DAG mode). Expected approvals: 1.
+- SyncNoPush: StageTrackedChanges + LocalCommit + LockUpdate. Expected approvals: 1.
+- Push: Push only. Expected approvals: 1 (always requires explicit approval).
+```
+
+#### Auto-allow commands
+
+These commands are always allowed without prompting:
+
+```
+ls, pwd, read file contents
+rg/grep/find-like inspection
+git status, git diff, git log, git show, git rev-parse
+stitch status, stitch diff, stitch dag (read-only)
+tend status, tend plan (read-only)
+```
+
+#### Ask-once commands (covered by single BoundedWorkspaceEdit lease)
+
+```
+mkdir -p inside declared repo paths
+create new files inside declared repo paths
+patch tracked files inside declared repo paths
+run nixfmt/statix/deadnix fix inside declared repo paths
+stage newly created files needed for Nix flake source visibility
+run nix flake check --no-write-lock-file
+run tend verify/fix for the changed scope
+```
+
+#### Always-ask commands
+
+```
+git push
+stitch sync with push
+sudo
+rm/rmdir of tracked paths
+chmod/chown outside repo
+editing secrets / private keys / tokens
+networked lock updates
+deleting branches
+force push
+```
+
+#### Nix flake source visibility rule
+
+If a newly created file is imported/referenced by a flake and `nix flake check` would fail because the path is untracked, automatically stage that new file under the BoundedWorkspaceEdit lease. This does not imply committing.
+
+```
+Example:
+  worker creates packages/dev-tools.nix
+  package.nix imports ../packages/dev-tools.nix
+  before nix flake check:
+    repo.stage_new_files(["packages/dev-tools.nix"])
+  nix flake check passes
+```
+
+#### Local DAG commit mode
+
+When a submodule commit exists locally but not remotely, pre-commit hooks fail because Nix cannot fetch the remote commit. `LocalCommitNoVerify` is allowed only when:
+
+1. LocalDagMode is enabled
+2. A reason is recorded (e.g., "Local DAG mode: submodule commit exists locally but not pushed")
+3. The commit will be pushed before remote consumers try to evaluate
+
+### Role-bound capabilities
+
+| Role | Allowed | Denied |
+|------|---------|--------|
+| Frontend (phenix-workflow) | RepoRead, create_workflow, delegate | WorkspacePatch, StageTrackedChanges, LocalCommit, Push |
+| Planner (phenix-planner) | RepoRead, create_plan | WorkspacePatch, LocalCommit, Push |
+| Architect (phenix-architect) | RepoRead, architecture_review | WorkspacePatch, LocalCommit, Push |
+| Worker (phenix-worker) | RepoRead, WorkspacePatch, WorkspaceCreateFile, WorkspaceMkdir, FormatFix, StageNewFiles | LocalCommit, Push |
+| Verifier (phenix-verifier) | RepoRead, Verify | WorkspacePatch, FormatFix, LocalCommit, Push |
+| Committer (phenix-commit-sync) | RepoRead, StageTrackedChanges, LocalCommit, LocalCommitNoVerify, SyncNoPush | Push (unless explicit push lease exists) |
+
+### Workflow presets
+
+Presets define common permission configurations:
+
+- **inspect_only**: ReadOnly lease, roles frontend/planner/verifier, 0 approvals
+- **medium_local_verified**: BoundedWorkspaceEdit lease, roles worker/verifier, 1 approval
+- **local_commit_no_push**: LocalCommit lease, roles committer, 1 approval
+- **sync_no_push**: SyncNoPush lease, roles committer/verifier, 1 approval
+- **push**: Push lease, requires explicit approval, 1 approval
+
+#### Expected approval counts
+
+| Workflow | Approvals |
+|----------|-----------|
+| inspect-only | 0 |
+| bounded local edit + verify | 1 |
+| bounded edit + local commits/no-push | 2 |
+| sync/push | 1 extra explicit approval |
+| dangerous/destructive | always ask |
+
+### `go on` continuation semantics
+
+When the user says "go on", "continue", or "resume":
+
+1. Resume the current workflow session if one is open
+2. Continue from the last blocked or incomplete task in the DAG
+3. Reuse still-valid permission leases - do not re-ask for already-granted permissions
+4. Do not re-plan unless the previous plan is missing or invalid
+5. Do not repeat questions already answered
+
+If the last blockage was permission-related, retry the next blocked operation under the existing or newly granted lease.
+
 ## Escalation And DAG Rewrite
 
 ```mermaid
@@ -631,6 +768,19 @@ plan-conformance and architecture-contract check.
 | OptionalCommit                  | Done                         | Stitch-safe commit route completed                          |
 | OptionalCommit                  | FailureAnalysis              | Commit gate blocked                                         |
 | FailureAnalysis                | Plan                           | Failure analyzer produced root causes and corrections       |
+
+### Generated file policy
+
+`.pre-commit-config.yaml` is generated by the pre-commit/tend setup process and should NOT be tracked in any Phenix submodule.
+
+Policy:
+- The root `.gitignore` already ignores `.pre-commit-config.yaml`
+- All Phenix submodules should have `.pre-commit-config.yaml` in their `.gitignore`
+- Running pre-commit/tend setup must not leave unrelated submodules dirty
+- Stitch commit must not require a commit message for a repo whose only dirt is generated `.pre-commit-config.yaml`
+- Generated pre-commit config files that are currently tracked should be removed from git tracking (with documented exception if a repo has an intentional reason to track them)
+
+The `classify_dirty_node` function in stitch/exec.rs handles this by classifying `.pre-commit-config.yaml` as a generated/non-meaningful change.
 
 ## Codebase memory use
 
