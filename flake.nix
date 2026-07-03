@@ -65,6 +65,7 @@
       imports = [
         ./phenix-module.nix
         ./phenix-wrappers.nix
+        ./phenix-re-exports.nix
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default

@@ -184,28 +184,66 @@ Prepare for migration without migrating real features during the foundation pass
 ## Phase 4: First real migration
 
 Goal:
-Start only after Phases 1 and 2 are usable.
+Incremental NewXOS feature adoption into Phenix subflakes, chunk by chunk.
 
-Current NewXOS adoption slice: API groundwork only. This slice adds shared
-provider pins, disabled/inert `phenix-hosts` module surfaces, and the
-`phenix-migration-info` status package. It does not enable host behavior or
-migrate NewXOS features.
+### Completed chunks
 
-Deferred migration chunks remain: host enablement, Home Manager configuration,
-secrets/sops activation, Hyprland behavior, dev-tools, shell/browser/VPN/LLM/TTS
-features, live USB/hardware work, full Stylix/theming, and CLI/workflow scripts.
+#### Chunk 1 — API groundwork (phenix-pins, phenix-hosts, root)
+- [x] Add `home-manager` and `sops-nix` provider pins to phenix-pins
+- [x] Create disabled/inert `phenix-hosts` NixOS/HM module APIs:
+  `nixosModules.{default, phenixMigrationBase, homeManagerBridge, sopsBridge}`
+- [x] Add `packages.phenix-migration-info` (inert status package)
+- [x] Root input pass-through and lock coordination
+- [x] `nix flake check` passes
+- [x] Committed (no push)
 
-- [ ] Select first migration slice
-- [ ] Inspect `newxos` source
-- [ ] Inspect Phenix target repo
-- [ ] Write change contract
-- [ ] Implement wrapper/package part
-- [ ] Add module surface only if needed
-- [ ] Add host enablement only if needed
-- [ ] Add checks
-- [ ] Run gates
-- [ ] Update docs/roadmap
+#### Chunk 2 — phenix-hosts base module surfaces
+- [x] Add NixOS modules (all opt-in, disabled by default):
+  `sopsBase`, `nixBase`, `usersMatthisk`, `localeDeEn`,
+  `audioPipewire`, `sudoWheelPasswordless`
+- [x] Add HM modules (all opt-in):
+  `usersMatthiskBase`, `usersMatthiskSsh`
+- [x] Preserve Chunk 1 exports
+- [x] `nix flake check` + `tend verify` pass
+- [x] Committed (no push)
+
+#### Chunk 3 — phenix-packages dev-tools
+- [x] Export 18 curated dev tool packages (git, gh, ripgrep, fd, fzf, bat,
+  eza, delta, jq, htop, btop, tmux, lazygit, zoxide, curl, wget, unzip, starship)
+- [x] Create opt-in `homeModules.devTools` HM module
+- [x] `nix flake check` + `tend verify` pass
+- [ ] Committed
+
+#### Chunk 4 — phenix-de Hyprland + cache modules
+- [x] Create `nixosModules.hyprland-base` (Hyprland, XDG portal, SDDM, env vars)
+- [x] Create `nixosModules.nix-cache` (Hyprland cachix + extensible cache config)
+- [x] Create `homeModules.hyprland` (full keybinds, input, decorations, animations)
+- [x] `nix flake check` + `tend verify` pass
+- [ ] Committed
+
+#### Chunk 5 — Root re-exports
+- [x] Create `phenix-re-exports.nix` aggregating sub-flake NixOS (11) and HM (4) modules
+- [x] Wire into root `flake.nix` imports
+- [x] `nix flake check` passes
+- [ ] Committed
+
+### Deferred for later chunks
+- [ ] Host enablement (nixosConfigurations)
+- [ ] Full Home Manager configuration
+- [ ] Secrets/sops activation
+- [ ] Shell/browser/VPN/LLM/TTS features
+- [ ] Live USB/hardware work
+- [ ] Full Stylix/theming
+- [ ] CLI/workflow scripts
+- [ ] Quickshell/newshell
+- [ ] Zen Browser
+- [ ] NordVPN
+- [ ] CUDA configuration
+
+### Remaining checklist
+- [ ] Chunk 7: Documentation finalization (this file)
 - [ ] Review for copied debt
+- [ ] Commit all remaining dirty chunks
 
 ## Permanent guardrails
 
