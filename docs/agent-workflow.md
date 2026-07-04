@@ -626,9 +626,13 @@ Two routes are allowed:
 2. delegated `review-committer` final review and commit, also after verifier
    success and with an explicit commit policy.
 
-Commit policy follows the glossary: `local commit` does not push; `commit` and
-`commit and push` may push the current node; `sync`, `sync commit`, and
-`synced commit` are DAG-aware propagation and push routes.
+Commit policy follows the canonical semantics:
+- `local commit`: create commits only; no push.
+- `push`: publish existing local commits; no new commits.
+- `commit and push`: local commit, then push.
+- `sync`: update downstream flake inputs/gitlinks, commit, and push.
+- `sync --no-push`: update downstream flake inputs/gitlinks and commit locally, no push.
+- `update submodules to remote`: explicit dependency update operation via `stitch update-submodules`.
 
 ### External-change commit-inclusion
 

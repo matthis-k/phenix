@@ -78,18 +78,51 @@ immediate child directories that contain `.git`.
 
 ```
 stitch repos              # list configured repos
-stitch status             # show workspace status (--json for agent)
-stitch diff               # show diffs across repos
-stitch dag                # show ordered operation DAG (--mode commit|sync|full)
-stitch commit             # commit changed files in DAG dependency order (local only)
-stitch commit --apply     # execute the commit
-stitch push               # push committed changes in dependency order
-stitch sync               # sync/update/push (update flake inputs, validate, push)
-stitch graph derive       # derive workspace graph from flake.lock files
-stitch graph verify       # validate workspace graph topology
-stitch graph order        # show provider-before-consumer topological order
-stitch graph print        # print workspace graph (default format: mermaid)
+stitch status              # show workspace status (--json for agent)
+stitch diff                # show diffs across repos
+stitch git-state           # structured workspace git state (--json for agent)
+stitch classify-git-action # classify user intent against workspace state (--json for agent)
+stitch check-locks         # lock/gitlink invariant check
+stitch dag                 # show ordered operation DAG (--mode commit|sync|full)
+stitch commit              # commit changed files in DAG dependency order (local only)
+stitch commit --apply      # execute the commit
+stitch push                # push committed changes in dependency order
+stitch push --apply        # execute the push
+stitch sync                # DAG-aware sync: update flake inputs, commit, push
+stitch sync --apply        # execute the sync
+stitch sync --apply --no-push  # DAG-aware sync: update inputs, commit locally, no push
+stitch update-submodules   # update submodules to remote (--dry-run to preview, --apply to execute)
+stitch graph derive        # derive workspace graph from flake.lock files
+stitch graph verify        # validate workspace graph topology
+stitch graph order         # show provider-before-consumer topological order
+stitch graph print         # print workspace graph (default format: mermaid)
 ```
+
+## Git semantics
+
+stitch implements the canonical Git semantics for the Phenix workspace:
+
+| Term | Creates commits | Pushes | Propagates downstream inputs | stitch command |
+|------|:---:|:---:|:---:|------|
+| `local commit` | ✅ | ❌ | ❌ | `stitch commit --apply` |
+| `push` | ❌ | ✅ | ❌ | `stitch push --apply` |
+| `commit and push` | ✅ | ✅ | ❌ | `stitch commit --apply` then `stitch push --apply` |
+| `sync` | ✅ | ✅ | ✅ | `stitch sync --apply` |
+| `sync --no-push` | ✅ | ❌ | ✅ | `stitch sync --apply --no-push` |
+| `update submodules to remote` | maybe | ❌ | maybe | `stitch update-submodules --remote --apply` |
+
+### Semantics
+
+- **local commit** (`stitch commit`): creates commits in the current or DAG-ordered repos. Does not push. This is the default commit mode.
+- **push** (`stitch push`): publishes existing local commits. Creates no new commits. Pushes in DAG dependency order.
+- **commit and push**: two-step operation: `stitch commit --apply` followed by `stitch push --apply`.
+- **sync** (`stitch sync`): updates downstream flake inputs/gitlinks, creates commits, and pushes in DAG dependency order. Full DAG-aware propagation.
+- **sync --no-push** (`stitch sync --apply --no-push`): updates downstream flake inputs/gitlinks and creates local commits. Does not push.
+- **update submodules to remote** (`stitch update-submodules --remote`): updates submodule pointers to remote HEAD. May create commits. Does not propagate downstream inputs. Not the same as sync.
+
+### Classification
+
+Use `stitch classify-git-action --intent <intent> --json` to resolve ambiguous user intent (e.g., "sync up submodules") against the current workspace state before mutating.
 
 ## Agent-Friendly JSON
 
@@ -98,10 +131,22 @@ stitch graph print        # print workspace graph (default format: mermaid)
 - `stitch status --json`
 - `stitch commit --dry-run --json`
 - `stitch dag --json`
+- `stitch git-state --json`
+- `stitch classify-git-action --json`
 
 ## Workflow
 
-### Multi-repo commit
+### Local commit
+
+```
+1. stitch status                    # inspect workspace state
+2. stitch diff --repo <name>        # review changes in a repo
+3. stitch dag --mode commit         # plan commit order
+4. stitch commit --dry-run          # preview what would be committed
+5. stitch commit --apply            # execute local commits (no push)
+```
+
+### Commit and push
 
 ```
 1. stitch status                    # inspect workspace state
@@ -109,15 +154,31 @@ stitch graph print        # print workspace graph (default format: mermaid)
 3. stitch dag --mode commit         # plan commit order
 4. stitch commit --dry-run          # preview what would be committed
 5. stitch commit --apply            # execute local commits
-6. stitch push                      # push committed changes
+6. stitch push --dry-run            # preview push order
+7. stitch push --apply              # push committed changes
 ```
 
-### Sync/push workflow
+### Sync (DAG-aware commit + push)
 
 ```
 1. stitch dag --mode sync           # plan sync order
 2. stitch sync --dry-run            # preview sync actions
-3. stitch sync --apply              # update flake inputs, validate, push
+3. stitch sync --apply              # update flake inputs, commit, push in DAG order
+```
+
+### Sync without push
+
+```
+1. stitch dag --mode sync           # plan sync order
+2. stitch sync --dry-run --no-push  # preview sync actions
+3. stitch sync --apply --no-push    # update flake inputs, commit locally, no push
+```
+
+### Update submodules to remote
+
+```
+1. stitch update-submodules --remote --dry-run   # preview changes
+2. stitch update-submodules --remote --apply     # execute
 ```
 
 ## Graph Subsystem
@@ -192,14 +253,16 @@ Read-only (implemented):
 - `stitch.diff` — show diffs across repos
 - `stitch.dag` — show ordered operation DAG
 - `stitch.commit_template` — generate commit message template (read-only)
+- `stitch.git_state` — structured workspace git state
+- `stitch.classify_git_action` — classify user intent against workspace state
+- `stitch.check_locks` — lock/gitlink invariant check
 
 Mutating (implemented):
 
-- `stitch.commit` — DAG-wide commit with validation (requires `apply: true`)
-
-Mutating (planned):
-
-- `stitch.sync` — pull/rebase/push across repos
+- `stitch.commit` — DAG-wide local commit with validation (requires `apply: true`)
+- `stitch.push` — push existing local commits in DAG dependency order (requires `apply: true`)
+- `stitch.sync` — DAG-aware sync: update flake inputs, commit, push (requires `apply: true`)
+- `stitch.update_submodules` — update submodules to remote (requires `apply: true`)
 
 ## Not Yet Implemented
 

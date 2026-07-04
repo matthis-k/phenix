@@ -6,98 +6,93 @@ permalink: newxos/agent-commit-flow
 
 # Agent Commit Flow
 
-The canonical agent workflow for multi-repo commits:
+The canonical agent workflow for Git operations in the Phenix workspace.
 
-Commit, push, sync, publish, deploy, tracked deletion, secrets/auth mutation, and
-permission-policy weakening are never inferred from dirty state. They require an
-explicit user request and an active WorkScope that allows the capability. DAG-aware
-sync/commit is `c4` release/control-plane work and must pass strict verifier
-evidence before execution.
+## Canonical semantics
 
-## Phase 1: Inspect
+| Term | Creates commits | Pushes | Propagates downstream inputs | Tool |
+|------|:---:|:---:|:---:|------|
+| `local commit` | ✅ | ❌ | ❌ | `stitch commit --apply` |
+| `push` | ❌ | ✅ | ❌ | `stitch push --apply` |
+| `commit and push` | ✅ | ✅ | ❌ | `stitch commit --apply` then `stitch push --apply` |
+| `sync` | ✅ | ✅ | ✅ | `stitch sync --apply` |
+| `sync --no-push` | ✅ | ❌ | ✅ | `stitch sync --apply --no-push` |
+| `update submodules to remote` | maybe | ❌ | maybe | `stitch update-submodules --remote --apply` |
+
+## Rules
+
+1. `commit` alone always means `local commit` — never push.
+2. `commit and push` is explicit — both steps required.
+3. `sync` is DAG-aware: update flake inputs, commit, push.
+4. `sync up submodules` is ambiguous. Run `stitch classify-git-action --intent status --json` first.
+5. Raw `git submodule update --remote` is forbidden. Use `stitch update-submodules --remote --dry-run`.
+
+## Workflow
+
+### Phase 1: Inspect
 
 ```text
-stitch status
-stitch diff --repo <name>
-stitch dag --mode commit
+stitch status              # multi-repo git status
+stitch diff --repo <name>  # inspect changes
+stitch git-state --json    # structured workspace git state
+stitch classify-git-action --intent <intent> --json
 ```
 
-Understand what is dirty and how repos depend on each other.
-
-## Phase 2: Template
-
-Generate commit message templates for dirty repos:
+### Phase 2: Local commit
 
 ```text
-# MCP (recommended for agents):
-stitch.commit_template
-
-# CLI equivalent:
-stitch dag --mode commit --json
+stitch commit --dry-run          # preview
+stitch commit --apply            # local commits, no push
 ```
 
-Edit the messages and commit with them.
-
-## Phase 3: Commit
-
-Commit in DAG dependency order (local commits only):
+Per-repo messages:
 
 ```text
-stitch commit --dry-run     # preview without mutating
-stitch commit --apply       # execute (required for safety)
-```
-
-For per-repo messages, use `--messages`:
-
-```text
+stitch commit_template           # generate .stitch/messages.json
 stitch commit --messages .stitch/messages.json --apply
 ```
 
-## Phase 4: Push
+### Phase 3: Push
 
 ```text
-stitch push
+stitch push --dry-run            # preview push order
+stitch push --apply              # push in DAG dependency order
 ```
 
-Push committed changes in dependency order.
-
-## Phase 5: Sync
-
-Update flake inputs and push (if needed after dependency changes):
+### Phase 4: Sync (DAG-aware commit + push)
 
 ```text
-stitch sync --dry-run       # preview sync actions
-stitch sync --apply         # update inputs, validate, push
+stitch sync --dry-run            # preview sync actions
+stitch sync --apply              # update inputs, commit, push in DAG order
+stitch sync --apply --no-push    # update inputs, commit locally, no push
+```
+
+### Phase 5: Update submodules to remote
+
+```text
+stitch update-submodules --remote --dry-run   # preview changes
+stitch update-submodules --remote --apply     # execute
 ```
 
 ## Safety Rules
 
-1. Never auto-commit without an explicit commit message.
-2. Never commit, push, publish, deploy, or sync unless WorkScope capability and
-   explicit user approval are present.
+1. Never auto-commit without a commit message.
+2. Never commit, push, or sync unless WorkScope capability and explicit approval are present.
 3. Never push before all local commits succeeded.
 4. Never force-push by default.
-5. Never stage ignored files silently.
+5. Never use raw `git submodule update --remote`.
 6. Never mutate outside the configured workspace repos.
-7. Never include unrelated dirty files unless the external-change gate documents
-   user acknowledgement, classification, secret review, verifier evidence, and
-   commit-summary inclusion.
+7. Never include unrelated dirty files without external-change gate.
 
 ## MCP Workflow
 
-For AI agents using MCP:
-
 1. `stitch.status` — inspect workspace
-2. `stitch.diff` — review changes
-3. `stitch.dag` — plan commit order
-4. `stitch.commit_template` — generate message template
-5. `stitch.commit` with `apply: true` — execute
-6. `stitch.sync` — post-commit sync/push (planned)
-
-## Deprecated
-
-Do NOT use:
-
-- `stitch changeset` subcommands — replaced by `stitch commit` / `stitch push` / `stitch sync`
-- Raw `git commit` in multiple repos — use `stitch commit` for coordinated commits
-- `sync.json` — retired; use `.tend.json` for checks
+2. `stitch.git_state` — structured git state
+3. `stitch.classify_git_action` — classify user intent
+4. `stitch.diff` — review changes
+5. `stitch.dag` — plan commit order
+6. `stitch.commit_template` — generate message template
+7. `stitch.commit` — local commits only (no_push is redundant but accepted)
+8. `stitch.push` — push existing commits
+9. `stitch.sync` — full DAG-aware sync
+10. `stitch.check_locks` — lock/gitlink invariant check
