@@ -85,3 +85,100 @@ This workspace configures `codebase-memory-mcp` as a local OpenCode MCP server v
 Use it for cheap structural codebase context (architecture overview, module discovery, call graphs, impact analysis, dead-code checks) before expensive file-by-file exploration.
 
 The planner, architect, verifier, and failure-analyzer agents have access to `codebase_memory_*` tools. The implementer may use them for navigation only when explicitly approved.
+
+## Model routing
+
+The Phenix agent harness supports a structured model-routing system that maps tasks
+to different model/provider classes based on routing mode, task difficulty, secrecy,
+and change kind.
+
+### Routing modes
+
+| Mode | Description |
+|------|-------------|
+| `mixed` | Default. Routes planner/verifier to GPT Plus slots, implementer to Go slots. |
+| `go` | Routes all roles to OpenCode Go slots. Stronger Go slots for planner/verifier at D2/D3. |
+| `plus` | Routes all roles to GPT Plus slots. Stronger GPT slots for planner/verifier at D2/D3. |
+| `free` | Routes all roles to free/cheap model slots. Hard-guarded: deny private/secret/D2+/security. |
+| `manual` | Uses user-configured model slots. Still enforces hard safety/privacy denials. |
+
+### Difficulty classes
+
+| Class | Description |
+|-------|-------------|
+| `D0` | Trivial/mechanical — typo fixes, trivial renames. Planner may be skipped or cheap. |
+| `D1` | Repo-aware but bounded — single-file or localized edits with clear intent. |
+| `D2` | Architectural or multi-file — cross-module changes, new abstractions. |
+| `D3` | High-risk, ambiguous, broad, cross-module, or main-sensitive. |
+
+### Ctrl+T keybinding
+
+`Ctrl+T` cycles the active routing mode: `mixed → go → plus → free → manual → mixed`.
+If `free` is unsafe (private/secret/security-sensitive task), it is skipped silently.
+
+### External-plan acceptance
+
+The planner can detect whether the user prompt is already a usable plan. If the
+prompt contains explicit steps, file paths, constraints, and validation expectations
+(`CompletePlan`), it is preserved with minimal normalization. If it has a clear
+objective but missing fields (`PartialPlan`), missing contract fields are added. If
+it is not a plan (`NotAPlan`), normal internal planning runs.
+
+All plans are normalized into a standard **Planner Contract** format before being
+passed to the implementer.
+
+### Configuration
+
+Routing configuration is exposed through `phenix.agentRouting` in the OpenCode config:
+
+```nix
+{
+  phenix.agentRouting = {
+    enable = true;
+    defaultMode = "mixed";
+    keybindings.cycleRoutingMode = "ctrl+t";
+    modes = { ... };
+    slots = {
+      planner.normal = "gpt-plus/medium";
+      planner.strong = "gpt-plus/high";
+      implementer.cheap = "opencode-go/cheap";
+      implementer.normal = "opencode-go/coding";
+      implementer.strong = "opencode-go/strong";
+      verifier.cheap = "opencode-go/different-cheap";
+      verifier.strong = "gpt-plus/high";
+      free.publicOnly = "zen-free/default";
+    };
+    freeMode = {
+      denyPrivate = true;
+      denySecret = true;
+      denyDifficulties = [ "D2" "D3" ];
+      denyChangeKinds = [ "Secrets" "Auth" "Ci" "RepoArchitecture" ];
+    };
+    externalPlans = {
+      enable = true;
+      normalizePartialPlans = true;
+      preserveCompletePlans = true;
+      requireArchitectureCompliance = true;
+    };
+  };
+}
+```
+
+### CLI flags
+
+The `/flow` command accepts:
+- `--routing-mode mixed|go|plus|free|manual` (default: mixed)
+- `--difficulty auto|D0|D1|D2|D3` (default: auto)
+- `--target-state scratch|dev-wallet|main-bound` (default: dev-wallet)
+- `--external-plan auto|force|off` (default: auto)
+
+### References
+
+Detailed routing documentation is in the agent harness prompts:
+- `prompts/workflow.md` — routing policy, Ctrl+T, mode resolution
+- `prompts/planner.md` — external-plan acceptance, plan classification, contract format
+- `prompts/verifier.md` — routing policy verification
+- `prompts/implementer.md` — routing scope constraints
+- `prompts/architecture-verifier.md` — routing invariants
+- `commands/route.md` — cycle-routing-mode command
+- `knowledge/glossary.md` — routing terminology
