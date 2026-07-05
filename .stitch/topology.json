@@ -36,7 +36,7 @@
       "role": "integration",
       "layer": 3,
       "path": "flakes/03-integrations/phenix-agent-harness",
-      "url": "git@github.com:matthis-k/phenix-opencode.git"
+      "url": "git@github.com:matthis-k/phenix-agent-harness.git"
     },
     {
       "name": "phenix-packages",

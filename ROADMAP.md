@@ -24,7 +24,7 @@ The current priority. Complete these before any NewXOS migration:
 - [x] Stitch topology validation (URL match, path existence, layer consistency)
 - [ ] Stitch safe integration status gate — deferred: requires additional Stitch feature work
 - [x] Topology URLs normalized to SSH
-- [x] agent-harness URL corrected to phenix-opencode
+- [x] agent-harness URL corrected (phenix-opencode → phenix-agent-harness)
 
 ### Root aggregate cleanup
 - [x] Remove mkForce-based module re-exports

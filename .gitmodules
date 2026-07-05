@@ -21,4 +21,4 @@
 	url = git@github.com:matthis-k/phenix-de.git
 [submodule "phenix-agent-harness"]
 	path = flakes/03-integrations/phenix-agent-harness
-	url = git@github.com:matthis-k/phenix-opencode.git
+	url = git@github.com:matthis-k/phenix-agent-harness.git
