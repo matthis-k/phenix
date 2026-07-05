@@ -6,7 +6,7 @@ permalink: newxos/readme
 
 # Phenix Development Docs
 
-This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `ROADMAP.md` (at repo root).
 
 This documentation is an **ought-state** documentation set. It defines how the workspace is supposed to behave, while the roadmap tracks what is actually implemented, missing, deferred, or enforced.
 

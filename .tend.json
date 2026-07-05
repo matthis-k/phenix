@@ -174,6 +174,42 @@
         "tags": ["hooks", "git", "workspace"],
         "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch hooks install --all; elif command -v stitch >/dev/null 2>&1; then stitch hooks install --all; else echo 'Error: stitch not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
         "expect": { "status": 0 }
+      },
+      {
+        "id": "repo-integration-check",
+        "description": "Run full integration status check (topology, status, git-jj-policy conformance)",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["manual"],
+        "tags": ["integration", "workspace"],
+        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command bash -c 'echo \"=== Integration Check ===\" && echo \"1. Topology:\" && stitch topology check --workspace . --config .stitch/topology.json && echo && echo \"2. Status:\" && stitch status && echo && echo \"3. Profile validation:\" && tend validate --profiles && echo && echo \"=== All integration checks passed ===\"; else echo 'Error: nix not available. Run nix develop first.' >&2; exit 1; fi"],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "docs-presence-check",
+        "description": "Verify required documentation files exist",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["git-hook", "pre-push", "manual"],
+        "tags": ["docs"],
+        "command": ["bash", "-c", "missing=0; for f in ROADMAP.md docs/workflow/git-jj-policy.md AGENTS.md flake.nix .stitch/topology.json .tend.json; do if [ ! -f \"$f\" ]; then echo \"MISSING: $f\"; missing=1; fi; done; if [ \"$missing\" = 1 ]; then exit 1; else echo 'All required docs present'; fi"],
+        "expect": { "status": 0 }
+      },
+      {
+        "id": "git-jj-policy-check",
+        "description": "Verify git/jj workflow policy documentation exists",
+        "phase": "verify",
+        "kind": "command",
+        "mutates": false,
+        "sandbox_safe": true,
+        "profiles": ["git-hook", "pre-push", "manual"],
+        "tags": ["docs", "policy"],
+        "command": ["bash", "-c", "if [ -f docs/workflow/git-jj-policy.md ]; then echo 'git-jj-policy.md: present'; else echo 'MISSING: docs/workflow/git-jj-policy.md' >&2; exit 1; fi"],
+        "expect": { "status": 0 }
       }
     ]
   }

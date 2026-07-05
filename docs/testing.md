@@ -6,7 +6,7 @@ permalink: newxos/testing
 
 # Phenix Testing and Gates
 
-This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `ROADMAP.md` (at repo root).
 
 ## Purpose
 

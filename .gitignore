@@ -1,8 +1,12 @@
 .cache/
-.stitch/
+.stitch/cache/
+.stitch/transactions/
+.stitch/messages.json
+.stitch/recipes.json
 .opencodestate/
 .phenix-agent-state/
 opencode.json
 .pre-commit-config.yaml
 result
 target/
+.tend/cache/

@@ -66,6 +66,7 @@
         ./phenix-module.nix
         ./phenix-wrappers.nix
         ./phenix-re-exports.nix
+        ./phenix-helpers.nix
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
@@ -90,12 +91,15 @@
           rustToolchain = [
             pkgs.cargo
             pkgs.rustc
-            # These provide cargo-fmt and cargo-clippy subcommands for Tend.
             pkgs.rustfmt
             pkgs.clippy
           ];
         in
         {
+          phenix = {
+            inherit tendPkg stitchPkg;
+          };
+
           packages.opencode =
             inputs.phenix-agent-harness.packages.${system}.opencode
               or inputs.phenix-agent-harness.packages.${system}.default;
@@ -131,7 +135,6 @@
                   always_run = true;
                   stages = [ "pre-push" ];
                 };
-
               };
             };
           };
@@ -155,7 +158,6 @@
                   cp -r ${lib.cleanSource ./.} source
                   chmod -R u+w source
                   cd source
-                  find . -name tend-shell.nix -delete
 
                   export HOME=$TMPDIR/home
                   mkdir -p $HOME
@@ -212,42 +214,7 @@
             shellHook = ''
               ${config.pre-commit.installationScript}
 
-              repo-hook() {
-                ${tendPkg}/bin/tend check --profile git-hook --staged --affected-dag "$@"
-              }
-
-              repo-pushgate() {
-                ${tendPkg}/bin/tend check --profile pre-push --affected-dag "$@"
-              }
-
-              repo-check() {
-                ${tendPkg}/bin/tend check --profile manual "$@"
-              }
-
-              repo-fix() {
-                ${tendPkg}/bin/tend check --profile fix "$@"
-              }
-
-              repo-hooks-plan() {
-                ${stitchPkg}/bin/stitch hooks plan --all "$@"
-              }
-
-              repo-install-all-hooks() {
-                ${stitchPkg}/bin/stitch hooks install --all "$@"
-              }
-
-              export -f repo-hook repo-pushgate repo-check repo-fix repo-hooks-plan repo-install-all-hooks 2>/dev/null || true
-
-              echo "Phenix development shell"
-              echo "  tools: git gh jq ripgrep fd statix deadnix nixfmt opencode pi"
-              echo "  tend: distributed maintenance/check harness"
-              echo "  stitch: coordinated multi-repo git tool"
-              echo "  repo-hook           -> tend check --profile git-hook --staged --affected-dag"
-              echo "  repo-pushgate       -> tend check --profile pre-push --affected-dag"
-              echo "  repo-check          -> tend check --profile manual"
-              echo "  repo-fix            -> tend check --profile fix"
-              echo "  repo-hooks-plan     -> stitch hooks plan --all"
-              echo "  repo-install-all-hooks -> stitch hooks install --all"
+              ${config.phenix.shellHook}
             '';
           };
         };

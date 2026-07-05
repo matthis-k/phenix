@@ -6,7 +6,7 @@ permalink: newxos/topology
 
 # Phenix flake topology and integration pattern
 
-This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `ROADMAP.md` (at repo root).
 
 Phenix uses multiple flakes instead of one monolithic repository. That only works reliably if the published flake-input graph is a directed acyclic graph.
 

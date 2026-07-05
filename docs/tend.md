@@ -203,7 +203,7 @@ explicit safe prerequisite edge.
   "id": "docs-exist",
   "phase": "verify",
   "kind": "filesExist",
-  "paths": ["docs/README.md", "docs/roadmap.md"]
+  "paths": ["docs/README.md", "ROADMAP.md"]
 }
 ```
 
@@ -423,3 +423,18 @@ Convenience aliases (human-friendly, but `plan → run → explain` is preferred
 - `tend fix changed` — same as `tend run --mode changed --phase fix`
 
 Use `tend --root <workspace> tree` to understand the composed task tree.
+
+## Cache (experimental)
+
+Tend now includes a conservative task cache module (`cache.rs`) for deterministic
+read-only tasks. Cache is not yet integrated into the execution pipeline.
+
+Cache management commands:
+- `tend cache status` — show cache directory and entry count
+- `tend cache prune --max-age <seconds>` — remove entries older than N seconds
+- `tend cache clear` — remove all cache entries
+- `tend cache explain <task-id>` — explain cache state for a task
+- `--no-cache` / `--cache` — CLI flags (not yet wired into `tend run`/`tend check`)
+
+Cache is not active by default in task execution. Integration into `tend run`/`tend check`
+is deferred to a follow-up pass.

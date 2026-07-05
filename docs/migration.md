@@ -6,7 +6,7 @@ permalink: newxos/migration-1
 
 # Phenix Migration Workflow
 
-This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `docs/roadmap.md`.
+This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `ROADMAP.md` (at repo root).
 
 ## Purpose
 
@@ -72,7 +72,7 @@ Each migration task must use:
 6. Add checks
 7. Run gates
 8. Review invariants
-9. Update docs/roadmap
+9. Update ROADMAP.md
 
 ## Ownership decision
 

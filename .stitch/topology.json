@@ -15,14 +15,14 @@
       "role": "producer",
       "layer": 2,
       "path": "flakes/02-producers/phenix-tend",
-      "url": "https://github.com/matthis-k/phenix-tend.git"
+      "url": "git@github.com:matthis-k/phenix-tend.git"
     },
     {
       "name": "phenix-stitch",
       "role": "producer",
       "layer": 2,
       "path": "flakes/02-producers/phenix-stitch",
-      "url": "https://github.com/matthis-k/phenix-stitch.git"
+      "url": "git@github.com:matthis-k/phenix-stitch.git"
     },
     {
       "name": "phenix-nvim",
@@ -36,7 +36,7 @@
       "role": "integration",
       "layer": 3,
       "path": "flakes/03-integrations/phenix-agent-harness",
-      "url": "git@github.com:matthis-k/phenix-agent-harness.git"
+      "url": "git@github.com:matthis-k/phenix-opencode.git"
     },
     {
       "name": "phenix-packages",
