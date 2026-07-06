@@ -18,8 +18,8 @@
 The current priority. Complete these before any NewXOS migration:
 
 ### Toolchain
-- [x] Tend task cache (conservative, deterministic, read-only)
-- [ ] Tend task prerequisites / requires — deferred: requires planning/design beyond scope of clean-base pass
+- [ ] Tend task cache — scaffolded only: cache structs and CLI commands exist, but execution is not wired to cache yet and stable content hashing is not implemented.
+- [x] Tend task prerequisites / requires — implemented in model/planner/executor; still needs stronger tests, JSON/human plan reporting, and profile-policy coverage.
 - [ ] Tend generated flake support (adopt flake-file or defer explicitly) — deferred: flake-file API maturity needs evaluation
 - [x] Stitch topology validation (URL match, path existence, layer consistency)
 - [ ] Stitch safe integration status gate — deferred: requires additional Stitch feature work
@@ -29,15 +29,15 @@ The current priority. Complete these before any NewXOS migration:
 ### Root aggregate cleanup
 - [x] Remove mkForce-based module re-exports
 - [x] Composable export style established
-- [ ] Clean phenix-wrappers.nix (make useful or delete) — deferred: phenix-wrappers kept as minimal option placeholder
+- [x] Clean phenix-wrappers.nix (made useful — exposes tend, stitch, opencode, pi as config.phenixWrapped)
 - [x] Delete legacy tend-shell.nix
 - [x] Fix .gitignore for .stitch/ (only ignore cache, not topology.json)
 
 ### Agent friction cleanup
 - [x] Remove old .opencode/agent definition files (replaced by generated config from agent harness)
-- [ ] Canonicalize permissions classification — deferred: requires model-level semantic classification > string matching (ongoing work)
-- [ ] MCP-first enforcement (verifier checks transport evidence) — deferred: verifier logic needs update for transport evidence format
-- [ ] Routing mode docs aligned with actual tool support — deferred: requires OpenCode native routing API
+- [ ] Canonicalize permissions classification — partially addressed: operation-class model defined in Nix, generated permission maps improved; semantic permission runtime enforcement still missing
+- [ ] MCP-first enforcement — prompt/test-level only; structural verifier/runtime enforcement still missing
+- [ ] Routing mode docs aligned with actual tool support — prompt-level unless runtime support is proven
 
 ### Shared devshell helpers
 - [x] Create shared helper module (phenix-helpers.nix)
@@ -72,11 +72,12 @@ Do not start migrating NewXOS feature content during clean-base tasks.
 
 ## Tend backlog
 
-- [ ] CLI surface stabilization tests — still needed
-- [x] Task cache (conservative read-only)
-- [ ] Task prerequisites / requires — deferred
-- [ ] Profile validation enforcement — still needed
-- [ ] Generated flake: adopt flake-file or mark experimental — deferred
+- [ ] CLI surface stabilization tests
+- [ ] Task cache — scaffolded; execution wiring and stable hashing still needed
+- [x] Task prerequisites / requires — implemented
+- [ ] Requires tests/reporting/profile-policy polish
+- [ ] Profile validation enforcement
+- [ ] Generated flake: adopt flake-file or mark experimental
 
 ## Stitch backlog
 
@@ -92,4 +93,4 @@ Do not start migrating NewXOS feature content during clean-base tasks.
 - `docs/roadmap.md` — replaced by root ROADMAP.md
 - `tend-shell.nix` — legacy, removed
 - Changelog/release ceremony — never existed, no need to add
-- `phenix-wrappers.nix` — kept as minimal placeholder
+- `phenix-wrappers.nix` — now populated as useful re-export
