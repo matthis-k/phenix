@@ -41,6 +41,21 @@ jobs:
             accept-flake-config = true
             max-jobs = auto
 
+      - name: Show submodule pins
+        run: git submodule status --recursive
+
+      - name: Validate Tend configuration
+        run: nix run .#tend -- validate --profiles
+
+      - name: Run Tend checks
+        run: nix run .#tend -- check --profile nix-check --offline --locked
+
+      - name: Validate Stitch topology
+        run: nix run .#stitch -- dag
+
+      - name: Run Stitch verification
+        run: nix run .#stitch -- verify --changed --downstream
+
       - name: Show flake metadata
         run: nix flake metadata --accept-flake-config
 

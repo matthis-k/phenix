@@ -7,37 +7,56 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
 
-    phenix-pins.url = ./flakes/00-pins/phenix-pins;
+    phenix-pins = {
+      url = ./flakes/00-pins/phenix-pins;
+      inputs.flake-parts.follows = "flake-parts";
+    };
     nixpkgs.follows = "phenix-pins/nixpkgs";
 
     phenix-packages = {
       url = ./flakes/04-pkgs/phenix-packages;
-      inputs.phenix-pins.follows = "phenix-pins";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     phenix-tend = {
       url = ./flakes/02-producers/phenix-tend;
-      inputs.phenix-pins.follows = "phenix-pins";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
+      };
     };
     phenix-stitch = {
       url = ./flakes/02-producers/phenix-stitch;
-      inputs.phenix-pins.follows = "phenix-pins";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     phenix-nvim = {
       url = ./flakes/03-integrations/phenix-nvim;
-      inputs.phenix-pins.follows = "phenix-pins";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     phenix-de = {
       url = ./flakes/05-consumers/phenix-de;
-      inputs.phenix-pins.follows = "phenix-pins";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     phenix-hosts = {
       url = ./flakes/05-consumers/phenix-hosts;
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
         home-manager.follows = "phenix-pins/home-manager";
         sops-nix.follows = "phenix-pins/sops-nix";
       };
@@ -47,6 +66,7 @@
       url = ./flakes/03-integrations/phenix-agent-harness;
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        flake-parts.follows = "flake-parts";
         phenix-tend.follows = "phenix-tend";
         phenix-stitch.follows = "phenix-stitch";
       };

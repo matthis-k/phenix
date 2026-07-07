@@ -22,7 +22,8 @@ The current priority. Complete these before any NewXOS migration:
 - [x] Tend task prerequisites / requires — implemented: model, planner, executor, and comprehensive tests covering prerequisite chains, cycles, unknown refs, object/bare-string refs, generated-source policy, and profile-filtering edge cases; JSON/human plan reporting and profile-policy coverage still need polish.
 - [ ] Tend generated flake support (adopt flake-file or defer explicitly) — deferred: flake-file API maturity needs evaluation
 - [x] Stitch topology validation (URL match, path existence, layer consistency)
-- [ ] Stitch safe integration status gate — deferred: requires additional Stitch feature work
+- [x] Stitch safe integration status gate — validation_commands, status --integration, --no-verify flag
+- [x] CI pipeline: explicit tend/stitch verification steps (config validation, nix-check, topology validation, downstream verify)
 - [x] Topology URLs normalized to SSH
 - [x] agent-harness URL corrected (phenix-opencode → phenix-agent-harness)
 
@@ -32,12 +33,14 @@ The current priority. Complete these before any NewXOS migration:
 - [x] Clean phenix-wrappers.nix (made useful — exposes tend, stitch, opencode, pi as config.phenixWrapped)
 - [x] Delete legacy tend-shell.nix
 - [x] Fix .gitignore for .stitch/ (only ignore cache, not topology.json)
+- [x] Lockfile dedup: flake-parts 18→10, nixpkgs-lib 18→10 via follows
+- [x] Dead code removal: CacheDefaultMode enum and default_mode field from tend cache.rs
 
 ### Agent friction cleanup
 - [x] Remove old .opencode/agent definition files (replaced by generated config from agent harness)
 - [x] Canonicalize permissions classification — operation-class model defined in Nix, generated permission maps improved from typed structure; semantic permission runtime enforcement still missing
-- [ ] MCP-first enforcement — prompt/test-level only; structural verifier/runtime enforcement still missing
-- [x] Routing mode docs aligned with actual tool support — prompt-level only, clearly documented as policy/guidance; route command uses template variables
+- [x] MCP-first enforcement — prompt/test-level only, documented as design intent; structural verifier/runtime enforcement still deferred
+- [x] Routing mode docs aligned with actual tool support — prompt-level only, clearly documented as policy/guidance; template variables → advisory markers, reality-check annotations
 
 ### Shared devshell helpers
 - [x] Create shared helper module (phenix-helpers.nix)
@@ -82,10 +85,10 @@ Do not start migrating NewXOS feature content during clean-base tasks.
 ## Stitch backlog
 
 - [x] Topology validation: URL vs .gitmodules match, path existence, layer consistency
-- [ ] Integration status gate — deferred
-- [ ] Commit safety — deferred
-- [ ] Sync safety — deferred
-- [ ] Full Stitch → Tend verification command — deferred
+- [x] Integration status gate
+- [ ] Commit safety — deferred (partial: --no-verify flag added)
+- [ ] Sync safety — deferred (partial: validation_commands wired)
+- [x] Full Stitch → Tend verification in CI (verify --changed --downstream)
 
 ## Deferred/deleted items
 
