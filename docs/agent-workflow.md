@@ -482,10 +482,10 @@ Example:
 
 #### Local DAG commit mode
 
-When a submodule commit exists locally but not remotely, pre-commit hooks fail because Nix cannot fetch the remote commit. `LocalCommitNoVerify` is allowed only when:
+When a workspace repo commit exists locally but not remotely, pre-commit hooks can fail because Nix cannot fetch the remote commit. `LocalCommitNoVerify` is allowed only when:
 
-1. LocalDagMode is enabled
-2. A reason is recorded (e.g., "Local DAG mode: submodule commit exists locally but not pushed")
+1. LocalWorkspaceMode is enabled
+2. A reason is recorded (e.g., "Local workspace mode: repo commit exists locally but not pushed")
 3. The commit will be pushed before remote consumers try to evaluate
 
 ### Role-bound capabilities
@@ -632,7 +632,7 @@ Commit policy follows the canonical semantics:
 - `commit and push`: local commit, then push.
 - `sync`: update downstream flake inputs/gitlinks, commit, and push.
 - `sync --no-push`: update downstream flake inputs/gitlinks and commit locally, no push.
-- `update submodules to remote`: explicit dependency update operation via `stitch update-submodules`.
+- `update workspace repos to remote`: explicit dependency update operation planned through Stitch.
 
 ### External-change commit-inclusion
 

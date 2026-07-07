@@ -17,15 +17,14 @@ The canonical agent workflow for Git operations in the Phenix workspace.
 | `commit and push` | ✅ | ✅ | ❌ | `stitch commit --apply` then `stitch push --apply` |
 | `sync` | ✅ | ✅ | ✅ | `stitch sync --apply` |
 | `sync --no-push` | ✅ | ❌ | ✅ | `stitch sync --apply --no-push` |
-| `update submodules to remote` | maybe | ❌ | maybe | `stitch update-submodules --remote --apply` |
 
 ## Rules
 
 1. `commit` alone always means `local commit` — never push.
 2. `commit and push` is explicit — both steps required.
 3. `sync` is DAG-aware: update flake inputs, commit, push.
-4. `sync up submodules` is ambiguous. Run `stitch classify-git-action --intent status --json` first.
-5. Raw `git submodule update --remote` is forbidden. Use `stitch update-submodules --remote --dry-run`.
+4. `sync up workspace repos` is ambiguous. Run Stitch planning/status first.
+5. Raw multi-repo checkout updates are forbidden. Use Stitch workspace/sync planning first.
 
 ## Workflow
 
@@ -67,11 +66,11 @@ stitch sync --apply              # update inputs, commit, push in DAG order
 stitch sync --apply --no-push    # update inputs, commit locally, no push
 ```
 
-### Phase 5: Update submodules to remote
+### Phase 5: Update workspace repos to remote
 
 ```text
-stitch update-submodules --remote --dry-run   # preview changes
-stitch update-submodules --remote --apply     # execute
+stitch sync --dry-run                         # preview DAG-aware updates
+stitch sync --apply --no-push                 # execute local sync when explicitly approved
 ```
 
 ## Safety Rules
@@ -80,7 +79,7 @@ stitch update-submodules --remote --apply     # execute
 2. Never commit, push, or sync unless WorkScope capability and explicit approval are present.
 3. Never push before all local commits succeeded.
 4. Never force-push by default.
-5. Never use raw `git submodule update --remote`.
+5. Never use raw multi-repo checkout updates when Stitch can plan the operation.
 6. Never mutate outside the configured workspace repos.
 7. Never include unrelated dirty files without external-change gate.
 

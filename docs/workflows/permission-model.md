@@ -60,8 +60,8 @@ Created files imported by a flake are auto-staged before `nix flake check`. No e
 ## Local DAG commit mode
 
 `LocalCommitNoVerify` allowed when:
-1. LocalDagMode enabled
-2. Reason recorded (submodule commit exists locally not pushed)
+1. LocalWorkspaceMode enabled
+2. Reason recorded (workspace repo commit exists locally not pushed)
 3. Will be pushed before remote consumers evaluate
 
 ## go on / continue / resume
@@ -74,7 +74,7 @@ Created files imported by a flake are auto-staged before `nix flake check`. No e
 
 ## Generated file policy
 
-`.pre-commit-config.yaml` is ignored everywhere (root + all submodules). Stitch `classify_dirty_node()` treats it as non-meaningful.
+`.pre-commit-config.yaml` is ignored everywhere (root + all workspace repos). Stitch status treats it as non-meaningful.
 
 ## Key references
 

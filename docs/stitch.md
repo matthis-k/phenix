@@ -33,7 +33,7 @@ It was removed and replaced with `stitch` because:
 - The DAG-based model was tied to a specific nix flake update workflow
 - `stitch` provides a clean model that works for any multi-repo Git operation
 - The old `sync.json` / `nodes.json` config format is retired
-- `stitch` uses `.stitch.json` instead
+- `stitch` derives the workspace from `flake.lock` and optional XDG local state
 
 `sync.json` files in individual repos are no longer consumed by any active
 tool.  `tend` covers the maintenance/check workflow that `sync.json` used to
@@ -43,8 +43,9 @@ describe.
 
 ### Workspace
 
-A workspace is a directory containing multiple Git repos.  The workspace
-config file `.stitch.json` lists the repos and the workspace name.
+A workspace is a root flake plus related repos. In locked mode, the DAG comes
+from remote flake inputs and `flake.lock`. In workspace/mixed developer modes,
+Stitch may map those locked repos to local checkouts through XDG state.
 
 ### Commit Trailers
 
@@ -55,24 +56,12 @@ Workspace: <workspace-name>
 Managed-By: stitch
 ```
 
-## Config
+## Workspace state
 
-`.stitch.json`:
-
-```json
-{
-  "version": 1,
-  "workspace": "phenix",
-  "repos": [
-    { "name": "phenix-tend",   "path": "flakes/02-producers/phenix-tend" },
-    { "name": "phenix-stitch", "path": "flakes/02-producers/phenix-stitch" },
-    { "name": "phenix",        "path": "." }
-  ]
-}
-```
-
-If `.stitch.json` does not exist, `stitch` falls back to discovering
-immediate child directories that contain `.git`.
+Committed `.stitch.json` repo lists and `.stitch/topology.json` are retired for
+normal operation. Local repo mappings belong in Stitch XDG state/config/cache
+paths. `/repos/` is ignored and may contain developer checkouts, but CI and
+locked checks use only the root flake inputs and lock file.
 
 ## CLI
 
@@ -91,7 +80,7 @@ stitch push --apply        # execute the push
 stitch sync                # DAG-aware sync: update flake inputs, commit, push
 stitch sync --apply        # execute the sync
 stitch sync --apply --no-push  # DAG-aware sync: update inputs, commit locally, no push
-stitch update-submodules   # update submodules to remote (--dry-run to preview, --apply to execute)
+stitch workspace discover  # inspect lock-derived workspace repo mapping
 stitch graph derive        # derive workspace graph from flake.lock files
 stitch graph verify        # validate workspace graph topology
 stitch graph order         # show provider-before-consumer topological order
@@ -109,20 +98,18 @@ stitch implements the canonical Git semantics for the Phenix workspace:
 | `commit and push` | ✅ | ✅ | ❌ | `stitch commit --apply` then `stitch push --apply` |
 | `sync` | ✅ | ✅ | ✅ | `stitch sync --apply` |
 | `sync --no-push` | ✅ | ❌ | ✅ | `stitch sync --apply --no-push` |
-| `update submodules to remote` | maybe | ❌ | maybe | `stitch update-submodules --remote --apply` |
 
 ### Semantics
 
 - **local commit** (`stitch commit`): creates commits in the current or DAG-ordered repos. Does not push. This is the default commit mode.
 - **push** (`stitch push`): publishes existing local commits. Creates no new commits. Pushes in DAG dependency order.
 - **commit and push**: two-step operation: `stitch commit --apply` followed by `stitch push --apply`.
-- **sync** (`stitch sync`): updates downstream flake inputs/gitlinks, creates commits, and pushes in DAG dependency order. Full DAG-aware propagation.
-- **sync --no-push** (`stitch sync --apply --no-push`): updates downstream flake inputs/gitlinks and creates local commits. Does not push.
-- **update submodules to remote** (`stitch update-submodules --remote`): updates submodule pointers to remote HEAD. May create commits. Does not propagate downstream inputs. Not the same as sync.
+- **sync** (`stitch sync`): updates downstream flake inputs, creates commits, and pushes in DAG dependency order. Full DAG-aware propagation.
+- **sync --no-push** (`stitch sync --apply --no-push`): updates downstream flake inputs and creates local commits. Does not push.
 
 ### Classification
 
-Use `stitch classify-git-action --intent <intent> --json` to resolve ambiguous user intent (e.g., "sync up submodules") against the current workspace state before mutating.
+Use Stitch planning/status commands to resolve ambiguous user intent against the current workspace state before mutating.
 
 ## Agent-Friendly JSON
 
@@ -174,11 +161,11 @@ Use `stitch classify-git-action --intent <intent> --json` to resolve ambiguous u
 3. stitch sync --apply --no-push    # update flake inputs, commit locally, no push
 ```
 
-### Update submodules to remote
+### Discover local workspace mapping
 
 ```
-1. stitch update-submodules --remote --dry-run   # preview changes
-2. stitch update-submodules --remote --apply     # execute
+1. stitch workspace state-path --workspace phenix
+2. stitch workspace discover --workspace . --json
 ```
 
 ## Graph Subsystem
@@ -204,10 +191,10 @@ phenix-hosts -> phenix-pins
 ### Graph commands
 
 ```
-stitch graph derive --source locks --workspace . --metadata stitch.workspace.json
-stitch graph verify --source locks --workspace . --metadata stitch.workspace.json
-stitch graph order  --source locks --workspace . --metadata stitch.workspace.json
-stitch graph print  --source locks --workspace . --metadata stitch.workspace.json --format mermaid
+stitch graph derive --source locks --workspace .
+stitch graph verify --source locks --workspace .
+stitch graph order  --source locks --workspace .
+stitch graph print  --source locks --workspace . --format mermaid
 ```
 
 ### Graph source
@@ -242,7 +229,7 @@ stitch graph print  --source locks --workspace . --metadata stitch.workspace.jso
 2. Never push before all local commits succeeded.
 3. Never force-push by default.
 4. Never stage ignored files silently.
-5. Never commit repos not listed in the workspace config.
+5. Never commit repos outside the lock-derived workspace mapping.
 6. Never mutate outside configured workspace repos.
 
 ## MCP Tools
@@ -255,14 +242,13 @@ Read-only (implemented):
 - `stitch.commit_template` — generate commit message template (read-only)
 - `stitch.git_state` — structured workspace git state
 - `stitch.classify_git_action` — classify user intent against workspace state
-- `stitch.check_locks` — lock/gitlink invariant check
+- `stitch.workspace` — inspect XDG workspace state and lock-derived mappings
 
 Mutating (implemented):
 
 - `stitch.commit` — DAG-wide local commit with validation (requires `apply: true`)
 - `stitch.push` — push existing local commits in DAG dependency order (requires `apply: true`)
 - `stitch.sync` — DAG-aware sync: update flake inputs, commit, push (requires `apply: true`)
-- `stitch.update_submodules` — update submodules to remote (requires `apply: true`)
 
 ## Not Yet Implemented
 

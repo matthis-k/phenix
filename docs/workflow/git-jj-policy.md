@@ -13,7 +13,7 @@ permalink: newxos/workflow/git-jj-policy
   state. This is normal and expected.
 - **Git commits** are integration units. Every pushed Git commit must be a valid
   state that passes its scope checks.
-- **Root aggregate commits** must only point to valid submodule commits.
+- **Root aggregate commits** must only point to valid locked flake input revisions.
 
 ## Rules
 

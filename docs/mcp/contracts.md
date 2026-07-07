@@ -63,7 +63,7 @@ Tend uses `.tend.json` files for configuration. See `docs/tend.md` for the full 
 
 ### Stitch Schema
 
-Stitch uses `.stitch.json` files for workspace configuration. See `docs/stitch.md` for the full schema.
+Stitch derives workspace DAGs from root flake inputs/locks and optional XDG local workspace mappings. See `docs/stitch.md` for the current workspace model.
 
 ## Deprecated Endpoints
 

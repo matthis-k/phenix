@@ -60,7 +60,7 @@ Run:
 stitch graph verify \
   --source locks \
   --workspace . \
-  --metadata .stitch/topology.json \
+  --source locks \
   --strict
 ```
 

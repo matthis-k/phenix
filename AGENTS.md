@@ -1,29 +1,33 @@
 # Phenix workspace
 
-This repository is the root Phenix workspace. It aggregates the Phenix subflakes
-as Git submodules under `flakes/**`.
+This repository is the root Phenix workspace and pure flake integration repo. It
+aggregates Phenix subflakes through locked flake inputs, not active Git
+submodules or gitlinks.
 
 Phenix commit terminology and workflow glossary terms are baked into the OpenCode configuration and available in any repository.
 
 Root-level actions are workspace actions. They may inspect, verify, commit, push,
-or synchronize multiple submodules together. Do not treat the root repository as
-an isolated flake.
+or synchronize multiple local repos together through Stitch. Do not treat the
+root repository as an isolated flake.
 
-Root commits may update submodule gitlinks.
+Local mutable repo checkouts live under gitignored `/repos/`. Stitch derives the
+workspace DAG from flake inputs and locks, optionally mapping locked repos to
+local `/repos/` worktrees for developer operations. No Git submodules or gitlinks
+are part of the active final architecture.
 
 Before committing or pushing from the root, verification must account for:
 
 - root files,
-- changed submodule gitlinks,
-- dirty or staged files inside submodules,
+- changed locked flake input revisions,
+- dirty or staged files inside local `/repos/` worktrees,
 - affected downstream DAG nodes,
-- each affected submodule's own verification contract.
+- each affected repo's own verification contract.
 
 Use `tend` for verification and planning. Use `stitch` for coordinated multi-repo
 Git operations. Avoid ad hoc multi-repo Git sequences when an equivalent
 `tend`/`stitch` workflow exists.
 
-Direct work inside a submodule must still pass that submodule's local verification.
+Direct work inside a local workspace repo must still pass that repo's local verification.
 Do not remove verification just because architecture changes; verification should
 target syntax, formatting, linting, compile/eval checks, and behavior-level checks
 rather than brittle file-existence assertions.
@@ -34,10 +38,10 @@ rather than brittle file-existence assertions.
   push, sync). Do not use raw `git commit`/`git push` across repos.
 - Prefer `tend` for verification/planning (plan, run, explain, status). Do not use
   hand-written ad hoc command sequences when `tend`/`stitch` equivalents exist.
-- Before proposing a root commit that touches submodule gitlinks, run
+- Before proposing a root commit that updates locked flake input revisions, run
   `tend plan --mode changed` and/or `tend plan --mode staged` to understand the
   verification scope.
-- When working inside a submodule, operate from that submodule's directory and
+- When working inside a local workspace repo, operate from that repo's directory and
   run its own verification (`tend run` or its shell hooks) before committing.
 - Use `--affected-dag` on `tend check` / `tend run` where available to scope checks to downstream nodes.
   Ensure any verification workflow that can affect multiple DAG nodes passes this
@@ -74,7 +78,7 @@ Architecture is checked twice: as **design admission control** before implementa
 
 ## Workflow prompts and commands
 
-The workflow agent prompts and commands are packaged in the `phenix-agent-harness` submodule wrapper (`flakes/03-integrations/phenix-agent-harness/`). They are available automatically when using the wrapped opencode binary from the Nix dev shell.
+The workflow agent prompts and commands are packaged in the `phenix-agent-harness` wrapper. They are available automatically when using the wrapped opencode binary from the Nix dev shell.
 
 These prompts are generic — they discover project-specific contracts from `AGENTS.md`, `docs/*`, `CLAUDE.md`, or `knowledge/` at runtime rather than hardcoding them.
 

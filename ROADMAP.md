@@ -1,5 +1,14 @@
 # Phenix Roadmap
 
+## Workspace topology migration
+
+- Root flake inputs are remote `github:matthis-k/*` inputs rather than local
+  submodule paths.
+- Stitch owns workspace discovery and DAG scheduling from flake locks plus local
+  XDG workspace state; committed topology and repo-list files are retired.
+- Tend remains the per-repo/profile verifier and is scheduled by Stitch for
+  workspace/DAG operations.
+
 > This project is not alpha yet. Roadmap/backlog are planning tools, not release records.
 
 **Current status**: Pre-alpha tooling groundwork. Creating a clean, reliable base for future NewXOS migration.
@@ -8,7 +17,7 @@
 
 - **jj changes** are editing units. They may be incomplete, experimental, or invalid.
 - **Git commits** are integration units. Every pushed Git commit must pass the relevant scope checks.
-- **Root commits** must only point to valid submodule commits.
+- **Root commits** must only reference valid locked flake input revisions.
 - Do not push "fix previous commit" cleanup commits if avoidable.
 - Use jj amend/squash/evolve before exporting Git commits.
 - Do not rewrite remote history without explicit human confirmation.

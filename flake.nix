@@ -1,20 +1,24 @@
 {
   description = "Phenix workspace superflake aggregating all subflakes";
 
-  # Enable submodule support so path: inputs into submodule dirs work
-  inputs.self.submodules = true;
+  nixConfig = {
+    extra-substituters = [ "https://hyprland.cachix.org" ];
+    extra-trusted-public-keys = [
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+    ];
+  };
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     phenix-pins = {
-      url = ./flakes/00-pins/phenix-pins;
+      url = "github:matthis-k/phenix-pins";
       inputs.flake-parts.follows = "flake-parts";
     };
     nixpkgs.follows = "phenix-pins/nixpkgs";
 
     phenix-packages = {
-      url = ./flakes/04-pkgs/phenix-packages;
+      url = "github:matthis-k/phenix-packages";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -22,14 +26,14 @@
     };
 
     phenix-tend = {
-      url = ./flakes/02-producers/phenix-tend;
+      url = "github:matthis-k/phenix-tend";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
       };
     };
     phenix-stitch = {
-      url = ./flakes/02-producers/phenix-stitch;
+      url = "github:matthis-k/phenix-stitch";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -37,7 +41,7 @@
     };
 
     phenix-nvim = {
-      url = ./flakes/03-integrations/phenix-nvim;
+      url = "github:matthis-k/phenix-nvim";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -45,7 +49,7 @@
     };
 
     phenix-de = {
-      url = ./flakes/05-consumers/phenix-de;
+      url = "github:matthis-k/phenix-de";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -53,7 +57,7 @@
     };
 
     phenix-hosts = {
-      url = ./flakes/05-consumers/phenix-hosts;
+      url = "github:matthis-k/phenix-hosts";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -63,7 +67,7 @@
     };
 
     phenix-agent-harness = {
-      url = ./flakes/03-integrations/phenix-agent-harness;
+      url = "github:matthis-k/phenix-agent-harness";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -73,6 +77,8 @@
     };
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
+
+    hyprland.url = "github:hyprwm/Hyprland";
   };
 
   outputs =
@@ -87,6 +93,16 @@
         ./phenix-wrappers.nix
         ./phenix-re-exports.nix
         ./phenix-helpers.nix
+        (
+          { inputs, lib, ... }:
+          {
+            perSystem =
+              { system, ... }:
+              {
+                packages.phenix-hyprland = lib.mkForce inputs.hyprland.packages.${system}.hyprland;
+              };
+          }
+        )
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
@@ -186,6 +202,7 @@
                   export NIX_PATH=nixpkgs=${pkgs.path}
 
                   ${tendPkg}/bin/tend validate --profiles
+                  ${stitchPkg}/bin/stitch graph verify --workspace . --source locks --strict
                   ${tendPkg}/bin/tend check --profile nix-check --offline --locked
 
                   touch $out

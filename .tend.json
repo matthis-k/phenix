@@ -94,15 +94,15 @@
         "expect": { "status": 0 }
       },
       {
-        "id": "stitch-topology-check",
-        "description": "Validate workspace DAG topology via stitch graph verify",
+        "id": "stitch-locked-graph-check",
+        "description": "Validate locked workspace DAG via stitch graph verify",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
         "sandbox_safe": true,
         "profiles": ["pre-push", "manual"],
-        "tags": ["stitch", "topology", "workspace"],
-        "command": ["bash", "-c", "if command -v stitch >/dev/null 2>&1; then stitch topology check --workspace . --config .stitch/topology.json; elif command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch topology check --workspace . --config .stitch/topology.json; else echo 'Error: stitch unavailable for topology check. Install nix and run nix develop first.' >&2; exit 1; fi"],
+        "tags": ["stitch", "locked-graph", "workspace"],
+        "command": ["bash", "-c", "if command -v stitch >/dev/null 2>&1; then stitch graph verify --workspace . --source locks --strict; elif command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch graph verify --workspace . --source locks --strict; else echo 'Error: stitch unavailable for locked graph check. Install nix and run nix develop first.' >&2; exit 1; fi"],
         "expect": { "status": 0 }
       },
       {
@@ -177,14 +177,14 @@
       },
       {
         "id": "repo-integration-check",
-        "description": "Run full integration status check (topology, status, git-jj-policy conformance)",
+        "description": "Run full integration status check (locked graph, status, git-jj-policy conformance)",
         "phase": "verify",
         "kind": "command",
         "mutates": false,
         "sandbox_safe": true,
         "profiles": ["manual"],
         "tags": ["integration", "workspace"],
-        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command bash -c 'echo \"=== Integration Check ===\" && echo \"1. Topology:\" && stitch topology check --workspace . --config .stitch/topology.json && echo && echo \"2. Status:\" && stitch status && echo && echo \"3. Profile validation:\" && tend validate --profiles && echo && echo \"=== All integration checks passed ===\"; else echo 'Error: nix not available. Run nix develop first.' >&2; exit 1; fi"],
+        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then stitch_flake=.; if [ -d repos/phenix-stitch ]; then stitch_flake=./repos/phenix-stitch; fi; echo '=== Integration Check ===' && echo '1. Locked graph:' && nix develop \"$stitch_flake#default\" --command stitch graph verify --workspace . --source locks --strict && echo && echo '2. Workspace discovery:' && nix develop \"$stitch_flake#default\" --command stitch workspace discover --workspace . --json >/dev/null && echo 'workspace discovery: ok' && echo && echo '3. Profile validation:' && nix develop .#default --command tend validate --profiles && echo && echo '=== All integration checks passed ==='; else echo \"Error: nix not available. Run nix develop first.\" >&2; exit 1; fi"],
         "expect": { "status": 0 }
       },
       {
@@ -196,7 +196,7 @@
         "sandbox_safe": true,
         "profiles": ["git-hook", "pre-push", "manual"],
         "tags": ["docs"],
-        "command": ["bash", "-c", "missing=0; for f in ROADMAP.md docs/workflow/git-jj-policy.md AGENTS.md flake.nix .stitch/topology.json .tend.json; do if [ ! -f \"$f\" ]; then echo \"MISSING: $f\"; missing=1; fi; done; if [ \"$missing\" = 1 ]; then exit 1; else echo 'All required docs present'; fi"],
+        "command": ["bash", "-c", "missing=0; for f in ROADMAP.md docs/workflow/git-jj-policy.md docs/workflow/workspace-state.md AGENTS.md flake.nix flake.lock .tend.json; do if [ ! -f \"$f\" ]; then echo \"MISSING: $f\"; missing=1; fi; done; if [ \"$missing\" = 1 ]; then exit 1; else echo 'All required docs present'; fi"],
         "expect": { "status": 0 }
       },
       {

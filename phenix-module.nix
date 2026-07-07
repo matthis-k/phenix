@@ -52,6 +52,22 @@ in
               inherit value;
             }) (merged.phenix or { }))
             // { };
+
+          apps =
+            let
+              waylandApps = {
+                phenix-wl-copy = "${pkgs.wl-clipboard}/bin/wl-copy";
+                phenix-wl-paste = "${pkgs.wl-clipboard}/bin/wl-paste";
+                phenix-grim = "${pkgs.grim}/bin/grim";
+                phenix-slurp = "${pkgs.slurp}/bin/slurp";
+                phenix-swappy = "${pkgs.swappy}/bin/swappy";
+                phenix-tesseract = "${pkgs.tesseract}/bin/tesseract";
+              };
+            in
+            lib.mapAttrs (_name: program: {
+              type = "app";
+              inherit program;
+            }) waylandApps;
         };
     };
 }
