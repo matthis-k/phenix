@@ -18,8 +18,8 @@
 The current priority. Complete these before any NewXOS migration:
 
 ### Toolchain
-- [ ] Tend task cache — scaffolded only: cache structs and CLI commands exist, but execution is not wired to cache yet and stable content hashing is not implemented.
-- [x] Tend task prerequisites / requires — implemented in model/planner/executor; still needs stronger tests, JSON/human plan reporting, and profile-policy coverage.
+- [x] Tend task cache — implemented: cache structs, CLI commands, execution wiring, and stable content hashing (blake3) all complete; tests cover cache hit/miss, no-cache, failed-task exclusion, and key stability.
+- [x] Tend task prerequisites / requires — implemented: model, planner, executor, and comprehensive tests covering prerequisite chains, cycles, unknown refs, object/bare-string refs, generated-source policy, and profile-filtering edge cases; JSON/human plan reporting and profile-policy coverage still need polish.
 - [ ] Tend generated flake support (adopt flake-file or defer explicitly) — deferred: flake-file API maturity needs evaluation
 - [x] Stitch topology validation (URL match, path existence, layer consistency)
 - [ ] Stitch safe integration status gate — deferred: requires additional Stitch feature work
@@ -35,9 +35,9 @@ The current priority. Complete these before any NewXOS migration:
 
 ### Agent friction cleanup
 - [x] Remove old .opencode/agent definition files (replaced by generated config from agent harness)
-- [ ] Canonicalize permissions classification — partially addressed: operation-class model defined in Nix, generated permission maps improved; semantic permission runtime enforcement still missing
+- [x] Canonicalize permissions classification — operation-class model defined in Nix, generated permission maps improved from typed structure; semantic permission runtime enforcement still missing
 - [ ] MCP-first enforcement — prompt/test-level only; structural verifier/runtime enforcement still missing
-- [ ] Routing mode docs aligned with actual tool support — prompt-level unless runtime support is proven
+- [x] Routing mode docs aligned with actual tool support — prompt-level only, clearly documented as policy/guidance; route command uses template variables
 
 ### Shared devshell helpers
 - [x] Create shared helper module (phenix-helpers.nix)
@@ -73,9 +73,9 @@ Do not start migrating NewXOS feature content during clean-base tasks.
 ## Tend backlog
 
 - [ ] CLI surface stabilization tests
-- [ ] Task cache — scaffolded; execution wiring and stable hashing still needed
+- [x] Task cache — implemented: execution wiring, stable blake3 hashing, cache status/explain CLI commands, and test coverage
 - [x] Task prerequisites / requires — implemented
-- [ ] Requires tests/reporting/profile-policy polish
+- [x] Requires tests — comprehensive; still needs reporting/profile-policy polish
 - [ ] Profile validation enforcement
 - [ ] Generated flake: adopt flake-file or mark experimental
 
