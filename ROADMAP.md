@@ -40,7 +40,7 @@ The current priority. Complete these before any NewXOS migration:
 - [x] Remove old .opencode/agent definition files (replaced by generated config from agent harness)
 - [x] Canonicalize permissions classification — operation-class model defined in Nix, generated permission maps improved from typed structure; semantic permission runtime enforcement still missing
 - [x] MCP-first enforcement — prompt/test-level only, documented as design intent; structural verifier/runtime enforcement still deferred
-- [x] Routing mode docs aligned with actual tool support — prompt-level only, clearly documented as policy/guidance; template variables → advisory markers, reality-check annotations
+- [x] Routing mode runtime state — `phenix-route` persists XDG route state, resolves logical slots deterministically, and the OpenCode wrapper applies the generated overlay at process start; hot switching remains unsupported and requires restart.
 
 ### Shared devshell helpers
 - [x] Create shared helper module (phenix-helpers.nix)

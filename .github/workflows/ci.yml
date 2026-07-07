@@ -44,17 +44,17 @@ jobs:
       - name: Show submodule pins
         run: git submodule status --recursive
 
-      - name: Validate Tend configuration
-        run: nix run .#tend -- validate --profiles
+      - name: Tend profile validation
+        run: nix develop .#default --command tend validate --profiles
 
-      - name: Run Tend checks
-        run: nix run .#tend -- check --profile nix-check --offline --locked
+      - name: Tend root nix-check profile
+        run: nix develop .#default --command tend check --profile nix-check --offline --locked
 
-      - name: Validate Stitch topology
-        run: nix run .#stitch -- dag
+      - name: Stitch topology check
+        run: nix develop .#default --command stitch topology check --workspace . --config .stitch/topology.json
 
-      - name: Run Stitch verification
-        run: nix run .#stitch -- verify --changed --downstream
+      - name: Stitch changed-node dry run
+        run: nix develop .#default --command stitch verify --changed --dry-run --json
 
       - name: Show flake metadata
         run: nix flake metadata --accept-flake-config
