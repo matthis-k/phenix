@@ -26,9 +26,9 @@
     },
     {
       "name": "phenix-nvim",
-      "role": "producer",
-      "layer": 2,
-      "path": "flakes/02-producers/phenix-nvim",
+      "role": "integration",
+      "layer": 3,
+      "path": "flakes/03-integrations/phenix-nvim",
       "url": "git@github.com:matthis-k/phenix-nvim.git"
     },
     {

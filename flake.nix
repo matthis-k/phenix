@@ -25,7 +25,7 @@
     };
 
     phenix-nvim = {
-      url = ./flakes/02-producers/phenix-nvim;
+      url = ./flakes/03-integrations/phenix-nvim;
       inputs.phenix-pins.follows = "phenix-pins";
     };
 

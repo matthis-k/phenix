@@ -32,7 +32,7 @@
     },
     {
       "name": "phenix-nvim",
-      "path": "flakes/02-producers/phenix-nvim"
+      "path": "flakes/03-integrations/phenix-nvim"
     },
     {
       "name": "phenix-agent-harness",

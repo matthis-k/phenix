@@ -4,9 +4,6 @@
 [submodule "phenix-packages"]
 	path = flakes/04-pkgs/phenix-packages
 	url = git@github.com:matthis-k/phenix-packages.git
-[submodule "phenix-nvim"]
-	path = flakes/02-producers/phenix-nvim
-	url = git@github.com:matthis-k/phenix-nvim.git
 [submodule "phenix-hosts"]
 	path = flakes/05-consumers/phenix-hosts
 	url = git@github.com:matthis-k/phenix-hosts.git
@@ -22,3 +19,6 @@
 [submodule "phenix-agent-harness"]
 	path = flakes/03-integrations/phenix-agent-harness
 	url = git@github.com:matthis-k/phenix-agent-harness.git
+[submodule "phenix-nvim"]
+	path = flakes/03-integrations/phenix-nvim
+	url = git@github.com:matthis-k/phenix-nvim.git

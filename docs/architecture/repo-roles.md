@@ -15,7 +15,7 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 | `phenix-pins` | pins | 0 | external only |
 | `phenix-tend` | producer | 2 | pins |
 | `phenix-stitch` | producer | 2 | pins |
-| `phenix-nvim` | producer | 2 | pins, lib, protocols, pkgs-base |
+| `phenix-nvim` | integration | 3 | pins, producers |
 | `phenix-agent-harness` | integration | 3 | pins, producers |
 | `phenix-packages` | pkgs-aggregator | 4 | pins, pkgs-base, producers, integrations |
 | `phenix-de` | consumer | 5 | pins, pkgs, integrations, selected producers |
@@ -34,9 +34,9 @@ flakes/
   02-producers/      layer 2 — package producers
     phenix-tend/
     phenix-stitch/
-    phenix-nvim/
   03-integrations/   layer 3 — cross-producer wiring
     phenix-agent-harness/
+    phenix-nvim/
   04-pkgs/           layer 4 — aggregated package set
     phenix-packages/
   05-consumers/      layer 5 — config and composition flakes
