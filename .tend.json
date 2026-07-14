@@ -12,7 +12,9 @@
         "docs-presence-check",
         "git-jj-policy-check"
       ],
-      "contexts": ["local"]
+      "contexts": [
+        "local"
+      ]
     },
     "pre-push": {
       "phase": "verify",
@@ -27,9 +29,12 @@
         "docs-presence-check",
         "git-jj-policy-check",
         "stitch-locked-graph-check",
-        "nix-flake-check"
+        "nix-flake-check",
+        "nixos-toplevel-eval"
       ],
-      "contexts": ["local"]
+      "contexts": [
+        "local"
+      ]
     },
     "manual": {
       "phase": "verify",
@@ -44,9 +49,12 @@
         "docs-presence-check",
         "git-jj-policy-check",
         "stitch-locked-graph-check",
-        "nix-flake-check"
+        "nix-flake-check",
+        "nixos-toplevel-eval"
       ],
-      "contexts": ["local"]
+      "contexts": [
+        "local"
+      ]
     },
     "ci": {
       "phase": "verify",
@@ -61,9 +69,12 @@
         "docs-presence-check",
         "git-jj-policy-check",
         "stitch-locked-graph-check",
-        "nix-flake-check"
+        "nix-flake-check",
+        "nixos-toplevel-eval"
       ],
-      "contexts": ["ci"]
+      "contexts": [
+        "ci"
+      ]
     },
     "nix-check": {
       "phase": "verify",
@@ -77,19 +88,31 @@
         "git-jj-policy-check",
         "stitch-locked-graph-check"
       ],
-      "contexts": ["nix-sandbox"]
+      "contexts": [
+        "nix-sandbox"
+      ]
     },
     "fix": {
       "phase": "fix",
       "selection": "staged",
-      "tasks": ["nixfmt-fix", "statix-fix"],
-      "contexts": ["local"]
+      "tasks": [
+        "nixfmt-fix",
+        "statix-fix"
+      ],
+      "contexts": [
+        "local"
+      ]
     },
     "setup": {
       "phase": "setup",
       "selection": "full",
-      "tasks": ["hooks-plan", "hooks-install"],
-      "contexts": ["local"]
+      "tasks": [
+        "hooks-plan",
+        "hooks-install"
+      ],
+      "contexts": [
+        "local"
+      ]
     }
   },
   "contexts": {
@@ -125,13 +148,18 @@
         "phase": "verify",
         "when": {
           "changed": {
-            "paths": ["*.nix"]
+            "paths": [
+              "*.nix"
+            ]
           }
         },
         "implementations": {
           "default": {
             "kind": "command",
-            "command": ["nixfmt", "--check"],
+            "command": [
+              "nixfmt",
+              "--check"
+            ],
             "file_args": "matched",
             "sandbox_safe": true
           }
@@ -143,13 +171,20 @@
         "phase": "verify",
         "when": {
           "changed": {
-            "paths": ["*.nix"]
+            "paths": [
+              "*.nix"
+            ]
           }
         },
         "implementations": {
           "default": {
             "kind": "command",
-            "command": ["statix", "check", "--ignore", ".git/**"],
+            "command": [
+              "statix",
+              "check",
+              "--ignore",
+              ".git/**"
+            ],
             "sandbox_safe": true
           }
         }
@@ -160,7 +195,9 @@
         "phase": "verify",
         "when": {
           "changed": {
-            "paths": ["*.nix"]
+            "paths": [
+              "*.nix"
+            ]
           }
         },
         "implementations": {
@@ -182,7 +219,10 @@
         "phase": "verify",
         "when": {
           "changed": {
-            "paths": ["*.json", "**/*.json"]
+            "paths": [
+              "*.json",
+              "**/*.json"
+            ]
           }
         },
         "implementations": {
@@ -205,7 +245,9 @@
         "phase": "verify",
         "when": {
           "changed": {
-            "paths": ["**/*.qml"]
+            "paths": [
+              "**/*.qml"
+            ]
           }
         },
         "implementations": {
@@ -228,7 +270,9 @@
         "phase": "verify",
         "when": {
           "changed": {
-            "paths": ["**/*.lua"]
+            "paths": [
+              "**/*.lua"
+            ]
           }
         },
         "implementations": {
@@ -270,7 +314,11 @@
         "implementations": {
           "default": {
             "kind": "command",
-            "command": ["test", "-f", "docs/workflow/git-jj-policy.md"],
+            "command": [
+              "test",
+              "-f",
+              "docs/workflow/git-jj-policy.md"
+            ],
             "sandbox_safe": true
           }
         }
@@ -319,18 +367,40 @@
         }
       },
       {
+        "id": "nixos-toplevel-eval",
+        "description": "Force both aggregate NixOS toplevel derivations without Home Manager package-set warnings",
+        "phase": "verify",
+        "always": true,
+        "implementations": {
+          "local": {
+            "kind": "command",
+            "command": [
+              "bash",
+              "-c",
+              "set -euo pipefail; for host in matthisk-laptop-phenix matthisk-desktop-phenix; do log=\"$(mktemp)\"; if ! nix eval --raw \".#nixosConfigurations.${host}.config.system.build.toplevel.drvPath\" >/dev/null 2>\"$log\"; then cat \"$log\"; exit 1; fi; cat \"$log\"; if grep -Fq \"home-manager.useGlobalPkgs\" \"$log\"; then echo \"Home Manager global package-set warning returned for $host\" >&2; exit 1; fi; rm -f \"$log\"; done"
+            ],
+            "network": true,
+            "sandbox_safe": false
+          }
+        }
+      },
+      {
         "id": "nixfmt-fix",
         "description": "Format changed root Nix files",
         "phase": "fix",
         "when": {
           "changed": {
-            "paths": ["*.nix"]
+            "paths": [
+              "*.nix"
+            ]
           }
         },
         "implementations": {
           "default": {
             "kind": "command",
-            "command": ["nixfmt"],
+            "command": [
+              "nixfmt"
+            ],
             "file_args": "matched",
             "mutates": true
           }
@@ -342,13 +412,18 @@
         "phase": "fix",
         "when": {
           "changed": {
-            "paths": ["*.nix"]
+            "paths": [
+              "*.nix"
+            ]
           }
         },
         "implementations": {
           "default": {
             "kind": "command",
-            "command": ["statix", "fix"],
+            "command": [
+              "statix",
+              "fix"
+            ],
             "mutates": true
           }
         }
@@ -361,7 +436,12 @@
         "implementations": {
           "local": {
             "kind": "command",
-            "command": ["stitch", "hooks", "plan", "--all"],
+            "command": [
+              "stitch",
+              "hooks",
+              "plan",
+              "--all"
+            ],
             "sandbox_safe": true
           }
         }
@@ -374,7 +454,12 @@
         "implementations": {
           "local": {
             "kind": "command",
-            "command": ["stitch", "hooks", "install", "--all"],
+            "command": [
+              "stitch",
+              "hooks",
+              "install",
+              "--all"
+            ],
             "mutates": true,
             "sandbox_safe": false
           }
