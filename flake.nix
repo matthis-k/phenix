@@ -9,7 +9,10 @@
   };
 
   inputs = {
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
 
     phenix-pins = {
       url = "github:matthis-k/phenix-pins";
@@ -32,6 +35,7 @@
         flake-parts.follows = "flake-parts";
       };
     };
+
     phenix-stitch = {
       url = "github:matthis-k/phenix-stitch";
       inputs = {
@@ -44,6 +48,7 @@
       url = "github:matthis-k/phenix-nvim";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
       };
     };
@@ -52,6 +57,7 @@
       url = "github:matthis-k/phenix-de";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
       };
     };
@@ -60,6 +66,7 @@
       url = "github:matthis-k/phenix-hosts";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
         home-manager.follows = "phenix-pins/home-manager";
         sops-nix.follows = "phenix-pins/sops-nix";
@@ -70,15 +77,15 @@
       url = "github:matthis-k/phenix-agent-harness";
       inputs = {
         phenix-pins.follows = "phenix-pins";
-        flake-parts.follows = "flake-parts";
         phenix-tend.follows = "phenix-tend";
         phenix-stitch.follows = "phenix-stitch";
       };
     };
 
-    git-hooks-nix.url = "github:cachix/git-hooks.nix";
-
-    hyprland.url = "github:hyprwm/Hyprland";
+    git-hooks-nix = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -88,25 +95,15 @@
         "x86_64-linux"
         "aarch64-linux"
       ];
+
       imports = [
         ./phenix-module.nix
         ./phenix-wrappers.nix
         ./phenix-re-exports.nix
         ./phenix-helpers.nix
-        (
-          { inputs, lib, ... }:
-          {
-            perSystem =
-              { system, ... }:
-              {
-                packages.phenix-hyprland = lib.mkForce inputs.hyprland.packages.${system}.hyprland;
-              };
-          }
-        )
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
-        inputs.phenix-hosts.flakeModules.default
         inputs.phenix-tend.flakeModules.default
         inputs.phenix-stitch.flakeModules.default
         inputs.phenix-agent-harness.flakeModules.default
@@ -124,6 +121,7 @@
         let
           tendPkg = inputs.phenix-tend.packages.${system}.tend;
           stitchPkg = inputs.phenix-stitch.packages.${system}.stitch;
+          piPkg = inputs.phenix-agent-harness.packages.${system}.pi;
           rustToolchain = [
             pkgs.cargo
             pkgs.rustc
@@ -136,10 +134,7 @@
             inherit tendPkg stitchPkg;
           };
 
-          packages.opencode =
-            inputs.phenix-agent-harness.packages.${system}.opencode
-              or inputs.phenix-agent-harness.packages.${system}.default;
-          packages.pi = inputs.phenix-agent-harness.packages.${system}.pi;
+          packages.pi = piPkg;
 
           apps = {
             tend = inputs.phenix-tend.apps.${system}.tend;
@@ -150,68 +145,66 @@
           pre-commit = {
             check.enable = false;
 
-            settings = {
-              hooks = {
-                tend-pre-commit = {
-                  enable = true;
-                  name = "tend pre-commit";
-                  description = "Run fast Tend checks on staged changes (inside Nix dev shell)";
-                  entry = "nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --staged --affected-dag";
-                  pass_filenames = false;
-                  always_run = true;
-                  stages = [ "pre-commit" ];
-                };
+            settings.hooks = {
+              tend-pre-commit = {
+                enable = true;
+                name = "tend pre-commit";
+                description = "Run the staged root checks through Tend";
+                entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile git-hook --context local";
+                pass_filenames = false;
+                always_run = true;
+                stages = [ "pre-commit" ];
+              };
 
-                tend-pre-push = {
-                  enable = true;
-                  name = "tend pre-push";
-                  description = "Run medium Tend checks with affected-DAG before push (inside Nix dev shell)";
-                  entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push --affected-dag";
-                  pass_filenames = false;
-                  always_run = true;
-                  stages = [ "pre-push" ];
-                };
+              tend-pre-push = {
+                enable = true;
+                name = "tend pre-push";
+                description = "Run the complete root pre-push gate through Tend";
+                entry = "${pkgs.nix}/bin/nix develop .#default --command ${tendPkg}/bin/tend check --profile pre-push --context local";
+                pass_filenames = false;
+                always_run = true;
+                stages = [ "pre-push" ];
               };
             };
           };
 
-          checks = {
-            tend-nix-check =
-              pkgs.runCommand "tend-nix-check"
-                {
-                  nativeBuildInputs = [
-                    tendPkg
-                    pkgs.git
-                    pkgs.jq
-                    pkgs.nix
-                    pkgs.nixfmt
-                    pkgs.statix
-                    pkgs.deadnix
-                  ]
-                  ++ rustToolchain;
-                }
-                ''
-                  cp -r ${lib.cleanSource ./.} source
-                  chmod -R u+w source
-                  cd source
+          checks.tend-nix-check =
+            pkgs.runCommand "tend-nix-check"
+              {
+                nativeBuildInputs = [
+                  tendPkg
+                  stitchPkg
+                  pkgs.git
+                  pkgs.jq
+                  pkgs.nix
+                  pkgs.nixfmt
+                  pkgs.statix
+                  pkgs.deadnix
+                ]
+                ++ rustToolchain;
+              }
+              ''
+                cp -r ${lib.cleanSource ./.} source
+                chmod -R u+w source
+                cd source
 
-                  export HOME=$TMPDIR/home
-                  mkdir -p $HOME
-                  export NIX_STATE_DIR=$TMPDIR/nix-state
-                  mkdir -p $NIX_STATE_DIR/profiles
-                  export NIX_PATH=nixpkgs=${pkgs.path}
+                export HOME=$TMPDIR/home
+                mkdir -p "$HOME"
+                export NIX_STATE_DIR=$TMPDIR/nix-state
+                mkdir -p "$NIX_STATE_DIR/profiles"
+                export NIX_PATH=nixpkgs=${pkgs.path}
 
-                  ${tendPkg}/bin/tend validate --profiles
-                  ${stitchPkg}/bin/stitch graph verify --workspace . --source locks --strict
-                  ${tendPkg}/bin/tend check --profile nix-check --offline --locked
+                git init --quiet
+                git add -A
 
-                  touch $out
-                '';
-          };
+                ${stitchPkg}/bin/stitch graph verify --workspace . --source locks --strict
+                ${tendPkg}/bin/tend check --profile git-hook --context local
+
+                touch "$out"
+              '';
 
           devShells.test = pkgs.mkShell {
             name = "phenix-test";
-
             packages =
               with pkgs;
               [
@@ -226,9 +219,7 @@
           };
 
           devShells.default = pkgs.mkShell {
-            inputsFrom = [
-              config.pre-commit.devShell
-            ];
+            inputsFrom = [ config.pre-commit.devShell ];
 
             packages =
               with pkgs;
@@ -241,8 +232,7 @@
                 statix
                 deadnix
                 nixfmt
-                inputs.phenix-agent-harness.packages.${system}.opencode
-                inputs.phenix-agent-harness.packages.${system}.pi
+                piPkg
                 tendPkg
                 stitchPkg
               ]
@@ -250,7 +240,6 @@
 
             shellHook = ''
               ${config.pre-commit.installationScript}
-
               ${config.phenix.shellHook}
             '';
           };
