@@ -29,9 +29,8 @@ The Pi package can also be invoked directly from the host development environmen
 - Nix owns package, runtime dependency, and configuration assembly.
 - TypeScript owns routing, state transitions, output verification, and permissions.
 
-Provider identifiers such as `opencode-go` may remain in routing configuration when
-they identify a model backend consumed by Pi. They do not imply use of the retired
-OpenCode agent application.
+Provider identifiers may remain in routing configuration when they identify model
+backends consumed by Pi. They do not represent separate agent applications.
 
 ## Configuration rules
 
