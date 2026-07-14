@@ -1,0 +1,42 @@
+name: Update identity lock
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - rename/phenix-identity-audit
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          ref: rename/phenix-identity-audit
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+      - name: Update renamed aggregate graph
+        run: nix flake update --accept-flake-config
+      - name: Commit generated lock through GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          current_sha="$(gh api 'repos/${{ github.repository }}/contents/flake.lock?ref=rename/phenix-identity-audit' --jq .sha)"
+          content="$(base64 -w0 flake.lock)"
+          gh api --method PUT 'repos/${{ github.repository }}/contents/flake.lock' \
+            -f message='chore: update renamed aggregate lock graph' \
+            -f content="$content" \
+            -f sha="$current_sha" \
+            -f branch='rename/phenix-identity-audit'
