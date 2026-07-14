@@ -198,7 +198,7 @@
                 git add -A
 
                 ${stitchPkg}/bin/stitch graph verify --workspace . --source locks --strict
-                ${tendPkg}/bin/tend check --profile nix-check --context nix-sandbox
+                ${tendPkg}/bin/tend check --profile git-hook --context local
 
                 touch "$out"
               '';
