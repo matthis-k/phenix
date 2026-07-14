@@ -1,7 +1,7 @@
 ---
 title: agent-workflow
 type: note
-permalink: newxos/agent-workflow
+permalink: phenix/agent-workflow
 ---
 
 # Agent Workflow

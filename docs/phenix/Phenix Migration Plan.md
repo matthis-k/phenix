@@ -1,7 +1,7 @@
 ---
 title: Phenix Migration Plan (Archived)
 type: note
-permalink: newxos/phenix/phenix-migration-plan
+permalink: phenix/phenix/phenix-migration-plan
 archive: true
 ---
 

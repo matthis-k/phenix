@@ -1,7 +1,7 @@
 ---
 title: agent-commit-flow
 type: note
-permalink: newxos/agent-commit-flow
+permalink: phenix/agent-commit-flow
 ---
 
 # Agent Commit Flow

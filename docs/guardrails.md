@@ -1,7 +1,7 @@
 ---
 title: guardrails
 type: note
-permalink: newxos/guardrails
+permalink: phenix/guardrails
 ---
 
 # Phenix Guardrails
@@ -37,7 +37,7 @@ Expected workspace layout:
   phenix-hosts/      # actual host definitions
   phenix-de/         # desktop environment (phenix-shell, phenix-apps, and DE composition)
   phenix-pins/       # pin/input policy, if kept separate
-  newxos/            # old source repo used only for migration reference
+  legacy monolith/            # old source repo used only for migration reference
 ```
 
 ## Root repo rule
@@ -47,7 +47,7 @@ The root `phenixos` repo is orchestration-only.
 It may contain:
 
 * workspace docs
-* repo-local OpenCode config
+* repo-local Pi config
 * superflake composition
 * dev-shell entrypoints
 * high-level checks
@@ -123,7 +123,7 @@ module option
 
 ## Migration rule
 
-Migrations from `newxos` must happen in small vertical slices.
+Migrations from the legacy monolith must happen in small vertical slices.
 
 A vertical slice is:
 
@@ -141,7 +141,7 @@ Do not do big-bang migrations.
 Bad:
 
 ```text
-Migrate all desktop config from newxos.
+Migrate all desktop config from legacy monolith.
 ```
 
 Good:
@@ -158,7 +158,7 @@ Create the package wrapper first. Add module options later.
 
 ## Compatibility rule
 
-Do not preserve `newxos` compatibility unless explicitly required.
+Do not preserve the legacy monolith compatibility unless explicitly required.
 
 Phenix is allowed to be a clean break.
 
@@ -217,7 +217,7 @@ After editing, check:
 * [ ] Wrapper-first model was preserved where relevant
 * [ ] No feature implementation landed in the wrong repo
 * [ ] No hidden `~/.config` sprawl was introduced
-* [ ] No `newxos` compatibility layer was added
+* [ ] No the legacy monolith compatibility layer was added
 * [ ] Docs still describe the intended workflow
 * [ ] Roadmap tracks unfinished work
 * [ ] Gates/checks cover the important behavior

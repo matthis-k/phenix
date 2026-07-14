@@ -1,7 +1,7 @@
 ---
 title: stitch
 type: note
-permalink: newxos/stitch
+permalink: phenix/stitch
 ---
 
 # stitch — Multi-Repo Git Coordination Tool

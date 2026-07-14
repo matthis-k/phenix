@@ -1,7 +1,7 @@
 ---
 title: mcp-contracts
 type: note
-permalink: newxos/mcp-contracts
+permalink: phenix/mcp-contracts
 ---
 
 # MCP Contracts

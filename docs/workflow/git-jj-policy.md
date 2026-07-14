@@ -1,7 +1,7 @@
 ---
 title: git-jj-policy
 type: note
-permalink: newxos/workflow/git-jj-policy
+permalink: phenix/workflow/git-jj-policy
 ---
 
 # Git / jj workflow policy

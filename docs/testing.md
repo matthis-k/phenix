@@ -1,7 +1,7 @@
 ---
 title: testing
 type: note
-permalink: newxos/testing
+permalink: phenix/testing
 ---
 
 # Phenix Testing and Gates
@@ -255,7 +255,7 @@ tasks:
 The first gate set should cover simple presence or static checks only, unless deeper checks are already passable:
 
 * docs presence
-* OpenCode config presence
+* Pi config presence
 * Nix formatting if already passable
 * Nix static analysis if already passable
 * flake check if already passable

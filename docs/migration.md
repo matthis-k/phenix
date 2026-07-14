@@ -1,7 +1,7 @@
 ---
 title: migration
 type: note
-permalink: newxos/migration-1
+permalink: phenix/migration-1
 ---
 
 # Phenix Migration Workflow
@@ -10,17 +10,17 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 
 ## Purpose
 
-Migration from `newxos` should happen only after guardrails, OpenCode workflow, and gate tooling exist.
+Migration from the legacy monolith should happen only after guardrails, Pi workflow, and gate tooling exist.
 
 The migration should be deliberate, vertical, and checked.
 
 ## Migration is not part of the foundation pass
 
-The foundation pass may inspect `newxos`, but must not port actual features.
+The foundation pass may inspect the legacy monolith, but must not port actual features.
 
 No real migration should happen until:
 
-- OpenCode workflow exists
+- Pi workflow exists
 - docs exist
 - guardrails exist
 - gate runner exists or is deliberately scaffolded
@@ -64,7 +64,7 @@ Avoid starting with:
 
 Each migration task must use:
 
-1. Inspect source in `newxos`
+1. Inspect source in the legacy monolith
 2. Inspect target Phenix repo
 3. Decide ownership
 4. Write change contract
@@ -102,7 +102,7 @@ Home Manager/NixOS modules may configure wrappers, but the wrapper should remain
 
 ## Do not copy debt
 
-Do not copy `newxos` structure blindly.
+Do not copy the legacy monolith structure blindly.
 
 For every migrated file, ask:
 
