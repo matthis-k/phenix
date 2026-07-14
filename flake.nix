@@ -20,11 +20,18 @@
     };
     nixpkgs.follows = "phenix-pins/nixpkgs";
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     phenix-packages = {
       url = "github:matthis-k/phenix-packages";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -33,6 +40,7 @@
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -40,7 +48,9 @@
       url = "github:matthis-k/phenix-stitch";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -50,6 +60,7 @@
         phenix-pins.follows = "phenix-pins";
         phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -59,15 +70,8 @@
         phenix-pins.follows = "phenix-pins";
         phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
-      };
-    };
-
-    phenix-agent-harness = {
-      url = "github:matthis-k/phenix-agent-harness";
-      inputs = {
-        phenix-pins.follows = "phenix-pins";
-        phenix-tend.follows = "phenix-tend";
-        phenix-stitch.follows = "phenix-stitch";
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "phenix-pins/home-manager";
       };
     };
 
@@ -77,11 +81,23 @@
         phenix-pins.follows = "phenix-pins";
         phenix-tend.follows = "phenix-tend";
         flake-parts.follows = "flake-parts";
+        nixpkgs.follows = "nixpkgs";
         home-manager.follows = "phenix-pins/home-manager";
         sops-nix.follows = "phenix-pins/sops-nix";
+        disko.follows = "disko";
         phenix-de.follows = "phenix-de";
         phenix-nvim.follows = "phenix-nvim";
         phenix-agent-harness.follows = "phenix-agent-harness";
+      };
+    };
+
+    phenix-agent-harness = {
+      url = "github:matthis-k/phenix-agent-harness";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        phenix-tend.follows = "phenix-tend";
+        phenix-stitch.follows = "phenix-stitch";
+        nixpkgs.follows = "nixpkgs";
       };
     };
 
@@ -142,6 +158,7 @@
           apps = {
             tend = inputs.phenix-tend.apps.${system}.tend;
             stitch = inputs.phenix-stitch.apps.${system}.stitch;
+            phenix-shell = inputs.phenix-de.apps.${system}.phenix-shell;
             default = inputs.phenix-stitch.apps.${system}.stitch;
           };
 
