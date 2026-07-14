@@ -23,8 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir repos
-          cp -a . repos/phenix
-          rm -rf repos/phenix/repos
+          git clone --depth=1 --branch rename/phenix-identity-audit \
+            https://github.com/matthis-k/phenix.git repos/phenix
           for repo in phenix-de phenix-nvim phenix-agent-harness phenix-packages phenix-pins phenix-tend phenix-stitch; do
             git clone --depth=1 "https://github.com/matthis-k/$repo.git" "repos/$repo"
           done
