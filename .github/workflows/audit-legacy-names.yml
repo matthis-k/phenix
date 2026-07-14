@@ -1,0 +1,62 @@
+name: Audit legacy names
+
+on:
+  push:
+    branches:
+      - rename/phenix-identity-audit
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out audit repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Clone active Phenix repositories
+        run: |
+          set -euo pipefail
+          mkdir repos
+          for repo in \
+            phenix \
+            phenix-hosts \
+            phenix-de \
+            phenix-nvim \
+            phenix-agent-harness \
+            phenix-packages \
+            phenix-pins \
+            phenix-tend \
+            phenix-stitch
+          do
+            if [ "$repo" = phenix ]; then
+              cp -a . "repos/$repo"
+              rm -rf "repos/$repo/repos"
+            elif [ "$repo" = phenix-hosts ]; then
+              git clone --depth=1 --branch cleanup/den-flake-structure "https://github.com/matthis-k/$repo.git" "repos/$repo"
+            else
+              git clone --depth=1 "https://github.com/matthis-k/$repo.git" "repos/$repo"
+            fi
+          done
+      - name: Audit paths and content
+        run: |
+          set -euo pipefail
+          : > legacy-names.txt
+          for repo in repos/*; do
+            echo "===== ${repo#repos/}: matching paths =====" >> legacy-names.txt
+            find "$repo" -path '*/.git' -prune -o \
+              \( -iname '*newxos*' -o -iname '*newshell*' -o -iname '*opencode*' \) \
+              -print | sed "s#^$repo/##" | sort >> legacy-names.txt || true
+            echo >> legacy-names.txt
+            echo "===== ${repo#repos/}: matching content =====" >> legacy-names.txt
+            rg -n -i --hidden --glob '!.git/**' --glob '!flake.lock' \
+              'newxos|newshell|opencode' "$repo" >> legacy-names.txt || true
+            echo >> legacy-names.txt
+          done
+          cat legacy-names.txt
+      - name: Upload audit
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
+        with:
+          name: legacy-name-audit
+          path: legacy-names.txt
+          if-no-files-found: error
