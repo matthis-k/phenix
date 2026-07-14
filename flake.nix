@@ -104,7 +104,6 @@
         inputs.phenix-packages.flakeModules.default
         inputs.phenix-de.flakeModules.default
         inputs.phenix-nvim.flakeModules.default
-        inputs.phenix-hosts.flakeModules.default
         inputs.phenix-tend.flakeModules.default
         inputs.phenix-stitch.flakeModules.default
         inputs.phenix-agent-harness.flakeModules.default
