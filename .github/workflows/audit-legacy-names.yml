@@ -1,4 +1,4 @@
-name: Audit legacy names
+name: Audit Phenix identity
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Check out audit repository
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-      - name: Clone active Phenix repositories
+      - name: Clone proposed aggregate repositories
         run: |
           set -euo pipefail
           mkdir repos
@@ -39,27 +39,39 @@ jobs:
               git clone --depth=1 "https://github.com/matthis-k/$repo.git" "repos/$repo"
             fi
           done
-      - name: Audit paths and content
+      - name: Reject predecessor and retired shell names
         run: |
           set -euo pipefail
-          : > legacy-names.txt
+          : > identity-violations.txt
+
+          while IFS= read -r path; do
+            case "$path" in
+              */.git/*|*/.github/workflows/*) continue ;;
+            esac
+            printf 'legacy path: %s\n' "$path" >> identity-violations.txt
+          done < <(
+            find repos -path '*/.git' -prune -o \
+              \( -iname '*newxos*' -o -iname '*newshell*' \) -print
+          )
+
+          grep -RInEi \
+            --exclude='flake.lock' \
+            --exclude-dir='.git' \
+            --exclude-dir='.github' \
+            'newxos|newshell' repos >> identity-violations.txt || true
+
           for repo in repos/*; do
-            echo "===== ${repo#repos/}: matching paths =====" >> legacy-names.txt
-            find "$repo" -path '*/.git' -prune -o \
-              \( -iname '*newxos*' -o -iname '*newshell*' -o -iname '*opencode*' \) \
-              -print | sed "s#^$repo/##" | sort >> legacy-names.txt || true
-            echo >> legacy-names.txt
-            echo "===== ${repo#repos/}: matching content =====" >> legacy-names.txt
+            [ "${repo##*/}" = phenix-agent-harness ] && continue
             grep -RInEi \
               --exclude='flake.lock' \
               --exclude-dir='.git' \
-              'newxos|newshell|opencode' "$repo" >> legacy-names.txt || true
-            echo >> legacy-names.txt
+              --exclude-dir='.github' \
+              'opencode' "$repo" >> identity-violations.txt || true
           done
-          cat legacy-names.txt
-      - name: Upload audit
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
-        with:
-          name: legacy-name-audit
-          path: legacy-names.txt
-          if-no-files-found: error
+
+          if [ -s identity-violations.txt ]; then
+            cat identity-violations.txt
+            exit 1
+          fi
+
+          echo "All active repositories use Phenix names; provider identifiers remain isolated to the Pi harness."
