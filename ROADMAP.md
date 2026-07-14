@@ -1,108 +1,109 @@
 # Phenix Roadmap
 
-## Workspace topology migration
+## Current status
 
-- Root flake inputs are remote `github:matthis-k/*` inputs rather than local
-  submodule paths.
-- Stitch owns workspace discovery and DAG scheduling from flake locks plus local
-  XDG workspace state; committed topology and repo-list files are retired.
-- Tend remains the per-repo/profile verifier and is scheduled by Stitch for
-  workspace/DAG operations.
+Phenix now has a complete **configuration migration baseline** for the two existing
+NewXOS workstations. The root flake aggregates remote, locked Phenix repositories
+and re-exports both concrete NixOS configurations.
 
-> This project is not alpha yet. Roadmap/backlog are planning tools, not release records.
+This is not yet a release declaration. Evaluation and CI parity are established;
+real-hardware activation, rollback, and behavioral acceptance remain before the old
+`newxos` repository can be archived.
 
-**Current status**: Pre-alpha tooling groundwork. Creating a clean, reliable base for future NewXOS migration.
+## Workspace model
 
-## jj/Git policy
+- The root `phenix` repository is a pure integration superflake.
+- Feature implementation belongs in the owning repository:
+  - `phenix-de` — desktop packages and NixOS/Home Manager desktop modules
+  - `phenix-hosts` — concrete systems, hardware, storage, users, secrets, and host services
+  - `phenix-nvim` — wrapped Neovim package and configuration
+  - `phenix-agent-harness` — Pi coding-agent runtime and configuration
+  - `phenix-packages` — shared development packages and Home Manager package modules
+  - `phenix-tend` — deterministic repository verification
+  - `phenix-stitch` — multi-repository graph and Git coordination
+- Root inputs are remote `github:matthis-k/*` flakes. The root `flake.lock` is the
+  authoritative aggregate revision set.
+- Child inputs follow the corresponding root inputs wherever they represent the same
+  dependency. This prevents the aggregate from validating a different dependency graph
+  than the individual repositories.
 
-- **jj changes** are editing units. They may be incomplete, experimental, or invalid.
-- **Git commits** are integration units. Every pushed Git commit must pass the relevant scope checks.
-- **Root commits** must only reference valid locked flake input revisions.
-- Do not push "fix previous commit" cleanup commits if avoidable.
-- Use jj amend/squash/evolve before exporting Git commits.
-- Do not rewrite remote history without explicit human confirmation.
+## Completed migration baseline
 
-## Clean-base milestone (in progress)
+### Desktop
 
-The current priority. Complete these before any NewXOS migration:
+- [x] Hyprland Lua configuration and keymap engine
+- [x] Quickshell desktop source and user service
+- [x] Kitty, Fish, Starship, Stylix/Catppuccin, and Zen Browser configuration
+- [x] Wayland screenshot, annotation, clipboard, and OCR utilities
+- [x] Aggregate and individually reusable NixOS/Home Manager desktop modules
+- [x] Desktop package, module, and keymap checks
 
-### Toolchain
-- [x] Tend task cache — implemented: cache structs, CLI commands, execution wiring, and stable content hashing (blake3) all complete; tests cover cache hit/miss, no-cache, failed-task exclusion, and key stability.
-- [x] Tend task prerequisites / requires — implemented: model, planner, executor, and comprehensive tests covering prerequisite chains, cycles, unknown refs, object/bare-string refs, generated-source policy, and profile-filtering edge cases; JSON/human plan reporting and profile-policy coverage still need polish.
-- [ ] Tend generated flake support (adopt flake-file or defer explicitly) — deferred: flake-file API maturity needs evaluation
-- [x] Stitch topology validation (URL match, path existence, layer consistency)
-- [x] Stitch safe integration status gate — validation_commands, status --integration, --no-verify flag
-- [x] CI pipeline: explicit tend/stitch verification steps (config validation, nix-check, topology validation, downstream verify)
-- [x] Topology URLs normalized to SSH
-- [x] agent-harness URL corrected (phenix-opencode → phenix-agent-harness)
+### Hosts
 
-### Root aggregate cleanup
-- [x] Remove mkForce-based module re-exports
-- [x] Composable export style established
-- [x] Clean phenix-wrappers.nix (made useful — exposes tend, stitch, opencode, pi as config.phenixWrapped)
-- [x] Delete legacy tend-shell.nix
-- [x] Fix .gitignore for .stitch/ (only ignore cache, not topology.json)
-- [x] Lockfile dedup: flake-parts 18→10, nixpkgs-lib 18→10 via follows
-- [x] Dead code removal: CacheDefaultMode enum and default_mode field from tend cache.rs
+- [x] `matthisk-laptop-newxos` NixOS configuration
+- [x] `matthisk-desktop-newxos` NixOS configuration
+- [x] Hardware, kernel, boot loader, Plymouth, and resume configuration
+- [x] Encrypted LUKS/LVM/Disko storage layouts
+- [x] Home Manager, user, SSH, Git/GitHub, SOPS, locale, audio, and sudo configuration
+- [x] Bluetooth, NetworkManager, Avahi, LocalSend, and NordVPN configuration
+- [x] Desktop Ollama, Open WebUI, Caddy, and Kokoro TTS services
+- [x] Neovim and Pi harness installation through their owning flakes
+- [x] Both concrete systems evaluate in repository CI
 
-### Agent friction cleanup
-- [x] Remove old .opencode/agent definition files (replaced by generated config from agent harness)
-- [x] Canonicalize permissions classification — operation-class model defined in Nix, generated permission maps improved from typed structure; semantic permission runtime enforcement still missing
-- [x] MCP-first enforcement — prompt/test-level only, documented as design intent; structural verifier/runtime enforcement still deferred
-- [x] Routing mode runtime state — `phenix-route` persists XDG route state, resolves logical slots deterministically, and the OpenCode wrapper applies the generated overlay at process start; hot switching remains unsupported and requires restart.
+### Aggregate
 
-### Shared devshell helpers
-- [x] Create shared helper module (phenix-helpers.nix)
-- [x] Deduplicate repo-hook/repo-pushgate/repo-check/repo-fix (root now uses centralized helpers)
+- [x] Root input graph follows the final migrated repository revisions
+- [x] Strict Stitch lock-derived graph verification
+- [x] Tend v2 root verification profiles and permanent CI
+- [x] Complete NixOS and Home Manager module re-exports
+- [x] Concrete host re-exports through the root flake
+- [x] Root `nix flake check` validates the composed graph
 
-### Docs
-- [x] docs/workflow/git-jj-policy.md
-- [x] Repository topology documented with agreed names and URLs
+## Replacement acceptance gates
 
-## NewXOS migration backlog
+The Phenix graph is a valid declarative replacement candidate when all gates below are
+complete. Evaluation success alone does not prove that every runtime behavior works on
+physical hardware.
 
-**Migration starts only after clean-base milestone is complete.**
+### Required before cutover
 
-Do not start migrating NewXOS feature content during clean-base tasks.
+- [ ] Provision or confirm each host's SOPS age identity outside the repository
+- [ ] Build and activate the laptop configuration on the laptop
+- [ ] Build and activate the desktop configuration on the desktop
+- [ ] Verify boot, encrypted storage, resume, graphics, display manager, and rollback
+- [ ] Verify NordVPN login, dedicated-IP autoconnect, LAN discovery, and LocalSend
+- [ ] Verify desktop shell startup, launcher, notifications, clipboard, screenshots, and OCR
+- [ ] Verify desktop-only Ollama, Open WebUI, Caddy certificate trust, and Kokoro TTS
+- [ ] Confirm SSH and GitHub credentials are readable with the expected ownership and modes
 
-### Planned migration slices (not started)
+### Functional gaps still to migrate or replace
 
-1. First real host (nixosConfiguration)
-2. Base Nix configuration
-3. HM bridge/user setup
-4. SOPS bootstrap
-5. Dev tools (packages already scaffolded in phenix-packages)
-6. Hyprland base
-7. Shell/browser/theme/VPN (later slices)
+- [ ] Installer media and the old live-USB/first-install workflow
+- [ ] Full Quickshell runtime/IPC and launcher case test harness from `newxos`
+- [ ] Explicit parity tests for the wrapped Neovim configuration
+- [ ] Decide whether the old NewXOS CLI and Basic Memory workflow are still required;
+      migrate them only if they provide behavior not covered by Stitch, Tend, or Pi
+- [ ] Replace remaining `newxos.*`, `NEWXOS_*`, and `*-newxos` compatibility names after
+      successful hardware cutover
+- [ ] Remove compatibility imports and duplicated migration-era settings after runtime proof
+- [ ] Decide whether `phenix-packages` remains an aggregator or receives additional shared
+      package ownership
 
-### Migration principles
+## Architecture follow-up
 
-- One vertical slice at a time: package → module → host → checks → docs
-- No big-bang migration
-- Do not copy debt from newxos
-- Wrapper-first: wrapper package before module options before host enablement
+Configuration preservation took precedence over redesign during migration. After the
+hardware acceptance gates pass:
 
-## Tend backlog
+1. Remove compatibility names and aliases.
+2. Consolidate repeated host declarations that are demonstrably identical.
+3. Keep hardware, storage, and machine policy explicit even when similar.
+4. Add behavior-level tests before moving or abstracting desktop source files.
+5. Archive `newxos` only after the Phenix rollback path has been exercised.
 
-- [ ] CLI surface stabilization tests
-- [x] Task cache — implemented: execution wiring, stable blake3 hashing, cache status/explain CLI commands, and test coverage
-- [x] Task prerequisites / requires — implemented
-- [x] Requires tests — comprehensive; still needs reporting/profile-policy polish
-- [ ] Profile validation enforcement
-- [ ] Generated flake: adopt flake-file or mark experimental
+## Verification policy
 
-## Stitch backlog
-
-- [x] Topology validation: URL vs .gitmodules match, path existence, layer consistency
-- [x] Integration status gate
-- [ ] Commit safety — deferred (partial: --no-verify flag added)
-- [ ] Sync safety — deferred (partial: validation_commands wired)
-- [x] Full Stitch → Tend verification in CI (verify --changed --downstream)
-
-## Deferred/deleted items
-
-- Old `.opencode/agents/*.md` files — replaced by generated config from agent harness
-- `docs/roadmap.md` — replaced by root ROADMAP.md
-- `tend-shell.nix` — legacy, removed
-- Changelog/release ceremony — never existed, no need to add
-- `phenix-wrappers.nix` — now populated as useful re-export
+- Every repository owns its local Tend manifest and permanent CI.
+- The root verifies the locked aggregate and downstream composition.
+- `nix flake check` must remain valid on every merged root revision.
+- Root input updates must point only to repository revisions that passed their own CI.
+- Temporary migration workflows and generated diagnostics must not remain on `main`.
