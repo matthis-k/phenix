@@ -9,7 +9,7 @@ on:
       - sync/final-aggregate-migration
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   update:
@@ -29,9 +29,15 @@ jobs:
             accept-flake-config = true
       - name: Update aggregate graph
         run: nix flake update --accept-flake-config
-      - name: Export generated lock
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
-        with:
-          name: final-aggregate-lock
-          path: flake.lock
-          if-no-files-found: error
+      - name: Commit generated lock through GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          current_sha="$(gh api "repos/$GITHUB_REPOSITORY/contents/flake.lock?ref=$BRANCH" --jq .sha)"
+          content="$(base64 -w0 flake.lock)"
+          gh api --method PUT "repos/$GITHUB_REPOSITORY/contents/flake.lock" \
+            -f message='chore: update final aggregate lock graph' \
+            -f content="$content" \
+            -f sha="$current_sha" \
+            -f branch="$BRANCH"
