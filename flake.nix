@@ -77,7 +77,6 @@
       url = "github:matthis-k/phenix-agent-harness";
       inputs = {
         phenix-pins.follows = "phenix-pins";
-        flake-parts.follows = "flake-parts";
         phenix-tend.follows = "phenix-tend";
         phenix-stitch.follows = "phenix-stitch";
       };
@@ -123,6 +122,7 @@
         let
           tendPkg = inputs.phenix-tend.packages.${system}.tend;
           stitchPkg = inputs.phenix-stitch.packages.${system}.stitch;
+          piPkg = inputs.phenix-agent-harness.packages.${system}.pi;
           rustToolchain = [
             pkgs.cargo
             pkgs.rustc
@@ -135,10 +135,7 @@
             inherit tendPkg stitchPkg;
           };
 
-          packages.opencode =
-            inputs.phenix-agent-harness.packages.${system}.opencode
-              or inputs.phenix-agent-harness.packages.${system}.default;
-          packages.pi = inputs.phenix-agent-harness.packages.${system}.pi;
+          packages.pi = piPkg;
 
           apps = {
             tend = inputs.phenix-tend.apps.${system}.tend;
@@ -236,8 +233,7 @@
                 statix
                 deadnix
                 nixfmt
-                inputs.phenix-agent-harness.packages.${system}.opencode
-                inputs.phenix-agent-harness.packages.${system}.pi
+                piPkg
                 tendPkg
                 stitchPkg
               ]
