@@ -887,11 +887,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784035348,
-        "narHash": "sha256-wErbcIQ/VxxqlVeLHbcvh4zsXJhdJHT1vAcw8F8O8i8=",
+        "lastModified": 1784059361,
+        "narHash": "sha256-YBsJJuhbwQEUiZ1BEL7JXv3YoDiHOMTYuPWSd3c3+hE=",
         "owner": "matthis-k",
         "repo": "phenix-agent-harness",
-        "rev": "4452af7eea48658777e5b5200ab8390efe1dabc3",
+        "rev": "85597ffdb8898cb9a095de5ee097fe8835fb5cb6",
         "type": "github"
       },
       "original": {
@@ -982,11 +982,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784041112,
-        "narHash": "sha256-NOQgM2wImYypREp9fyUNw6NfCA4UKCffUvbuXxOwg70=",
+        "lastModified": 1784059716,
+        "narHash": "sha256-hTFF6XgdZSe+L094lygKMN17ZTkaZVq6h2zFwAeZmgo=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "b8a8e6412a6d7d1c0fc3fe5d3f686be6321554ba",
+        "rev": "d02e2d8fcdf2059ce42ba4401c01089c7d181ecf",
         "type": "github"
       },
       "original": {
@@ -1097,11 +1097,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784001652,
-        "narHash": "sha256-AiWXJpKRXMt3hP2hB5pBoKMHuWO7IUnVTsU56+ehuBg=",
+        "lastModified": 1784057946,
+        "narHash": "sha256-UoO2owA4wvtp2mSrGer/SvwrU/OSdi2EsyEMjLn5NSs=",
         "owner": "matthis-k",
         "repo": "phenix-stitch",
-        "rev": "647394b56121afbcc3f2a3e2f1c7e5429aecabb7",
+        "rev": "5a54293fe95b977528d14d7ed369636e25fba517",
         "type": "github"
       },
       "original": {
