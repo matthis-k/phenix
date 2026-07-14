@@ -9,7 +9,7 @@ on:
       - sync/final-aggregate-migration
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   update:
@@ -29,12 +29,9 @@ jobs:
             accept-flake-config = true
       - name: Update aggregate graph
         run: nix flake update --accept-flake-config
-      - name: Commit generated graph
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add flake.lock
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: update final aggregate lock graph"
-            git push origin HEAD:${{ github.head_ref || github.ref_name }}
-          fi
+      - name: Export generated lock
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4.4.2
+        with:
+          name: final-aggregate-lock
+          path: flake.lock
+          if-no-files-found: error
