@@ -982,16 +982,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1784003444,
+        "lastModified": 1784005089,
         "narHash": "sha256-Q06gL7ECCYlXu/IpQbSXKwmPEroeJqnbKGJIasQl5A4=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "b628ba9ce25a1468621aed50a6dc076da8c7ba93",
+        "rev": "14bde9aac0172b4c2dcdfa7a6358d61c41c110b1",
         "type": "github"
       },
       "original": {
         "owner": "matthis-k",
-        "ref": "cleanup/den-flake-structure",
         "repo": "phenix-hosts",
         "type": "github"
       }
