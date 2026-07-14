@@ -1,0 +1,37 @@
+name: Update phenix-agent-harness consumers
+
+on:
+  push:
+    branches:
+      - chore/update-phenix-agent-harness
+
+permissions:
+  contents: write
+
+jobs:
+  update-lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update locks and remove bootstrap workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          nix flake lock --update-input phenix-agent-harness
+          nix flake lock --update-input phenix-hosts
+          rm .github/workflows/update-phenix-agent-harness-lock.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add flake.lock .github/workflows/update-phenix-agent-harness-lock.yml
+          git commit -m 'chore: update phenix-agent-harness consumers'
+          git push
