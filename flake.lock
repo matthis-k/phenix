@@ -887,11 +887,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783976767,
-        "narHash": "sha256-jFMuPkSNjBaHIWYBtdID9hj6wFpAXBme5fc1TviHizQ=",
+        "lastModified": 1784035348,
+        "narHash": "sha256-wErbcIQ/VxxqlVeLHbcvh4zsXJhdJHT1vAcw8F8O8i8=",
         "owner": "matthis-k",
         "repo": "phenix-agent-harness",
-        "rev": "e1b425283071a08acd406fdc420e895725b29fe6",
+        "rev": "4452af7eea48658777e5b5200ab8390efe1dabc3",
         "type": "github"
       },
       "original": {
@@ -982,11 +982,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784006838,
-        "narHash": "sha256-v/bARvfxLuWIbgfLhh6twhf1TRCQJge0dRuGN/0c4oU=",
+        "lastModified": 1784035675,
+        "narHash": "sha256-IzW6+X2nRRJ8LXAqHZ19T3C4xVXHlMUP5VlhLfWNeIo=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "b5491970a29e603c71dd0d4ecbc69d9a1a4bece7",
+        "rev": "7f45e021280b66d87e77d2abdf542f74ca612218",
         "type": "github"
       },
       "original": {
