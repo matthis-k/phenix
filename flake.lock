@@ -982,11 +982,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784036957,
-        "narHash": "sha256-Isb/6kBwYPKVzTIBClK8Xa7pYSkNBFSIkhJyWaYeHc4=",
+        "lastModified": 1784041112,
+        "narHash": "sha256-NOQgM2wImYypREp9fyUNw6NfCA4UKCffUvbuXxOwg70=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "247615aa344eff7c432c38948d4e209eb94edf08",
+        "rev": "b8a8e6412a6d7d1c0fc3fe5d3f686be6321554ba",
         "type": "github"
       },
       "original": {
