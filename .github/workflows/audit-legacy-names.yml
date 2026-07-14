@@ -50,7 +50,9 @@ jobs:
               -print | sed "s#^$repo/##" | sort >> legacy-names.txt || true
             echo >> legacy-names.txt
             echo "===== ${repo#repos/}: matching content =====" >> legacy-names.txt
-            rg -n -i --hidden --glob '!.git/**' --glob '!flake.lock' \
+            grep -RInEi \
+              --exclude='flake.lock' \
+              --exclude-dir='.git' \
               'newxos|newshell|opencode' "$repo" >> legacy-names.txt || true
             echo >> legacy-names.txt
           done
