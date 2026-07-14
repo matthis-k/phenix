@@ -126,6 +126,21 @@
         "type": "github"
       }
     },
+    "den": {
+      "locked": {
+        "lastModified": 1783964713,
+        "narHash": "sha256-wVN3xYYL5erapo9FQp9sfmN5tZ65whwLlK7z+iQnTgw=",
+        "owner": "denful",
+        "repo": "den",
+        "rev": "84b514929d25c7b2f8e9cfba5ff87d395c2b9263",
+        "type": "github"
+      },
+      "original": {
+        "owner": "denful",
+        "repo": "den",
+        "type": "github"
+      }
+    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -912,11 +927,11 @@
         "zen-flake": "zen-flake"
       },
       "locked": {
-        "lastModified": 1783992296,
-        "narHash": "sha256-DqNAuMDfEDR1bHfCwvWIB3ocY50E6Ky9MK0y+qnwUaY=",
+        "lastModified": 1784001427,
+        "narHash": "sha256-B+Bt8tFbUhXrY0TKc/F21PGuiYYe9uz44wQkVvdB8wM=",
         "owner": "matthis-k",
         "repo": "phenix-de",
-        "rev": "f41e9b9d1ac8fb84280e620fd76854e665eb05fa",
+        "rev": "ea00a9eca632382bcb4ca81d1bf49c9bfe75caa5",
         "type": "github"
       },
       "original": {
@@ -927,8 +942,14 @@
     },
     "phenix-hosts": {
       "inputs": {
+        "den": "den",
         "disko": [
           "disko"
+        ],
+        "flake-file": [
+          "phenix-hosts",
+          "phenix-pins",
+          "flake-file"
         ],
         "flake-parts": [
           "flake-parts"
@@ -961,15 +982,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1783995283,
-        "narHash": "sha256-eh3f6Ck21hrh+F5QdIcNtHhNI3jVKJ46kWWiGhJVvs0=",
+        "lastModified": 1784001569,
+        "narHash": "sha256-jLfmciLOa/ZtqcDnK9G6AetVRJszz7/vBIF3iYLJzMc=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "b8b94d341b53a3ebd0ea1755be66630a81f342a7",
+        "rev": "add5b1ee68d750a7a60e969e7b8d23fa08649688",
         "type": "github"
       },
       "original": {
         "owner": "matthis-k",
+        "ref": "cleanup/den-flake-structure",
         "repo": "phenix-hosts",
         "type": "github"
       }
@@ -991,11 +1013,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783987344,
-        "narHash": "sha256-RZpy0dYGcWPv1WtwUMdgPe22dlDV5jz2FObACYZHJAI=",
+        "lastModified": 1784001297,
+        "narHash": "sha256-Ar4ydt56Z43YuwoNYBhpuohd9mCzIG8fs7U+qA4lips=",
         "owner": "matthis-k",
         "repo": "phenix-nvim",
-        "rev": "f385541a5668834db4361e8b8ec7c14779de3503",
+        "rev": "424658897f191cde781608255125384968ba9a89",
         "type": "github"
       },
       "original": {
@@ -1020,11 +1042,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783996304,
-        "narHash": "sha256-cHZoB+xa9avtQsGiqilisGFqk/opiun4Ehlt8CoJNPc=",
+        "lastModified": 1784001312,
+        "narHash": "sha256-x1hRrUEp6y0/Q80tJ1ug990hSL++hncz4JXabtykQvE=",
         "owner": "matthis-k",
         "repo": "phenix-packages",
-        "rev": "2ced5c4aad581434f733aa9d8da6c082abd458b5",
+        "rev": "b710bff82d8eea4c9c00a4d2bb6a564cea056096",
         "type": "github"
       },
       "original": {
@@ -1076,11 +1098,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783969933,
-        "narHash": "sha256-V4OPUcRKqMVSIvfW5ZoeJ23WbtBNFShip6XZOO8ot8s=",
+        "lastModified": 1784001652,
+        "narHash": "sha256-AiWXJpKRXMt3hP2hB5pBoKMHuWO7IUnVTsU56+ehuBg=",
         "owner": "matthis-k",
         "repo": "phenix-stitch",
-        "rev": "75e93be4b16b0422aba2386f2e8edec6d1ed04f0",
+        "rev": "647394b56121afbcc3f2a3e2f1c7e5429aecabb7",
         "type": "github"
       },
       "original": {
