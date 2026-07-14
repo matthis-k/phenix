@@ -1,7 +1,7 @@
 ---
 title: repo-goals
 type: note
-permalink: newxos/repo-goals
+permalink: phenix/repo-goals
 ---
 
 # Repo Goals

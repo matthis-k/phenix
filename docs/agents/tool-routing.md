@@ -1,7 +1,7 @@
 ---
 title: tool-routing
 type: note
-permalink: newxos/tool-routing
+permalink: phenix/tool-routing
 ---
 
 # Agent Tool Routing

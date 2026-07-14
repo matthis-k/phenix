@@ -1,7 +1,7 @@
 ---
 title: topology
 type: note
-permalink: newxos/topology
+permalink: phenix/topology
 ---
 
 # Phenix flake topology and integration pattern
@@ -313,7 +313,7 @@ MCP configs referencing multiple packages
 Integrations may depend on multiple package producers.
 
 In the current workspace, `phenix-agent-harness` is a layer-3 integration because it
-wraps OpenCode and Pi configuration together with `phenix-tend` and `phenix-stitch` commands and MCPs.
+wraps Pi configuration together with `phenix-tend` and `phenix-stitch` commands and MCPs.
 
 Package producers must not depend on integrations.
 

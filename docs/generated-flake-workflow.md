@@ -1,7 +1,7 @@
 ---
 title: generated-flake-workflow
 type: note
-permalink: newxos/generated-flake-workflow
+permalink: phenix/generated-flake-workflow
 ---
 
 # Generated flake workflow

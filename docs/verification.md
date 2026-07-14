@@ -1,7 +1,7 @@
 ---
 title: verification
 type: note
-permalink: newxos/verification
+permalink: phenix/verification
 ---
 
 # Verification

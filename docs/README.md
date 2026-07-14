@@ -1,89 +1,50 @@
 ---
 title: README
 type: note
-permalink: newxos/readme
+permalink: phenix/readme
 ---
 
-# Phenix Development Docs
+# Phenix development documentation
 
-This document describes the intended Phenix workflow. Items not yet implemented must be tracked in `ROADMAP.md` (at repo root).
-
-This documentation is an **ought-state** documentation set. It defines how the workspace is supposed to behave, while the roadmap tracks what is actually implemented, missing, deferred, or enforced.
+Phenix is a multi-repository NixOS composition workspace with explicit ownership,
+locked aggregate revisions, and deterministic verification.
 
 ## Reading order
 
 1. `guardrails.md`
 2. `architecture/flake-topology.md`
-3. `opencode.md`
+3. `pi.md`
 4. `stitch.md`
 5. `tend.md`
 6. `testing.md`
 7. `migration.md`
-8. `roadmap.md`
+8. the root `ROADMAP.md`
 
-## Core idea
+## Repository model
 
-Phenix is not a monolithic dotfiles repository.
+- The root `phenix` flake is the integration surface.
+- `phenix-hosts` owns concrete machines and system policy.
+- `phenix-de` owns the graphical desktop and Phenix Shell.
+- `phenix-nvim` owns the Neovim wrapper.
+- `phenix-agent-harness` owns Pi.
+- `phenix-packages` owns shared development packages.
+- `phenix-pins` owns shared upstream revisions.
+- Tend owns checks; Stitch owns cross-repository coordination.
 
-Phenix is an operating-system composition workspace made of separate repos with clear ownership:
+## Verification
 
-- root orchestration
-- development tools
-- packages and wrappers
-- reusable modules
-- host configs
-- shell/UI
-- pins/input policy
-- tests and gates
+```console
+tend check --profile git-hook --context local
+tend check --profile pre-push --context local
+tend check --profile manual --context local
+tend check --profile ci --context ci --base <base> --head <head>
+```
 
-The structure is part of the product.
+Each feature repository must pass its own gate before the root lock is updated.
+The root gate then validates the exact aggregate graph.
 
-## Development order
+## Agent workflow
 
-The project intentionally proceeds in this order:
-
-1. Guardrails and OpenCode workflow
-2. Testing and gate tooling
-3. Migration from `newxos`
-
-Do not migrate features before the guardrails and test runner exist.
-
-## Agent workflows
-
-Agents should use the Phenix MCP tools rather than reconstructing workflows from shell commands.
-
-- Use `tend` for check planning and execution.
-- Use `stitch` for multi-repo git status, DAGs, commits, and sync.
-
-See:
-
-- `docs/agents/tool-routing.md`
-- `docs/agent-workflow.md`
-- `docs/workflows/agent-check-flow.md`
-- `docs/workflows/agent-commit-flow.md`
-- `docs/mcp/contracts.md`
-
-## Check execution model
-
-- `git commit` runs `tend check --profile git-hook --staged`.
-- `git push` runs `tend check --profile pre-push`.
-- `nix flake check` runs `tend check --profile nix-check --offline --locked`.
-- Developers can run `repo-check` for the full local gate.
-- Developers can run `repo-fix` for mutating fixes.
-- `stitch commit` relies on Git hooks.
-- `stitch commit --sync` may use a Tend preflight token to avoid duplicate hook runs.
-
-See `docs/tend.md` for the full profile specification and validation rules.
-
-## Foundation boundary
-
-The foundation phase may create:
-
-- docs
-- roadmap
-- repo-local OpenCode config
-- dev shell basics
-- minimal gate scaffold
-- simple passing presence checks
-
-The foundation phase must not migrate real `newxos` features.
+Use Pi through `phenix ai` or the wrapped package from `phenix-agent-harness`.
+Use Tend for deterministic checks and Stitch for workspace graph and Git actions.
+Agent prompts must not replace typed runtime contracts or repository verification.

@@ -1,7 +1,7 @@
 ---
 title: agent-check-flow
 type: note
-permalink: newxos/agent-check-flow
+permalink: phenix/agent-check-flow
 ---
 
 # Agent Check Flow

@@ -1,7 +1,7 @@
 ---
 title: repo-roles
 type: note
-permalink: newxos/repo-roles
+permalink: phenix/repo-roles
 ---
 
 # Phenix repo roles
@@ -46,7 +46,7 @@ flakes/
 
 A flake may depend on flakes in lower-numbered directories. It must not depend on flakes in same-numbered or higher-numbered directories.
 
-`phenix-agent-harness` lives in layer 3 because its wrapped OpenCode and Pi
+`phenix-agent-harness` lives in layer 3 because its wrapped Pi
 agent configuration integrates with `phenix-tend` and `phenix-stitch`. `phenix-de` remains a layer-5 consumer; any
 package or overlay outputs there are consumer-local desktop-environment
 composition, not a reusable lower-layer provider API. The current root workspace

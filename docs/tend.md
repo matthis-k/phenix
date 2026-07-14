@@ -1,7 +1,7 @@
 ---
 title: tend
 type: note
-permalink: newxos/tend
+permalink: phenix/tend
 ---
 
 # tend — Low-Level Composable Task Harness

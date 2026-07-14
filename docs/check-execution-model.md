@@ -1,7 +1,7 @@
 ---
 title: check-execution-model
 type: note
-permalink: newxos/check-execution-model
+permalink: phenix/check-execution-model
 ---
 
 # Check execution model
