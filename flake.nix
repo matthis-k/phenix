@@ -76,7 +76,7 @@
     };
 
     phenix-hosts = {
-      url = "github:matthis-k/phenix-hosts";
+      url = "github:matthis-k/phenix-hosts/cleanup/den-flake-structure";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         phenix-tend.follows = "phenix-tend";
