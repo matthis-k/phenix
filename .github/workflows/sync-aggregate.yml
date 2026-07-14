@@ -36,3 +36,4 @@ jobs:
             git commit -m "chore: synchronize aggregate lock graph"
             git push
           fi
+      # Temporary workflow; removed after the aggregate gate passes.
