@@ -1,0 +1,38 @@
+name: Sync aggregate
+
+on:
+  push:
+    branches:
+      - sync/aggregate-after-config-migration
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+      - name: Update and validate aggregate
+        run: |
+          nix flake update --accept-flake-config
+          nix flake check --print-build-logs --keep-going --accept-flake-config
+      - name: Commit updated lock graph
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add flake.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: synchronize aggregate lock graph"
+            git push
+          fi
