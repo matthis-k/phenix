@@ -54,7 +54,7 @@ real-hardware activation, rollback, and behavioral acceptance remain before the 
 
 - [x] Root input graph follows the final migrated repository revisions
 - [x] Strict Stitch lock-derived graph verification
-- [x] Tend v2 root verification profiles and permanent CI
+- [x] Tend v2 verification contracts and permanent CI across the aggregate repositories
 - [x] Complete NixOS and Home Manager module re-exports
 - [x] Concrete host re-exports through the root flake
 - [x] Root `nix flake check` validates the composed graph
