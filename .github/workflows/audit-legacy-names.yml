@@ -21,8 +21,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir repos
+          git clone --depth=1 --branch rename/phenix-identity-audit \
+            https://github.com/matthis-k/phenix.git repos/phenix
           for repo in \
-            phenix \
             phenix-hosts \
             phenix-de \
             phenix-nvim \
@@ -32,10 +33,7 @@ jobs:
             phenix-tend \
             phenix-stitch
           do
-            if [ "$repo" = phenix ]; then
-              cp -a . "repos/$repo"
-              rm -rf "repos/$repo/repos"
-            elif [ "$repo" = phenix-hosts ]; then
+            if [ "$repo" = phenix-hosts ]; then
               git clone --depth=1 --branch cleanup/den-flake-structure "https://github.com/matthis-k/$repo.git" "repos/$repo"
             else
               git clone --depth=1 "https://github.com/matthis-k/$repo.git" "repos/$repo"
