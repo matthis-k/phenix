@@ -1,215 +1,384 @@
 {
-  "$schema": "https://phenix.local/schemas/tend.schema.json",
-  "version": 1,
+  "version": 2,
+  "profiles": {
+    "git-hook": {
+      "phase": "verify",
+      "selection": "staged",
+      "tasks": [
+        "nixfmt-check",
+        "statix-check",
+        "deadnix-check",
+        "json-validate-check",
+        "docs-presence-check",
+        "git-jj-policy-check"
+      ],
+      "contexts": ["local"]
+    },
+    "pre-push": {
+      "phase": "verify",
+      "selection": "full",
+      "tasks": [
+        "nixfmt-check",
+        "statix-check",
+        "deadnix-check",
+        "json-validate-check",
+        "qml-format-check",
+        "lua-format-check",
+        "docs-presence-check",
+        "git-jj-policy-check",
+        "stitch-locked-graph-check",
+        "nix-flake-check"
+      ],
+      "contexts": ["local"]
+    },
+    "manual": {
+      "phase": "verify",
+      "selection": "full",
+      "tasks": [
+        "nixfmt-check",
+        "statix-check",
+        "deadnix-check",
+        "json-validate-check",
+        "qml-format-check",
+        "lua-format-check",
+        "docs-presence-check",
+        "git-jj-policy-check",
+        "stitch-locked-graph-check",
+        "nix-flake-check"
+      ],
+      "contexts": ["local"]
+    },
+    "ci": {
+      "phase": "verify",
+      "selection": "git-range",
+      "tasks": [
+        "nixfmt-check",
+        "statix-check",
+        "deadnix-check",
+        "json-validate-check",
+        "qml-format-check",
+        "lua-format-check",
+        "docs-presence-check",
+        "git-jj-policy-check",
+        "stitch-locked-graph-check",
+        "nix-flake-check"
+      ],
+      "contexts": ["ci"]
+    },
+    "nix-check": {
+      "phase": "verify",
+      "selection": "full",
+      "tasks": [
+        "nixfmt-check",
+        "statix-check",
+        "deadnix-check",
+        "json-validate-check",
+        "docs-presence-check",
+        "git-jj-policy-check",
+        "stitch-locked-graph-check"
+      ],
+      "contexts": ["nix-sandbox"]
+    },
+    "fix": {
+      "phase": "fix",
+      "selection": "staged",
+      "tasks": ["nixfmt-fix", "statix-fix"],
+      "contexts": ["local"]
+    },
+    "setup": {
+      "phase": "setup",
+      "selection": "full",
+      "tasks": ["hooks-plan", "hooks-install"],
+      "contexts": ["local"]
+    }
+  },
+  "contexts": {
+    "local": {
+      "implementation": "local",
+      "allow_mutation": true,
+      "allow_interactive": false,
+      "allow_network": true,
+      "require_sandbox_safe": false
+    },
+    "ci": {
+      "implementation": "local",
+      "allow_mutation": false,
+      "allow_interactive": false,
+      "allow_network": true,
+      "require_sandbox_safe": false
+    },
+    "nix-sandbox": {
+      "implementation": "sandbox",
+      "allow_mutation": false,
+      "allow_interactive": false,
+      "allow_network": false,
+      "require_sandbox_safe": true
+    }
+  },
   "node": {
     "id": "root",
-    "description": "Root workspace code quality and maintenance checks",
-    "tags": ["workspace", "foundation"],
-    "context": {
-      "workdir": "."
-    },
+    "description": "Verify the Phenix root workspace and locked dependency graph",
     "tasks": [
       {
-        "id": "tend-validate-profiles",
-        "description": "Validate all tend profiles and configuration",
-        "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual"],
-        "tags": ["tend", "validate"],
-        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command tend validate --profiles; elif command -v tend >/dev/null 2>&1; then tend validate --profiles; else echo 'Error: tend not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
-        "expect": { "status": 0 }
-      },
-      {
         "id": "nixfmt-check",
-        "description": "Check root Nix files are formatted correctly",
+        "description": "Check root Nix formatting",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual", "nix-check"],
-        "tags": ["nix", "format"],
-        "command": ["bash", "-c", "find . -maxdepth 1 -name '*.nix' -print0 | xargs -0 -r nixfmt --check"],
-        "expect": { "status": 0 }
+        "when": {
+          "changed": {
+            "paths": ["*.nix"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": ["nixfmt", "--check"],
+            "file_args": "matched",
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "statix-check",
-        "description": "Lint root Nix files with statix (skipping submodules)",
+        "description": "Lint root Nix expressions",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual", "nix-check"],
-        "tags": ["nix", "lint"],
-        "command": ["statix", "check", "--ignore", "flakes/**", "--ignore", ".git/**"],
-        "expect": { "status": 0 }
+        "when": {
+          "changed": {
+            "paths": ["*.nix"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": ["statix", "check", "--ignore", ".git/**"],
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "deadnix-check",
-        "description": "Find and report dead Nix code in root files",
+        "description": "Reject dead root Nix code",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual", "nix-check"],
-        "tags": ["nix", "cleanup"],
-        "command": ["bash", "-c", "find . -maxdepth 1 -name '*.nix' -print0 | xargs -0 -r deadnix --fail --no-lambda-arg --no-lambda-pattern-names"],
-        "expect": { "status": 0 }
+        "when": {
+          "changed": {
+            "paths": ["*.nix"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": [
+              "deadnix",
+              "--fail",
+              "--no-lambda-arg",
+              "--no-lambda-pattern-names"
+            ],
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "json-validate-check",
-        "description": "Validate JSON files in the root workspace",
+        "description": "Parse changed workspace JSON files",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual", "nix-check"],
-        "tags": ["json", "format"],
-        "command": ["bash", "-c", "files=$(find . -path './flakes' -prune -o -path './.git' -prune -o -name '*.json' -type f -print); if [ -z \"$files\" ]; then echo 'No JSON files'; exit 0; fi; printf '%s\n' \"$files\" | xargs jq -e . >/dev/null"],
-        "expect": { "status": 0 }
+        "when": {
+          "changed": {
+            "paths": ["*.json", "**/*.json"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": [
+              "bash",
+              "-c",
+              "for file in \"$@\"; do jq -e . \"$file\" >/dev/null; done",
+              "--"
+            ],
+            "file_args": "matched",
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "qml-format-check",
-        "description": "Format-check QML files when QML files and qmlformat are available",
+        "description": "Check changed QML formatting when qmlformat is available",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["pre-push", "manual"],
-        "tags": ["qml", "format"],
-        "command": ["bash", "-c", "files=$(find . -path './flakes' -prune -o -path './.git' -prune -o -name '*.qml' -type f -print); if [ -z \"$files\" ]; then echo 'No QML files'; exit 0; fi; if ! command -v qmlformat >/dev/null 2>&1; then echo 'qmlformat unavailable; skipping'; exit 0; fi; printf '%s\n' \"$files\" | xargs qmlformat --check"],
-        "expect": { "status": 0 }
+        "when": {
+          "changed": {
+            "paths": ["**/*.qml"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": [
+              "bash",
+              "-c",
+              "if ! command -v qmlformat >/dev/null; then echo 'qmlformat unavailable; skipping'; exit 0; fi; qmlformat --check \"$@\"",
+              "--"
+            ],
+            "file_args": "matched",
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "lua-format-check",
-        "description": "Format-check Lua files when Lua files and stylua are available",
+        "description": "Check changed Lua formatting when Stylua is available",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["pre-push", "manual"],
-        "tags": ["lua", "format"],
-        "command": ["bash", "-c", "files=$(find . -path './flakes' -prune -o -path './.git' -prune -o -name '*.lua' -type f -print); if [ -z \"$files\" ]; then echo 'No Lua files'; exit 0; fi; if ! command -v stylua >/dev/null 2>&1; then echo 'stylua unavailable; skipping'; exit 0; fi; printf '%s\n' \"$files\" | xargs stylua --check"],
-        "expect": { "status": 0 }
-      },
-      {
-        "id": "stitch-locked-graph-check",
-        "description": "Validate locked workspace DAG via stitch graph verify",
-        "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["pre-push", "manual"],
-        "tags": ["stitch", "locked-graph", "workspace"],
-        "command": ["bash", "-c", "if command -v stitch >/dev/null 2>&1; then stitch graph verify --workspace . --source locks --strict; elif command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch graph verify --workspace . --source locks --strict; else echo 'Error: stitch unavailable for locked graph check. Install nix and run nix develop first.' >&2; exit 1; fi"],
-        "expect": { "status": 0 }
-      },
-      {
-        "id": "mix-format-check",
-        "description": "Run Mix formatter check when an Elixir project is present",
-        "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["pre-push", "manual"],
-        "tags": ["elixir", "format"],
-        "command": ["bash", "-c", "if [ ! -f mix.exs ]; then echo 'No mix.exs'; exit 0; fi; if ! command -v mix >/dev/null 2>&1; then echo 'mix unavailable; skipping'; exit 0; fi; mix format --check-formatted"],
-        "expect": { "status": 0 }
-      },
-      {
-        "id": "nix-flake-check",
-        "description": "Full Nix flake evaluation check",
-        "phase": "verify",
-        "kind": "command",
-        "command": ["nix", "flake", "check"],
-        "profiles": ["manual"],
-        "tags": ["nix", "full"],
-        "sandbox_safe": false,
-        "mutates": false,
-        "interactive": false
-      },
-      {
-        "id": "nixfmt-fix",
-        "description": "Auto-format all Nix files",
-        "phase": "fix",
-        "kind": "command",
-        "command": ["bash", "-c", "find . -maxdepth 1 -name '*.nix' -print0 | xargs -0 -r nixfmt"],
-        "profiles": ["fix"],
-        "tags": ["nix", "format", "fix"],
-        "sandbox_safe": false,
-        "mutates": true
-      },
-      {
-        "id": "statix-fix",
-        "description": "Auto-fix statix warnings where safe",
-        "phase": "fix",
-        "kind": "command",
-        "command": ["statix", "fix"],
-        "profiles": ["fix"],
-        "tags": ["nix", "lint", "fix"],
-        "sandbox_safe": false,
-        "mutates": true
-      },
-      {
-        "id": "hooks-plan",
-        "description": "Preview which git hooks would be installed across all workspace repos",
-        "phase": "setup",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["setup", "manual"],
-        "tags": ["hooks", "git", "workspace"],
-        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch hooks plan --all; elif command -v stitch >/dev/null 2>&1; then stitch hooks plan --all; else echo 'Error: stitch not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
-        "expect": { "status": 0 }
-      },
-      {
-        "id": "hooks-install",
-        "description": "Install pre-commit and pre-push git hooks for all workspace repos",
-        "phase": "setup",
-        "kind": "command",
-        "mutates": true,
-        "sandbox_safe": true,
-        "profiles": ["setup", "manual"],
-        "tags": ["hooks", "git", "workspace"],
-        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then nix develop .#default --command stitch hooks install --all; elif command -v stitch >/dev/null 2>&1; then stitch hooks install --all; else echo 'Error: stitch not available. Install nix and run nix develop first.' >&2; exit 1; fi"],
-        "expect": { "status": 0 }
-      },
-      {
-        "id": "repo-integration-check",
-        "description": "Run full integration status check (locked graph, status, git-jj-policy conformance)",
-        "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["manual"],
-        "tags": ["integration", "workspace"],
-        "command": ["bash", "-c", "if command -v nix >/dev/null 2>&1; then stitch_flake=.; if [ -d repos/phenix-stitch ]; then stitch_flake=./repos/phenix-stitch; fi; echo '=== Integration Check ===' && echo '1. Locked graph:' && nix develop \"$stitch_flake#default\" --command stitch graph verify --workspace . --source locks --strict && echo && echo '2. Workspace discovery:' && nix develop \"$stitch_flake#default\" --command stitch workspace discover --workspace . --json >/dev/null && echo 'workspace discovery: ok' && echo && echo '3. Profile validation:' && nix develop .#default --command tend validate --profiles && echo && echo '=== All integration checks passed ==='; else echo \"Error: nix not available. Run nix develop first.\" >&2; exit 1; fi"],
-        "expect": { "status": 0 }
+        "when": {
+          "changed": {
+            "paths": ["**/*.lua"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": [
+              "bash",
+              "-c",
+              "if ! command -v stylua >/dev/null; then echo 'stylua unavailable; skipping'; exit 0; fi; stylua --check \"$@\"",
+              "--"
+            ],
+            "file_args": "matched",
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "docs-presence-check",
-        "description": "Verify required documentation files exist",
+        "description": "Require the root workflow documentation and contracts",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual"],
-        "tags": ["docs"],
-        "command": ["bash", "-c", "missing=0; for f in ROADMAP.md docs/workflow/git-jj-policy.md docs/workflow/workspace-state.md AGENTS.md flake.nix flake.lock .tend.json; do if [ ! -f \"$f\" ]; then echo \"MISSING: $f\"; missing=1; fi; done; if [ \"$missing\" = 1 ]; then exit 1; else echo 'All required docs present'; fi"],
-        "expect": { "status": 0 }
+        "always": true,
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": [
+              "bash",
+              "-c",
+              "missing=0; for file in ROADMAP.md docs/workflow/git-jj-policy.md docs/workflow/workspace-state.md AGENTS.md flake.nix flake.lock .tend.json; do if [[ ! -f \"$file\" ]]; then echo \"MISSING: $file\"; missing=1; fi; done; exit \"$missing\""
+            ],
+            "sandbox_safe": true
+          }
+        }
       },
       {
         "id": "git-jj-policy-check",
-        "description": "Verify git/jj workflow policy documentation exists",
+        "description": "Require the documented Git/Jujutsu policy",
         "phase": "verify",
-        "kind": "command",
-        "mutates": false,
-        "sandbox_safe": true,
-        "profiles": ["git-hook", "pre-push", "manual"],
-        "tags": ["docs", "policy"],
-        "command": ["bash", "-c", "if [ -f docs/workflow/git-jj-policy.md ]; then echo 'git-jj-policy.md: present'; else echo 'MISSING: docs/workflow/git-jj-policy.md' >&2; exit 1; fi"],
-        "expect": { "status": 0 }
+        "always": true,
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": ["test", "-f", "docs/workflow/git-jj-policy.md"],
+            "sandbox_safe": true
+          }
+        }
+      },
+      {
+        "id": "stitch-locked-graph-check",
+        "description": "Validate the strict lock-derived workspace graph",
+        "phase": "verify",
+        "always": true,
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": [
+              "stitch",
+              "graph",
+              "verify",
+              "--workspace",
+              ".",
+              "--source",
+              "locks",
+              "--strict"
+            ],
+            "sandbox_safe": true
+          }
+        }
+      },
+      {
+        "id": "nix-flake-check",
+        "description": "Run the complete root flake gate",
+        "phase": "verify",
+        "always": true,
+        "implementations": {
+          "local": {
+            "kind": "command",
+            "command": [
+              "nix",
+              "flake",
+              "check",
+              "--print-build-logs",
+              "--keep-going",
+              "--accept-flake-config"
+            ],
+            "network": true,
+            "sandbox_safe": false
+          }
+        }
+      },
+      {
+        "id": "nixfmt-fix",
+        "description": "Format changed root Nix files",
+        "phase": "fix",
+        "when": {
+          "changed": {
+            "paths": ["*.nix"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": ["nixfmt"],
+            "file_args": "matched",
+            "mutates": true
+          }
+        }
+      },
+      {
+        "id": "statix-fix",
+        "description": "Apply safe Statix fixes",
+        "phase": "fix",
+        "when": {
+          "changed": {
+            "paths": ["*.nix"]
+          }
+        },
+        "implementations": {
+          "default": {
+            "kind": "command",
+            "command": ["statix", "fix"],
+            "mutates": true
+          }
+        }
+      },
+      {
+        "id": "hooks-plan",
+        "description": "Preview workspace hook installation",
+        "phase": "setup",
+        "always": true,
+        "implementations": {
+          "local": {
+            "kind": "command",
+            "command": ["stitch", "hooks", "plan", "--all"],
+            "sandbox_safe": true
+          }
+        }
+      },
+      {
+        "id": "hooks-install",
+        "description": "Install workspace hooks",
+        "phase": "setup",
+        "always": true,
+        "implementations": {
+          "local": {
+            "kind": "command",
+            "command": ["stitch", "hooks", "install", "--all"],
+            "mutates": true,
+            "sandbox_safe": false
+          }
+        }
       }
     ]
   }
