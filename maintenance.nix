@@ -28,7 +28,8 @@ in
         test ! -e phenix-module.nix
         test ! -e phenix-wrappers.nix
         test ! -e phenix-helpers.nix
-        ! git grep -niE '(^|[^[:alnum:]_-])tend([^[:alnum:]_-]|$)' \
+        retired="$(printf 'te%s' 'nd')"
+        ! git grep -niE "(^|[^[:alnum:]_-])${retired}([^[:alnum:]_-]|$)" \
           -- . ':(exclude).github/workflows/**'
       '';
     };
