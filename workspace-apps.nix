@@ -24,6 +24,8 @@
           }
           ''
             export HOME="$TMPDIR"
+            phenix-workspace --help > workspace-help
+            grep -q 'nix NIX-COMMAND' workspace-help
             phenix-workspace --root ${inputs.self} init --dry-run > "$out"
             grep -q 'phenix-stitch' "$out"
             grep -q 'phenix-tools' "$out"
@@ -39,6 +41,7 @@
         init-workspace = app "init-workspace" "init";
         sync-workspace = app "sync-workspace" "sync";
         clean-workspace = app "clean-workspace" "clean";
+        nixdev = app "nixdev" "nix";
         dev = app "phenix-dev" "dev";
         check-local = app "check-local" "check";
         workspace-overrides = app "workspace-overrides" "overrides";
