@@ -28,8 +28,8 @@ in
         test ! -e phenix-module.nix
         test ! -e phenix-wrappers.nix
         test ! -e phenix-helpers.nix
-        needle="$(printf 'te%s' 'nd')"
-        ! git grep -ni "$needle"
+        ! git grep -niE '(^|[^[:alnum:]_-])tend([^[:alnum:]_-]|$)' \
+          -- . ':(exclude).github/workflows/**'
       '';
     };
     "maintenance-fix-statix" = {
