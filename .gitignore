@@ -5,8 +5,9 @@
 .stitch/recipes.json
 .phenix-agent-state/
 .pre-commit-config.yaml
+.devenv/
+.direnv/
 result
 target/
-.tend/cache/
 source/
 /repos/
