@@ -1,0 +1,14 @@
+{
+  "role": "root",
+  "dependencies": [
+    "phenix-pins",
+    "phenix-packages",
+    "phenix-stitch",
+    "phenix-tools",
+    "phenix-nvim",
+    "phenix-de",
+    "phenix-agent-harness",
+    "phenix-hosts",
+    "phenix-shell"
+  ]
+}
