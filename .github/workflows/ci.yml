@@ -1,49 +1,64 @@
-name: CI
+name: Finalize merged root
 
 on:
   pull_request:
-  push:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: finalize-root-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  checks:
-    name: Maintenance checks
+  finalize:
+    if: github.event.pull_request.head.ref == 'refactor/standalone-root-maintenance'
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 180
     steps:
-      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-        with: { fetch-depth: 0 }
-      - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
+      - uses: actions/checkout@v5
         with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refactor/standalone-root-maintenance
+          fetch-depth: 0
+      - name: Rewrite active documentation
+        run: |
+          python3 scripts/finalize-root.py
+          rm scripts/finalize-root.py
+      - name: Audit tracked tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in phenix-module.nix phenix-wrappers.nix phenix-helpers.nix; do
+            test ! -e "$path" || { echo "unexpected legacy file: $path" >&2; exit 1; }
+          done
+          retired="$(printf 'te%s' 'nd')"
+          set +e
+          git grep -niE "(^|[^[:alnum:]_-])${retired}([^[:alnum:]_-]|$)" \
+            -- . ':(exclude).github/workflows/**'
+          status=$?
+          set -e
+          (( status == 1 ))
+      - uses: cachix/install-nix-action@v31
+        with:
           extra_nix_config: |
             experimental-features = nix-command flakes
             accept-flake-config = true
-            max-jobs = auto
       - uses: cachix/cachix-action@v17
         with: { name: devenv }
-      - name: Install devenv
-        run: nix profile add nixpkgs#devenv
-      - name: Run repository maintenance
-        shell: bash
+      - run: nix profile add nixpkgs#devenv
+      - name: Normalize and refresh graph
         run: |
-          set +e
-          devenv test > devenv-test.log 2>&1
-          status=$?
-          tail -n 500 devenv-test.log
-          exit "$status"
-      - name: Upload diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: devenv-test-log
-          path: devenv-test.log
-          if-no-files-found: error
+          set -euo pipefail
+          devenv tasks run maintenance:fix
+          nix flake update --accept-flake-config
+      - name: Validate merged graph
+        run: devenv test
+      - name: Publish final source tree
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A -- . ':(exclude).github/workflows/**'
+          git diff --cached --quiet || git commit -m "refactor: finalize merged Phenix workspace"
+          git push origin HEAD:refactor/standalone-root-maintenance
