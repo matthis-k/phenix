@@ -168,7 +168,7 @@
               ];
               shellHook = ''
                 echo "Phenix workspace"
-                echo "  local dev:   nix run .#dev"
+                echo "  local Nix:   nix run .#nixdev -- flake check"
                 echo "  init repos:  nix run .#init-workspace"
                 echo "  maintenance: devenv test"
                 echo "  fixes:       devenv tasks run maintenance:fix"
