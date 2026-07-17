@@ -21,18 +21,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          : > audit.log
           for path in phenix-module.nix phenix-wrappers.nix phenix-helpers.nix; do
             if [[ -e "$path" ]]; then
-              echo "unexpected legacy file: $path" >&2
+              echo "unexpected legacy file: $path" | tee -a audit.log >&2
               exit 1
             fi
           done
           retired="$(printf 'te%s' 'nd')"
           set +e
           git grep -niE "(^|[^[:alnum:]_-])${retired}([^[:alnum:]_-]|$)" \
-            -- . ':(exclude).github/workflows/**'
+            -- . ':(exclude).github/workflows/**' > audit.log
           status=$?
           set -e
+          cat audit.log
           if (( status == 0 )); then
             echo "retired references remain" >&2
             exit 1
@@ -87,6 +89,7 @@ jobs:
         with:
           name: root-refresh-diagnostics
           path: |
+            audit.log
             fix.log
             lock.log
             test.log
