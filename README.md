@@ -14,4 +14,10 @@ devenv tasks run maintenance:check
 devenv tasks run maintenance:fix
 ```
 
-Cross-repository selection and ordering are provided by Stitch. Stitch does not define repository-specific checks.
+## Workspace coordination
+
+Cross-repository selection and ordering are provided by Stitch. Stitch does not define repository-specific checks; it invokes the command supplied by the caller:
+
+```sh
+stitch exec --changed --closure downstream --order providers-first -- devenv test
+```
