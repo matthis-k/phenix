@@ -82,7 +82,7 @@
     };
 
     phenix-hosts = {
-      url = "github:matthis-k/phenix-hosts?ref=refactor/standalone-devenv-maintenance";
+      url = "github:matthis-k/phenix-hosts";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
