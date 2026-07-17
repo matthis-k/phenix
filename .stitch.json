@@ -4,6 +4,7 @@
     "phenix-pins",
     "phenix-packages",
     "phenix-stitch",
+    "phenix-opencode",
     "phenix-tools",
     "phenix-nvim",
     "phenix-de",
