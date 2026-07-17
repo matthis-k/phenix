@@ -24,6 +24,8 @@
           }
           ''
             export HOME="$TMPDIR"
+            phenix-workspace --help > workspace-help
+            grep -q 'nix NIX-COMMAND' workspace-help
             phenix-workspace --root ${inputs.self} init --dry-run > "$out"
             grep -q 'phenix-stitch' "$out"
             grep -q 'phenix-tools' "$out"
