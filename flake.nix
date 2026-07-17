@@ -43,11 +43,14 @@
       };
     };
 
+    phenix-opencode.url = "github:matthis-k/phenix-opencode";
+
     phenix-tools = {
       url = "github:matthis-k/phenix-tools";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         phenix-stitch.follows = "phenix-stitch";
+        phenix-opencode.follows = "phenix-opencode";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
       };
@@ -114,7 +117,10 @@
         "aarch64-linux"
       ];
 
-      imports = [ ./phenix-re-exports.nix ];
+      imports = [
+        ./phenix-re-exports.nix
+        ./workspace-apps.nix
+      ];
 
       perSystem =
         { pkgs, system, ... }:
@@ -122,11 +128,13 @@
           stitch = inputs.phenix-tools.packages.${system}.stitch;
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
           opencode = inputs.phenix-tools.packages.${system}.opencode;
+          workspace = inputs.phenix-tools.packages.${system}.phenix-workspace;
           pi = inputs.phenix-agent-harness.packages.${system}.pi;
         in
         {
           packages = {
             inherit stitch opencode pi;
+            phenix-workspace = workspace;
             stitch-mcp = stitchMcp;
             default = stitch;
           };
@@ -156,9 +164,12 @@
                 pkgs.fd
                 pi
                 stitch
+                workspace
               ];
               shellHook = ''
                 echo "Phenix workspace"
+                echo "  local dev:   nix run .#dev"
+                echo "  init repos:  nix run .#init-workspace"
                 echo "  maintenance: devenv test"
                 echo "  fixes:       devenv tasks run maintenance:fix"
                 echo "  stitch:      $(stitch --version 2>/dev/null || echo '?')"
