@@ -42,20 +42,19 @@ jobs:
             --update-input phenix-de \
             --update-input phenix-hosts
 
-      - name: Prepare generated commit
+      - name: Commit generated lock
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/ci.yml
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .github/workflows/ci.yml flake.lock
+          git add flake.lock
           git commit -m "chore: propagate Phenix DE UX architecture"
 
       - name: Run read-only Tend CI profile
         shell: bash
         run: |
+          git fetch origin main
           nix develop --accept-flake-config --command tend check \
             --profile ci \
             --context ci \
