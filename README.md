@@ -16,14 +16,14 @@ nix run .#init-workspace
 nix run .#clean-workspace
 nix run .#clean-workspace -- --apply
 
-# Enter the root development shell with every local flake overridden by path.
+# Enter the root development shell with every local flake overridden locally.
 nix run .#dev
 
 # Run the root flake check with the same local overrides.
 nix run .#check-local
 ```
 
-The local commands use Nix input overrides and do not modify the production lock file. Local uncommitted source changes are evaluated directly.
+The local commands use `git+file:` input overrides and do not modify the production lock file. Dirty tracked changes are evaluated immediately. New files only need `git add`; they do not need to be committed.
 
 ## Maintenance
 
