@@ -16,12 +16,13 @@ nix run .#init-workspace
 nix run .#clean-workspace
 nix run .#clean-workspace -- --apply
 
-# Enter the root development shell with every local flake overridden locally.
-nix run .#dev
-
-# Run the root flake check with the same local overrides.
-nix run .#check-local
+# Run arbitrary Nix commands against the root with local flake overrides.
+nix run .#nixdev -- flake check
+nix run .#nixdev -- develop
+nix run .#nixdev -- build .#pi
 ```
+
+`nixdev` changes to the Phenix root, injects `--override-input` for every local Phenix flake, and then forwards the remaining arguments directly to Nix. The convenience apps `dev` and `check-local` remain aliases for `nixdev -- develop` and `nixdev -- flake check`.
 
 The local commands use `git+file:` input overrides and do not modify the production lock file. Dirty tracked changes are evaluated immediately. New files only need `git add`; they do not need to be committed.
 
