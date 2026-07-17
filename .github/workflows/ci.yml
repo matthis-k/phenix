@@ -1,21 +1,26 @@
-name: Finalize local workspace development
+name: CI
 
 on:
   pull_request:
+  push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  finalize:
-    if: github.event.pull_request.head.ref == 'feat/local-workspace-dev'
+  checks:
+    name: Maintenance checks
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
-          ref: feat/local-workspace-dev
           fetch-depth: 0
       - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
         with:
@@ -27,19 +32,7 @@ jobs:
       - uses: cachix/cachix-action@v17
         with:
           name: devenv
-      - run: nix profile add nixpkgs#devenv
-      - name: Normalize and refresh merged graph
-        run: |
-          set -euo pipefail
-          devenv tasks run maintenance:fix
-          nix flake update --accept-flake-config
-      - name: Validate local workspace integration
+      - name: Install devenv
+        run: nix profile add nixpkgs#devenv
+      - name: Run repository maintenance
         run: devenv test
-      - name: Publish canonical source and lock
-        run: |
-          set -euo pipefail
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A -- . ':(exclude).github/workflows/**'
-          git diff --cached --quiet || git commit -m "feat: finalize local workspace development"
-          git push origin HEAD:feat/local-workspace-dev
