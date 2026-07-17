@@ -1,12 +1,19 @@
+# Workspace and local development state
+/repos/
 .cache/
-.stitch/cache/
-.stitch/transactions/
-.stitch/messages.json
-.stitch/recipes.json
+.devenv/
+.direnv/
+.stitch/
 .phenix-agent-state/
 .pre-commit-config.yaml
+
+# Build outputs
 result
+result-*
 target/
-.tend/cache/
 source/
-/repos/
+
+# Diagnostics and temporary migration state
+*.log
+*.log.*
+.maintenance-trigger
