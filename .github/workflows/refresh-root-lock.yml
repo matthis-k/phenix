@@ -33,11 +33,11 @@ jobs:
           status=$?
           tail -n 300 fix.log
           exit "$status"
-      - name: Refresh merged lock
+      - name: Refresh merged provider graph
         shell: bash
         run: |
           set +e
-          nix flake lock --accept-flake-config > lock.log 2>&1
+          nix flake update --accept-flake-config > lock.log 2>&1
           status=$?
           tail -n 300 lock.log
           exit "$status"
