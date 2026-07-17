@@ -1,6 +1,0 @@
-{
-  "version": 1,
-  "description": "This file is retired. Checks migrated to .tend.json.",
-  "migration": "See .tend.json in the repository root.",
-  "retired": true
-}
