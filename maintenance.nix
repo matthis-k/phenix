@@ -29,7 +29,7 @@ in
         test ! -e phenix-wrappers.nix
         test ! -e phenix-helpers.nix
         retired="$(printf 'te%s' 'nd')"
-        ! git grep -niE "(^|[^[:alnum:]_-])${retired}([^[:alnum:]_-]|$)" \
+        ! git grep -niE "(^|[^[:alnum:]_-])''${retired}([^[:alnum:]_-]|$)" \
           -- . ':(exclude).github/workflows/**'
       '';
     };
