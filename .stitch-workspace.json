@@ -1,0 +1,5 @@
+{
+  "owner": "matthis-k",
+  "repository_pattern": "phenix-*",
+  "search_roots": ["repos"]
+}
