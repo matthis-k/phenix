@@ -39,6 +39,7 @@
         init-workspace = app "init-workspace" "init";
         sync-workspace = app "sync-workspace" "sync";
         clean-workspace = app "clean-workspace" "clean";
+        nixdev = app "nixdev" "nix";
         dev = app "phenix-dev" "dev";
         check-local = app "check-local" "check";
         workspace-overrides = app "workspace-overrides" "overrides";
