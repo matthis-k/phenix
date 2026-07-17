@@ -6,7 +6,7 @@ on:
       - .github/workflows/generate-agent-harness-lock.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          ref: ${{ github.head_ref }}
       - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
@@ -22,9 +24,11 @@ jobs:
             accept-flake-config = true
       - name: Update harness input
         run: nix flake update phenix-agent-harness
-      - name: Upload generated lockfile
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-agent-harness-lock
-          path: flake.lock
-          if-no-files-found: error
+      - name: Commit generated lockfile
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add flake.lock
+          git diff --cached --quiet && exit 0
+          git commit -m "lock: update phenix-agent-harness"
+          git push
