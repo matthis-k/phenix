@@ -35,7 +35,7 @@
     };
 
     phenix-stitch = {
-      url = "github:matthis-k/phenix-stitch?ref=feat/local-workspace-management";
+      url = "github:matthis-k/phenix-stitch";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
@@ -46,7 +46,7 @@
     phenix-opencode.url = "github:matthis-k/phenix-opencode";
 
     phenix-tools = {
-      url = "github:matthis-k/phenix-tools?ref=feat/workspace-wrapper";
+      url = "github:matthis-k/phenix-tools";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         phenix-stitch.follows = "phenix-stitch";
