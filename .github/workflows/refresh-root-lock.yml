@@ -25,15 +25,45 @@ jobs:
       - uses: cachix/cachix-action@v17
         with: { name: devenv }
       - run: nix profile add nixpkgs#devenv
-      - name: Refresh and validate merged graph
+      - name: Apply maintenance fixes
         shell: bash
         run: |
+          set +e
+          devenv tasks run maintenance:fix > fix.log 2>&1
+          status=$?
+          tail -n 300 fix.log
+          exit "$status"
+      - name: Refresh merged lock
+        shell: bash
+        run: |
+          set +e
+          nix flake lock --accept-flake-config > lock.log 2>&1
+          status=$?
+          tail -n 300 lock.log
+          exit "$status"
+      - name: Validate merged graph
+        shell: bash
+        run: |
+          set +e
+          devenv test > test.log 2>&1
+          status=$?
+          tail -n 600 test.log
+          exit "$status"
+      - name: Publish canonical lock
+        run: |
           set -euo pipefail
-          devenv tasks run maintenance:fix
-          nix flake lock --accept-flake-config
-          devenv test
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add flake.lock flake.nix maintenance.nix devenv.nix
           git diff --cached --quiet || git commit -m "refactor: repin merged Phenix graph"
           git push origin HEAD:refactor/standalone-root-maintenance
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: root-refresh-diagnostics
+          path: |
+            fix.log
+            lock.log
+            test.log
+          if-no-files-found: warn
