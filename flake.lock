@@ -1314,11 +1314,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784311106,
-        "narHash": "sha256-vMXW8No6NJdY8+ur77mbGAKWxCo6FoyBfL8vWU/TdxQ=",
+        "lastModified": 1784316402,
+        "narHash": "sha256-kReTDWk8dWb9YWOIngRhXfjVs/Zj2xeILDN/LjW5j1s=",
         "owner": "matthis-k",
         "repo": "phenix-tools",
-        "rev": "92682bf7c50cd018bb0ebf429c995312b42a9214",
+        "rev": "05746541a9dc4eceec0bd2a2ed3d62eec17df727",
         "type": "github"
       },
       "original": {
