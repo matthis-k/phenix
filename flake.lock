@@ -1018,11 +1018,11 @@
         "zen-flake": "zen-flake"
       },
       "locked": {
-        "lastModified": 1784302750,
-        "narHash": "sha256-SqjjHQmEOWinDZXsLfsIp7uTKcE96W0gyc47GiaUQ6U=",
+        "lastModified": 1784379486,
+        "narHash": "sha256-G4Vvx3P43YuWYT0vbNizN3LNJA7eFFor3lAZhZcQc4c=",
         "owner": "matthis-k",
         "repo": "phenix-de",
-        "rev": "61bba64b02b29e0899f3f6722b2a1e839127b4c5",
+        "rev": "de26340e49a2bd382e88693306faf39b9eb5dacc",
         "type": "github"
       },
       "original": {
@@ -1070,11 +1070,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784303781,
-        "narHash": "sha256-Rv2wfGErloF1mT7m6dCjsqpTXU/ZwKIvG7I+PROzbMk=",
+        "lastModified": 1784380425,
+        "narHash": "sha256-tdghGg3nf9tmegwI5PZxFmcyCUfzD4Q9dehFTHA2UNk=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "6590b81fda70e91661f75345b49fc744627e2c7b",
+        "rev": "6ef58adc303ed0a6299faf22ea2b2e99e3371c4d",
         "type": "github"
       },
       "original": {
