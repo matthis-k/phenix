@@ -3,11 +3,11 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, chore/propagate-root-workflow-entry]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -22,6 +22,7 @@ jobs:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
@@ -29,6 +30,17 @@ jobs:
             experimental-features = nix-command flakes
             accept-flake-config = true
             max-jobs = auto
+      - name: Generate harness lock
+        if: github.ref_name == 'chore/propagate-root-workflow-entry' || github.head_ref == 'chore/propagate-root-workflow-entry'
+        run: |
+          nix flake lock --update-input phenix-agent-harness
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add flake.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update root workflow entry lock"
+            git push origin HEAD:chore/propagate-root-workflow-entry
+          fi
       - uses: cachix/cachix-action@v17
         with:
           name: devenv
