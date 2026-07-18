@@ -1,0 +1,27 @@
+name: Prefetch agent harness
+
+on:
+  push:
+    branches: [chore/propagate-opencode-provider-resilience]
+
+permissions:
+  contents: read
+
+jobs:
+  prefetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - name: Prefetch merged harness
+        run: |
+          nix flake prefetch --json \
+            github:matthis-k/phenix-agent-harness/f88407f0ce389ec0040e921aa1fe6f6c3eaa4813 \
+            > prefetch.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-harness-prefetch
+          path: prefetch.json
