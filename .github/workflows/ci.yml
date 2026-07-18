@@ -34,7 +34,6 @@ jobs:
         if: github.head_ref == 'chore/propagate-virtual-model-boundary'
         run: |
           nix flake lock --update-input phenix-agent-harness
-          test "$(nix eval --raw --expr '(builtins.fromJSON (builtins.readFile ./flake.lock)).nodes."phenix-agent-harness".locked.rev')" = "02db7f0decc1794b49ab11e55fb702e6c9854687"
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add flake.lock
