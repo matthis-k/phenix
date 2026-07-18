@@ -980,11 +980,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784332425,
-        "narHash": "sha256-yJokE8IkT6xVevTo+Q3k3eaQUgOBsDOCTvuLOczi0v8=",
+        "lastModified": 1784344169,
+        "narHash": "sha256-RIHjODBHwyx6y2ev0FLA7vKX+ssZAyWR72dxL8MR+CY=",
         "owner": "matthis-k",
         "repo": "phenix-agent-harness",
-        "rev": "acfa3665fb3d4116f66e2ee0569efc887504c976",
+        "rev": "e33fc443ae419e008e1e5a64a288e103d5bab4e5",
         "type": "github"
       },
       "original": {
