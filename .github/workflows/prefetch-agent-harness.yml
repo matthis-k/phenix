@@ -1,8 +1,7 @@
 name: Prefetch agent harness
 
 on:
-  push:
-    branches: [chore/propagate-opencode-provider-resilience]
+  pull_request:
 
 permissions:
   contents: read
