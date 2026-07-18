@@ -1,26 +1,33 @@
-name: Prefetch agent harness
+name: Propagate agent harness lock
 
 on:
-  pull_request:
+  push:
+    branches: [chore/propagate-opencode-provider-resilience]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  prefetch:
+  propagate:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          ref: chore/propagate-opencode-provider-resilience
       - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
           extra_nix_config: |
             experimental-features = nix-command flakes
-      - name: Prefetch merged harness
+      - name: Update and verify lock
         run: |
-          nix flake prefetch --json \
-            github:matthis-k/phenix-agent-harness/f88407f0ce389ec0040e921aa1fe6f6c3eaa4813 \
-            > prefetch.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: agent-harness-prefetch
-          path: prefetch.json
+          nix flake update phenix-agent-harness
+          jq -e '.nodes["phenix-agent-harness"].locked.rev == "f88407f0ce389ec0040e921aa1fe6f6c3eaa4813"' flake.lock
+          rm .github/workflows/prefetch-agent-harness.yml
+      - name: Commit final propagation
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add flake.lock .github/workflows/prefetch-agent-harness.yml
+          git commit -m 'chore: update agent harness lock'
+          git push
