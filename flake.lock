@@ -981,11 +981,11 @@
         "pi-src": "pi-src"
       },
       "locked": {
-        "lastModified": 1784504606,
-        "narHash": "sha256-HT3Ehn+itnSV857WsgfKgx+WG7uX//6JVrlJCEJhuvc=",
+        "lastModified": 1784582672,
+        "narHash": "sha256-KrEGj8k9K+XnmGYyAyZb2/5VRwE6URYAfQ+uZHJcTXo=",
         "owner": "matthis-k",
         "repo": "phenix-agent-harness",
-        "rev": "2c7812c6842209b8c5002703a9f348b6808394a7",
+        "rev": "b143d2f351cd8942f2d5b5123c6013c6d91fe4f6",
         "type": "github"
       },
       "original": {
@@ -1070,11 +1070,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784505252,
-        "narHash": "sha256-hOKccJktBsLQEnueQh5FxBxMjOVqnToLePWDziypoO4=",
+        "lastModified": 1784583508,
+        "narHash": "sha256-PEYxZT5l7KHNnO3naw2+Ti7339dIzrzHg1/7PC8RbjY=",
         "owner": "matthis-k",
         "repo": "phenix-hosts",
-        "rev": "8de32fe467e33af12bd9b4374172e5d7957c8742",
+        "rev": "bd2b441df96c0d6b2cb408fab8a27c94828263b2",
         "type": "github"
       },
       "original": {
