@@ -79,6 +79,7 @@
       url = "github:matthis-k/phenix-agent-harness";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-packages.follows = "phenix-packages";
         phenix-stitch.follows = "phenix-stitch";
         nixpkgs.follows = "nixpkgs";
       };
@@ -129,12 +130,18 @@
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
           opencode = inputs.phenix-tools.packages.${system}.opencode;
           workspace = inputs.phenix-tools.packages.${system}.phenix-workspace;
+          phenixDev = inputs.phenix-tools.packages.${system}.phenix-dev;
           pi = inputs.phenix-agent-harness.packages.${system}.pi;
+          piStore = inputs.phenix-agent-harness.packages.${system}.pi-store;
+          piDev = inputs.phenix-agent-harness.packages.${system}.pi-dev;
         in
         {
           packages = {
             inherit stitch opencode pi;
+            phenix-dev = phenixDev;
             phenix-workspace = workspace;
+            pi-store = piStore;
+            pi-dev = piDev;
             stitch-mcp = stitchMcp;
             default = stitch;
           };
@@ -146,6 +153,14 @@
             pi = {
               type = "app";
               program = "${pi}/bin/pi";
+            };
+            pi-store = {
+              type = "app";
+              program = "${piStore}/bin/pi-store";
+            };
+            pi-dev = {
+              type = "app";
+              program = "${piDev}/bin/pi-dev";
             };
             phenix-shell = inputs.phenix-de.apps.${system}.phenix-shell;
             default = inputs.phenix-tools.apps.${system}.stitch;
@@ -162,6 +177,7 @@
                 pkgs.jq
                 pkgs.ripgrep
                 pkgs.fd
+                phenixDev
                 pi
                 stitch
                 workspace

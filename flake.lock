@@ -972,6 +972,9 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "phenix-packages": [
+          "phenix-packages"
+        ],
         "phenix-pins": [
           "phenix-pins"
         ],
@@ -981,11 +984,11 @@
         "pi-src": "pi-src"
       },
       "locked": {
-        "lastModified": 1784587012,
-        "narHash": "sha256-BYeTCpWeashu+F1F7OQ9OtDD/dni4PnX0gHFe6qtevU=",
+        "lastModified": 1785413701,
+        "narHash": "sha256-iTCiZ9NmHpuNoPbcXP7Rb0zq6MdKEkEszgDcIkWzovY=",
         "owner": "matthis-k",
         "repo": "phenix-agent-harness",
-        "rev": "3991e009fb5641d2b18e63c86dd452d4b52af0c7",
+        "rev": "330033571f5d4eb8de0d41bdaa23636e0199e660",
         "type": "github"
       },
       "original": {
@@ -1147,11 +1150,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784302688,
-        "narHash": "sha256-roPLnSzc8SWnHFS6L2CPx3nnUxXB2qU3BupiK3HxJkU=",
+        "lastModified": 1785413230,
+        "narHash": "sha256-kV22whFETzE0maJJ0XDmKhl+AkalzvvDQ75fD0BnpfY=",
         "owner": "matthis-k",
         "repo": "phenix-packages",
-        "rev": "b1aadf98e16603b19a11cd8515fc12a25e6a5ae9",
+        "rev": "3e98c66cf6ff8e796022f941cf23558861be7927",
         "type": "github"
       },
       "original": {
@@ -1315,11 +1318,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784316402,
-        "narHash": "sha256-kReTDWk8dWb9YWOIngRhXfjVs/Zj2xeILDN/LjW5j1s=",
+        "lastModified": 1785411631,
+        "narHash": "sha256-4ljI73kfrFx0rXdjtz98FHGtaAhyzphK7GTJPMoZqrA=",
         "owner": "matthis-k",
         "repo": "phenix-tools",
-        "rev": "05746541a9dc4eceec0bd2a2ed3d62eec17df727",
+        "rev": "1a757c8b9686ad32652b6f8d3c7043f654247d94",
         "type": "github"
       },
       "original": {
