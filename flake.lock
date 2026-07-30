@@ -972,7 +972,9 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "phenix-packages": "phenix-packages",
+        "phenix-packages": [
+          "phenix-packages"
+        ],
         "phenix-pins": [
           "phenix-pins"
         ],
@@ -1136,36 +1138,6 @@
       }
     },
     "phenix-packages": {
-      "inputs": {
-        "flake-parts": [
-          "phenix-agent-harness",
-          "phenix-pins",
-          "flake-parts"
-        ],
-        "nixpkgs": [
-          "phenix-agent-harness",
-          "nixpkgs"
-        ],
-        "phenix-pins": [
-          "phenix-agent-harness",
-          "phenix-pins"
-        ]
-      },
-      "locked": {
-        "lastModified": 1785410340,
-        "narHash": "sha256-wOLaElGL1wMY0VEpFKnT6Whf+wTqFOiVQV3W7E+jHL8=",
-        "owner": "matthis-k",
-        "repo": "phenix-packages",
-        "rev": "dd63266f3ecd391df2edf3ce06410a72edb6e8fb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "matthis-k",
-        "repo": "phenix-packages",
-        "type": "github"
-      }
-    },
-    "phenix-packages_2": {
       "inputs": {
         "flake-parts": [
           "flake-parts"
@@ -1412,7 +1384,7 @@
         "phenix-hosts": "phenix-hosts",
         "phenix-nvim": "phenix-nvim",
         "phenix-opencode": "phenix-opencode",
-        "phenix-packages": "phenix-packages_2",
+        "phenix-packages": "phenix-packages",
         "phenix-pins": "phenix-pins_2",
         "phenix-shell": "phenix-shell",
         "phenix-stitch": "phenix-stitch_2",
