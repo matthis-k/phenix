@@ -79,6 +79,7 @@
       url = "github:matthis-k/phenix-agent-harness";
       inputs = {
         phenix-pins.follows = "phenix-pins";
+        phenix-packages.follows = "phenix-packages";
         phenix-stitch.follows = "phenix-stitch";
         nixpkgs.follows = "nixpkgs";
       };
@@ -129,11 +130,13 @@
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
           opencode = inputs.phenix-tools.packages.${system}.opencode;
           workspace = inputs.phenix-tools.packages.${system}.phenix-workspace;
+          phenixDev = inputs.phenix-tools.packages.${system}.phenix-dev;
           pi = inputs.phenix-agent-harness.packages.${system}.pi;
         in
         {
           packages = {
             inherit stitch opencode pi;
+            phenix-dev = phenixDev;
             phenix-workspace = workspace;
             stitch-mcp = stitchMcp;
             default = stitch;
@@ -162,6 +165,7 @@
                 pkgs.jq
                 pkgs.ripgrep
                 pkgs.fd
+                phenixDev
                 pi
                 stitch
                 workspace
