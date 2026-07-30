@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -22,6 +22,7 @@ jobs:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
@@ -40,11 +41,15 @@ jobs:
             --update-input phenix-packages \
             --update-input phenix-tools \
             --update-input phenix-agent-harness
-      - name: Upload refreshed lock
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: refreshed-flake-lock
-          path: flake.lock
-          if-no-files-found: error
+      - name: Commit refreshed lock
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add flake.lock
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(inputs): propagate Phenix development runtime'
+            git push origin HEAD:${{ github.head_ref }}
+          fi
       - name: Run repository maintenance
         run: devenv test
