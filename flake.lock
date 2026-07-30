@@ -972,9 +972,6 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "phenix-packages": [
-          "phenix-packages"
-        ],
         "phenix-pins": [
           "phenix-pins"
         ],
@@ -984,11 +981,11 @@
         "pi-src": "pi-src"
       },
       "locked": {
-        "lastModified": 1785413701,
-        "narHash": "sha256-iTCiZ9NmHpuNoPbcXP7Rb0zq6MdKEkEszgDcIkWzovY=",
+        "lastModified": 1785415350,
+        "narHash": "sha256-kqC5bMnd3eXI942lnLCf6ASsOPFOotbwphxOpuXDdiU=",
         "owner": "matthis-k",
         "repo": "phenix-agent-harness",
-        "rev": "330033571f5d4eb8de0d41bdaa23636e0199e660",
+        "rev": "1d5768a94c57bd20af979980bbad60fc2c26e3b4",
         "type": "github"
       },
       "original": {
@@ -1150,11 +1147,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785413230,
-        "narHash": "sha256-kV22whFETzE0maJJ0XDmKhl+AkalzvvDQ75fD0BnpfY=",
+        "lastModified": 1785415325,
+        "narHash": "sha256-brIgqTVS5LcyqNN67zKtwaPC3AA+rIeY11WNvuxqF+4=",
         "owner": "matthis-k",
         "repo": "phenix-packages",
-        "rev": "3e98c66cf6ff8e796022f941cf23558861be7927",
+        "rev": "7744293297c44ff56cf68236ff50eec275fdd006",
         "type": "github"
       },
       "original": {
@@ -1202,11 +1199,11 @@
         "sops-nix": "sops-nix_2"
       },
       "locked": {
-        "lastModified": 1784302653,
-        "narHash": "sha256-PpW/9z+ahzOVo64Op5Fm98mxpNDtVze2ejKQvKdmBJo=",
+        "lastModified": 1785414837,
+        "narHash": "sha256-QURE1WbouFqOF8WHAaO23/lsXOXw/v17Z4JVM3tbnxk=",
         "owner": "matthis-k",
         "repo": "phenix-pins",
-        "rev": "adc17b05d747863a9f82d3a0f8721fbc9e7a1823",
+        "rev": "1bbb49b17e648b67a9f0efe2a693f8fe5296cb03",
         "type": "github"
       },
       "original": {

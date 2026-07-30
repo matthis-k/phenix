@@ -79,7 +79,6 @@
       url = "github:matthis-k/phenix-agent-harness";
       inputs = {
         phenix-pins.follows = "phenix-pins";
-        phenix-packages.follows = "phenix-packages";
         phenix-stitch.follows = "phenix-stitch";
         nixpkgs.follows = "nixpkgs";
       };
