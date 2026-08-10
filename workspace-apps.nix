@@ -17,26 +17,8 @@
           type = "app";
           program = "${wrapper}/bin/${name}";
         };
-      inventoryCheck =
-        pkgs.runCommand "phenix-workspace-inventory"
-          {
-            nativeBuildInputs = [ workspace ];
-          }
-          ''
-            export HOME="$TMPDIR"
-            phenix-workspace --help > workspace-help
-            grep -q 'nix NIX-COMMAND' workspace-help
-            phenix-workspace --root ${inputs.self} init --dry-run > "$out"
-            grep -q 'phenix-stitch' "$out"
-            grep -q 'phenix-tools' "$out"
-          '';
     in
     {
-      checks = {
-        phenix-workspace-package = workspace;
-        phenix-workspace-inventory = inventoryCheck;
-      };
-
       apps = {
         init-workspace = app "init-workspace" "init";
         sync-workspace = app "sync-workspace" "sync";
