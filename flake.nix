@@ -9,15 +9,12 @@
   };
 
   inputs = {
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
-
+    phenix-flake-ci.url = "github:matthis-k/phenix-flake-ci";
     phenix-pins = {
       url = "github:matthis-k/phenix-pins";
-      inputs.flake-parts.follows = "flake-parts";
+      inputs.phenix-flake-ci.follows = "phenix-flake-ci";
     };
+    flake-parts.follows = "phenix-pins/flake-parts";
     nixpkgs.follows = "phenix-pins/nixpkgs";
 
     disko = {
@@ -28,6 +25,7 @@
     phenix-packages = {
       url = "github:matthis-k/phenix-packages";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
@@ -37,20 +35,19 @@
     phenix-stitch = {
       url = "github:matthis-k/phenix-stitch";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
       };
     };
 
-    phenix-opencode.url = "github:matthis-k/phenix-opencode";
-
     phenix-tools = {
       url = "github:matthis-k/phenix-tools";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         phenix-stitch.follows = "phenix-stitch";
-        phenix-opencode.follows = "phenix-opencode";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
       };
@@ -59,6 +56,7 @@
     phenix-nvim = {
       url = "github:matthis-k/phenix-nvim";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
@@ -68,6 +66,7 @@
     phenix-de = {
       url = "github:matthis-k/phenix-de";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
@@ -78,6 +77,7 @@
     phenix-agent-harness = {
       url = "github:matthis-k/phenix-agent-harness";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         phenix-stitch.follows = "phenix-stitch";
         nixpkgs.follows = "nixpkgs";
@@ -87,6 +87,7 @@
     phenix-hosts = {
       url = "github:matthis-k/phenix-hosts";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
@@ -102,6 +103,7 @@
     phenix-shell = {
       url = "github:matthis-k/phenix-shell";
       inputs = {
+        phenix-flake-ci.follows = "phenix-flake-ci";
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
@@ -120,14 +122,20 @@
       imports = [
         ./phenix-re-exports.nix
         ./workspace-apps.nix
+        ./development.nix
       ];
 
       perSystem =
-        { pkgs, system, ... }:
+        {
+          config,
+          pkgs,
+          system,
+          ...
+        }:
         let
           stitch = inputs.phenix-tools.packages.${system}.stitch;
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
-          opencode = inputs.phenix-tools.packages.${system}.opencode;
+          phenix = inputs.phenix-tools.packages.${system}.phenix;
           workspace = inputs.phenix-tools.packages.${system}.phenix-workspace;
           phenixDev = inputs.phenix-tools.packages.${system}.phenix-dev;
           pi = inputs.phenix-agent-harness.packages.${system}.pi;
@@ -136,7 +144,7 @@
         in
         {
           packages = {
-            inherit stitch opencode pi;
+            inherit stitch phenix pi;
             phenix-dev = phenixDev;
             phenix-workspace = workspace;
             pi-store = piStore;
@@ -148,7 +156,7 @@
           apps = {
             stitch = inputs.phenix-tools.apps.${system}.stitch;
             stitch-mcp = inputs.phenix-tools.apps.${system}.stitch-mcp;
-            opencode = inputs.phenix-tools.apps.${system}.opencode;
+            phenix = inputs.phenix-tools.apps.${system}.phenix;
             pi = {
               type = "app";
               program = "${pi}/bin/pi";
@@ -170,7 +178,6 @@
             default = pkgs.mkShell {
               name = "phenix-workspace";
               packages = [
-                pkgs.devenv
                 pkgs.git
                 pkgs.gh
                 pkgs.jq
@@ -180,13 +187,14 @@
                 pi
                 stitch
                 workspace
+                config.packages.phenix-maintenance
               ];
               shellHook = ''
+                ${config.packages.phenix-maintenance.phenixMaintenance.gitHooks.shellHook or ""}
                 echo "Phenix workspace"
-                echo "  local Nix:   nix run .#nixdev -- flake check"
-                echo "  init repos:  nix run .#init-workspace"
-                echo "  maintenance: devenv test"
-                echo "  fixes:       devenv tasks run maintenance:fix"
+                echo "  init repos:  nix run .#init-workspace -- --dry-run"
+                echo "  maintenance: maintenance all"
+                echo "  fixes:       maintenance fix"
                 echo "  stitch:      $(stitch --version 2>/dev/null || echo '?')"
               '';
             };
