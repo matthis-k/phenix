@@ -126,12 +126,7 @@
       ];
 
       perSystem =
-        {
-          config,
-          pkgs,
-          system,
-          ...
-        }:
+        { system, ... }:
         let
           stitch = inputs.phenix-tools.packages.${system}.stitch;
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
@@ -173,32 +168,7 @@
             default = inputs.phenix-tools.apps.${system}.stitch;
           };
 
-          devShells = {
-            shared = inputs.phenix-shell.devShells.${system}.default;
-            default = pkgs.mkShell {
-              name = "phenix-workspace";
-              packages = [
-                pkgs.git
-                pkgs.gh
-                pkgs.jq
-                pkgs.ripgrep
-                pkgs.fd
-                phenixDev
-                pi
-                stitch
-                workspace
-                config.packages.phenix-maintenance
-              ];
-              shellHook = ''
-                ${config.packages.phenix-maintenance.phenixMaintenance.gitHooks.shellHook or ""}
-                echo "Phenix workspace"
-                echo "  init repos:  nix run .#init-workspace -- --dry-run"
-                echo "  maintenance: maintenance all"
-                echo "  fixes:       maintenance fix"
-                echo "  stitch:      $(stitch --version 2>/dev/null || echo '?')"
-              '';
-            };
-          };
+          devShells.shared = inputs.phenix-shell.devShells.${system}.default;
         };
     };
 }
