@@ -4,6 +4,17 @@ Phenix is a Nix flake workspace composed from independent provider and consumer 
 
 The root repository is aggregation-only. It pins child flakes, re-exports packages, apps, modules, and host configurations, and provides the workspace development shell.
 
+## Agent architecture
+
+Phenix uses one canonical runtime/configuration stack:
+
+- `phenix-conductor` owns the headless ACP runtime, provider integration, sessions, routing, workflows, and execution semantics.
+- `phenix-harness` owns the default Phenix policy, agent definitions, routing profiles, orchestrations, and skills, and exports a configured Conductor product.
+- `phenix-nvim` is the Neovim frontend and consumes the configured Harness product.
+- `phenix-hosts` installs the frontend and configured Harness product for concrete systems.
+
+Historical Pi/OpenCode repository identities are not part of the current dependency graph.
+
 ## Local workspace
 
 The root owns the desired Phenix repository set through its lock graph and `.stitch-workspace.json` policy. Local clones live under the gitignored `repos/` directory.
@@ -19,7 +30,7 @@ nix run .#clean-workspace -- --apply
 # Run arbitrary Nix commands against the root with local flake overrides.
 nix run .#nixdev -- flake check
 nix run .#nixdev -- develop
-nix run .#nixdev -- build .#pi
+nix run .#nixdev -- build .#phenix
 ```
 
 `nixdev` changes to the Phenix root, injects `--override-input` for every local Phenix flake, and then forwards the remaining arguments directly to Nix. The convenience apps `dev` and `check-local` remain aliases for `nixdev -- develop` and `nixdev -- flake check`.
