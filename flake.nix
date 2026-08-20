@@ -43,14 +43,27 @@
       };
     };
 
-    phenix-opencode.url = "github:matthis-k/phenix-opencode";
+    phenix-conductor = {
+      url = "github:matthis-k/phenix-conductor";
+      inputs = {
+        phenix-pins.follows = "phenix-pins";
+        phenix-stitch.follows = "phenix-stitch";
+      };
+    };
+
+    phenix-harness = {
+      url = "github:matthis-k/phenix-harness";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        phenix-conductor.follows = "phenix-conductor";
+      };
+    };
 
     phenix-tools = {
       url = "github:matthis-k/phenix-tools";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         phenix-stitch.follows = "phenix-stitch";
-        phenix-opencode.follows = "phenix-opencode";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
       };
@@ -62,6 +75,8 @@
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
+        phenix-conductor.follows = "phenix-conductor";
+        phenix-harness.follows = "phenix-harness";
       };
     };
 
@@ -75,15 +90,6 @@
       };
     };
 
-    phenix-agent-harness = {
-      url = "github:matthis-k/phenix-agent-harness";
-      inputs = {
-        phenix-pins.follows = "phenix-pins";
-        phenix-stitch.follows = "phenix-stitch";
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-
     phenix-hosts = {
       url = "github:matthis-k/phenix-hosts";
       inputs = {
@@ -94,8 +100,9 @@
         sops-nix.follows = "phenix-pins/sops-nix";
         disko.follows = "disko";
         phenix-de.follows = "phenix-de";
+        phenix-conductor.follows = "phenix-conductor";
+        phenix-harness.follows = "phenix-harness";
         phenix-nvim.follows = "phenix-nvim";
-        phenix-agent-harness.follows = "phenix-agent-harness";
       };
     };
 
@@ -127,20 +134,19 @@
         let
           stitch = inputs.phenix-tools.packages.${system}.stitch;
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
-          opencode = inputs.phenix-tools.packages.${system}.opencode;
           workspace = inputs.phenix-tools.packages.${system}.phenix-workspace;
           phenixDev = inputs.phenix-tools.packages.${system}.phenix-dev;
-          pi = inputs.phenix-agent-harness.packages.${system}.pi;
-          piStore = inputs.phenix-agent-harness.packages.${system}.pi-store;
-          piDev = inputs.phenix-agent-harness.packages.${system}.pi-dev;
+          conductor = inputs.phenix-conductor.packages.${system}.default;
+          harness = inputs.phenix-harness.packages.${system}.default;
         in
         {
           packages = {
-            inherit stitch opencode pi;
+            inherit stitch;
+            phenix = harness;
+            phenix-conductor = conductor;
+            phenix-harness = harness;
             phenix-dev = phenixDev;
             phenix-workspace = workspace;
-            pi-store = piStore;
-            pi-dev = piDev;
             stitch-mcp = stitchMcp;
             default = stitch;
           };
@@ -148,19 +154,9 @@
           apps = {
             stitch = inputs.phenix-tools.apps.${system}.stitch;
             stitch-mcp = inputs.phenix-tools.apps.${system}.stitch-mcp;
-            opencode = inputs.phenix-tools.apps.${system}.opencode;
-            pi = {
-              type = "app";
-              program = "${pi}/bin/pi";
-            };
-            pi-store = {
-              type = "app";
-              program = "${piStore}/bin/pi-store";
-            };
-            pi-dev = {
-              type = "app";
-              program = "${piDev}/bin/pi-dev";
-            };
+            phenix = inputs.phenix-harness.apps.${system}.default;
+            phenix-conductor = inputs.phenix-conductor.apps.${system}.default;
+            phenix-harness = inputs.phenix-harness.apps.${system}.default;
             phenix-shell = inputs.phenix-de.apps.${system}.phenix-shell;
             default = inputs.phenix-tools.apps.${system}.stitch;
           };
@@ -177,7 +173,7 @@
                 pkgs.ripgrep
                 pkgs.fd
                 phenixDev
-                pi
+                harness
                 stitch
                 workspace
               ];
