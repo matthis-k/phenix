@@ -44,9 +44,17 @@ in
         test ! -e phenix-module.nix
         test ! -e phenix-wrappers.nix
         test ! -e phenix-helpers.nix
+
         retired="$(printf 'te%s' 'nd')"
         ! git grep -niE "(^|[^[:alnum:]_-])''${retired}([^[:alnum:]_-]|$)" \
           -- . ':(exclude).github/workflows/**'
+
+        legacy_agent="$(printf 'phenix-agent-%s' 'harness')"
+        legacy_opencode="$(printf 'phenix-%s' 'opencode')"
+        legacy_pi="$(printf 'pi-%s' 'src')"
+        for legacy in "$legacy_agent" "$legacy_opencode" "$legacy_pi"; do
+          ! git grep -nF "$legacy" -- . ':(exclude).github/workflows/**'
+        done
       '';
     };
     "maintenance-fix-statix" = {
