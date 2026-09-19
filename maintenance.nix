@@ -59,7 +59,6 @@ in
         ! grep -F 'url = "github:matthis-k/phenix-conductor"' flake.nix
         ! grep -F 'url = "github:matthis-k/phenix-harness"' flake.nix
         grep -F 'inputs.phenix-ai.follows = "phenix-ai";' flake.nix >/dev/null
-        grep -F 'inputs.phenix-ai-nvim.follows = "phenix-ai-nvim";' flake.nix >/dev/null
         grep -F 'phenix-ai-nvim.follows = "phenix-ai-nvim";' flake.nix >/dev/null
       '';
     };
