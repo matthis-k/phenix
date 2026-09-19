@@ -13,11 +13,12 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 | Repo | Role | Layer | Allowed inputs |
 |---|---:|---:|---|
 | `phenix-pins` | pins | 0 | external only |
-| `phenix-tend` | producer | 2 | pins |
 | `phenix-stitch` | producer | 2 | pins |
-| `phenix-nvim` | integration | 3 | pins, producers |
-| `phenix-agent-harness` | integration | 3 | pins, producers |
-| `phenix-packages` | pkgs-aggregator | 4 | pins, pkgs-base, producers, integrations |
+| `phenix-tools` | producer | 2 | pins, stitch |
+| `phenix-ai` | runtime provider | 2 | pins, stitch |
+| `phenix-ai.nvim` | frontend integration | 3 | phenix-ai |
+| `phenix-nvim` | editor integration | 4 | pins, phenix-ai.nvim |
+| `phenix-packages` | pkgs-aggregator | 4 | pins, producers, integrations |
 | `phenix-de` | consumer | 5 | pins, pkgs, integrations, selected producers |
 | `phenix-hosts` | consumer | 5 | pins, pkgs, de, home, secrets |
 | `phenix` | root | 6 | all internal flakes |
@@ -32,12 +33,13 @@ flakes/
     phenix-pins/
   01-foundation/     layer 1 — lib, protocols, pkgs-base (future)
   02-producers/      layer 2 — package producers
-    phenix-tend/
     phenix-stitch/
-  03-integrations/   layer 3 — cross-producer wiring
-    phenix-agent-harness/
+    phenix-tools/
+    phenix-ai/
+  03-integrations/   layer 3 — runtime frontends
+    phenix-ai.nvim/
+  04-pkgs/           layer 4 — editor and package aggregation
     phenix-nvim/
-  04-pkgs/           layer 4 — aggregated package set
     phenix-packages/
   05-consumers/      layer 5 — config and composition flakes
     phenix-de/
@@ -46,10 +48,10 @@ flakes/
 
 A flake may depend on flakes in lower-numbered directories. It must not depend on flakes in same-numbered or higher-numbered directories.
 
-`phenix-agent-harness` lives in layer 3 because its wrapped Pi
-agent configuration integrates with `phenix-tend` and `phenix-stitch`. `phenix-de` remains a layer-5 consumer; any
-package or overlay outputs there are consumer-local desktop-environment
-composition, not a reusable lower-layer provider API. The current root workspace
+`phenix-ai` owns the supported runtime and default Harness product. `phenix-ai.nvim`
+is the canonical frontend and `phenix-nvim` composes it into the editor distribution.
+`phenix-de` remains a layer-5 consumer; any package or overlay outputs there are
+consumer-local desktop-environment composition, not a reusable lower-layer provider API. The current root workspace
 is `phenix`; the former shell role has been absorbed into `phenix-de`.
 
 ## Validation
