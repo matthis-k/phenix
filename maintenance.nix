@@ -38,6 +38,7 @@ in
       packages = [
         pkgs.coreutils
         pkgs.git
+        pkgs.jq
       ];
       exec = ''
         ${root}
@@ -60,6 +61,13 @@ in
         ! grep -F 'url = "github:matthis-k/phenix-harness"' flake.nix
         grep -F 'inputs.phenix-ai.follows = "phenix-ai";' flake.nix >/dev/null
         grep -F 'phenix-ai-nvim.follows = "phenix-ai-nvim";' flake.nix >/dev/null
+        jq -e '
+          ([.nodes | keys[] | select(test("^phenix-(conductor|harness)(_|$)"))] | length) == 0
+          and .nodes.root.inputs["phenix-ai"] != null
+          and .nodes.root.inputs["phenix-ai-nvim"] != null
+          and .nodes.root.inputs["phenix-nvim"] != null
+          and .nodes.root.inputs["phenix-hosts"] != null
+        ' flake.lock >/dev/null
       '';
     };
     "maintenance-fix-statix" = {
