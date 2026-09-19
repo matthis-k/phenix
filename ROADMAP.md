@@ -7,6 +7,8 @@
 - Thin tools aggregation.
 - Provider-first flake topology with validated host configurations.
 - Root workspace reduced to aggregation and re-exports.
+- AI runtime, default Harness product, providers, and policy consolidated under `phenix-ai`.
+- Canonical dependency chain defined as `phenix-ai -> phenix-ai.nvim -> phenix-nvim -> phenix-hosts -> phenix`.
 
 ## Next
 
