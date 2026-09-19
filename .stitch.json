@@ -4,11 +4,11 @@
     "phenix-pins",
     "phenix-packages",
     "phenix-stitch",
-    "phenix-opencode",
     "phenix-tools",
+    "phenix-ai",
+    "phenix-ai.nvim",
     "phenix-nvim",
     "phenix-de",
-    "phenix-agent-harness",
     "phenix-hosts",
     "phenix-shell"
   ]
