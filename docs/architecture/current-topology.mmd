@@ -1,26 +1,41 @@
 flowchart TD
-  phenix[phenix<br/>layer 6<br/>workspaceRoot]
-  phenix_de[phenix-de<br/>layer 5<br/>hostConsumer]
-  phenix_hosts[phenix-hosts<br/>layer 5<br/>hostConsumer]
-  phenix_nvim[phenix-nvim<br/>layer 2<br/>toolProvider]
-  phenix_packages[phenix-packages<br/>layer 4<br/>packageProvider]
+  phenix[phenix<br/>layer 6<br/>workspace root]
+  phenix_hosts[phenix-hosts<br/>layer 5<br/>host consumer]
+  phenix_de[phenix-de<br/>layer 5<br/>desktop consumer]
+  phenix_nvim[phenix-nvim<br/>layer 4<br/>editor distribution]
+  phenix_ai_nvim[phenix-ai.nvim<br/>layer 3<br/>canonical Neovim client]
+  phenix_packages[phenix-packages<br/>layer 4<br/>package provider]
+  phenix_ai[phenix-ai<br/>layer 2<br/>AI runtime + product]
+  phenix_tools[phenix-tools<br/>layer 2<br/>tool provider]
+  phenix_stitch[phenix-stitch<br/>layer 2<br/>workspace provider]
   phenix_pins[phenix-pins<br/>layer 0<br/>pins]
-  phenix_tend[phenix-tend<br/>layer 2<br/>toolProvider]
-  phenix_stitch[phenix-stitch<br/>layer 2<br/>toolProvider]
-  phenix_agent_harness[phenix-agent-harness<br/>layer 3<br/>integration]
-  phenix --> phenix_de
+
   phenix --> phenix_hosts
+  phenix --> phenix_de
   phenix --> phenix_nvim
+  phenix --> phenix_ai_nvim
   phenix --> phenix_packages
-  phenix --> phenix_pins
-  phenix --> phenix_tend
+  phenix --> phenix_ai
+  phenix --> phenix_tools
   phenix --> phenix_stitch
-  phenix --> phenix_agent_harness
-  phenix_de --> phenix_pins
+  phenix --> phenix_pins
+
+  phenix_hosts --> phenix_de
+  phenix_hosts --> phenix_nvim
+  phenix_hosts --> phenix_ai
+  phenix_hosts --> phenix_packages
   phenix_hosts --> phenix_pins
+
+  phenix_nvim --> phenix_ai_nvim
+  phenix_nvim --> phenix_ai
   phenix_nvim --> phenix_pins
+
+  phenix_ai_nvim --> phenix_ai
+  phenix_ai --> phenix_stitch
+  phenix_ai --> phenix_pins
+
+  phenix_de --> phenix_pins
   phenix_packages --> phenix_pins
-  phenix_tend --> phenix_pins
+  phenix_tools --> phenix_stitch
+  phenix_tools --> phenix_pins
   phenix_stitch --> phenix_pins
-  phenix_agent_harness --> phenix_tend
-  phenix_agent_harness --> phenix_stitch
