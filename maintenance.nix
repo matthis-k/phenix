@@ -55,6 +55,12 @@ in
         for legacy in "$legacy_agent" "$legacy_opencode" "$legacy_pi"; do
           ! git grep -nF "$legacy" -- . ':(exclude).github/workflows/**'
         done
+
+        for retired_repo in \
+          "github:matthis-k/phenix-conductor" \
+          "github:matthis-k/phenix-harness"; do
+          ! git grep -nF "$retired_repo" -- . ':(exclude).github/workflows/**'
+        done
       '';
     };
     "maintenance-fix-statix" = {
