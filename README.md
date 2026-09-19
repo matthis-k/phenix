@@ -8,10 +8,10 @@ The root repository is aggregation-only. It pins child flakes, re-exports packag
 
 Phenix uses one canonical runtime/configuration stack:
 
-- `phenix-conductor` owns the headless ACP runtime, provider integration, sessions, routing, workflows, and execution semantics.
-- `phenix-harness` owns the default Phenix policy, agent definitions, routing profiles, orchestrations, and skills, and exports a configured Conductor product.
-- `phenix-nvim` is the Neovim frontend and consumes the configured Harness product.
-- `phenix-hosts` installs the frontend and configured Harness product for concrete systems.
+- `phenix-ai` is the single source of truth for the headless ACP runtime, provider integration, sessions, routing, workflows, default Harness policy, orchestrations, and skills.
+- `phenix-ai.nvim` is the canonical Neovim AI client and follows the root `phenix-ai` pin.
+- `phenix-nvim` owns the editor distribution and consumes the canonical AI client.
+- `phenix-hosts` installs the editor and the supported `phenix-ai` product for concrete systems.
 
 Historical Pi/OpenCode repository identities are not part of the current dependency graph.
 
