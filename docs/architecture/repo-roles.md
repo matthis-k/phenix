@@ -13,44 +13,44 @@ This document describes the intended Phenix workflow. Items not yet implemented 
 | Repo | Role | Layer | Allowed inputs |
 |---|---:|---:|---|
 | `phenix-pins` | pins | 0 | external only |
-| `phenix-tend` | producer | 2 | pins |
-| `phenix-stitch` | producer | 2 | pins |
-| `phenix-nvim` | integration | 3 | pins, producers |
-| `phenix-agent-harness` | integration | 3 | pins, producers |
-| `phenix-packages` | pkgs-aggregator | 4 | pins, pkgs-base, producers, integrations |
-| `phenix-de` | consumer | 5 | pins, pkgs, integrations, selected producers |
-| `phenix-hosts` | consumer | 5 | pins, pkgs, de, home, secrets |
-| `phenix` | root | 6 | all internal flakes |
+| `phenix-ai` | AI runtime + supported product | 2 | pins, workspace providers |
+| `phenix-stitch` | workspace provider | 2 | pins |
+| `phenix-tools` | tools aggregation | 2 | pins, workspace providers |
+| `phenix-ai.nvim` | canonical Neovim client | 3 | AI runtime |
+| `phenix-nvim` | editor distribution | 4 | pins, AI runtime, Neovim client |
+| `phenix-packages` | package provider | 4 | pins, lower-layer producers |
+| `phenix-de` | desktop consumer | 5 | pins, packages |
+| `phenix-hosts` | host consumer | 5 | pins, packages, desktop, AI runtime, editor distribution |
+| `phenix` | workspace root | 6 | all internal flakes |
 
 ## Filesystem layout
 
-The root repo mirrors the dependency DAG via layer-numbered directories:
+The published dependency DAG is provider-first:
 
 ```
-flakes/
-  00-pins/           layer 0 — external pin authority
-    phenix-pins/
-  01-foundation/     layer 1 — lib, protocols, pkgs-base (future)
-  02-producers/      layer 2 — package producers
-    phenix-tend/
-    phenix-stitch/
-  03-integrations/   layer 3 — cross-producer wiring
-    phenix-agent-harness/
-    phenix-nvim/
-  04-pkgs/           layer 4 — aggregated package set
-    phenix-packages/
-  05-consumers/      layer 5 — config and composition flakes
-    phenix-de/
-    phenix-hosts/
+0  phenix-pins
+   |
+2  phenix-ai        phenix-stitch / phenix-tools
+   |
+3  phenix-ai.nvim
+   |
+4  phenix-nvim      phenix-packages
+   |
+5  phenix-hosts     phenix-de
+   |
+6  phenix
 ```
 
-A flake may depend on flakes in lower-numbered directories. It must not depend on flakes in same-numbered or higher-numbered directories.
+`phenix-ai` is the single repository authority for the runtime, providers,
+default policy, routing, skills, ACP product, and internal conductor/harness
+packages. `phenix-ai.nvim` owns only the canonical editor client.
+`phenix-nvim` owns editor distribution/configuration and pins both to the same
+runtime revision. `phenix-hosts` installs the resulting distribution and the
+supported `phenix-ai` product.
 
-`phenix-agent-harness` lives in layer 3 because its wrapped Pi
-agent configuration integrates with `phenix-tend` and `phenix-stitch`. `phenix-de` remains a layer-5 consumer; any
-package or overlay outputs there are consumer-local desktop-environment
-composition, not a reusable lower-layer provider API. The current root workspace
-is `phenix`; the former shell role has been absorbed into `phenix-de`.
+The former standalone `phenix-conductor`, `phenix-harness`,
+`phenix-agent-harness`, and `phenix-opencode` repositories are not valid
+published dependency edges.
 
 ## Validation
 
