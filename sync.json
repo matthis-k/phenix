@@ -1,0 +1,25 @@
+{
+  "dependsOn": [
+    "phenix-pins",
+    "phenix-packages",
+    "phenix-stitch",
+    "phenix-tools",
+    "phenix-ai",
+    "phenix-nvim",
+    "phenix-de",
+    "phenix-hosts",
+    "phenix-shell"
+  ],
+  "updateInputs": [
+    "phenix-pins",
+    "phenix-packages",
+    "phenix-stitch",
+    "phenix-tools",
+    "phenix-ai",
+    "phenix-nvim",
+    "phenix-de",
+    "phenix-hosts",
+    "phenix-shell"
+  ],
+  "checks": ["devenv test"]
+}
