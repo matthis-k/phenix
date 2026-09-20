@@ -43,19 +43,11 @@
       };
     };
 
-    phenix-conductor = {
-      url = "github:matthis-k/phenix-conductor";
+    phenix-ai = {
+      url = "github:matthis-k/phenix-ai";
       inputs = {
         phenix-pins.follows = "phenix-pins";
         phenix-stitch.follows = "phenix-stitch";
-      };
-    };
-
-    phenix-harness = {
-      url = "github:matthis-k/phenix-harness";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        phenix-conductor.follows = "phenix-conductor";
       };
     };
 
@@ -75,8 +67,7 @@
         phenix-pins.follows = "phenix-pins";
         flake-parts.follows = "flake-parts";
         nixpkgs.follows = "nixpkgs";
-        phenix-conductor.follows = "phenix-conductor";
-        phenix-harness.follows = "phenix-harness";
+        phenix-ai.follows = "phenix-ai";
       };
     };
 
@@ -100,8 +91,7 @@
         sops-nix.follows = "phenix-pins/sops-nix";
         disko.follows = "disko";
         phenix-de.follows = "phenix-de";
-        phenix-conductor.follows = "phenix-conductor";
-        phenix-harness.follows = "phenix-harness";
+        phenix-ai.follows = "phenix-ai";
         phenix-nvim.follows = "phenix-nvim";
       };
     };
@@ -136,15 +126,13 @@
           stitchMcp = inputs.phenix-tools.packages.${system}.stitch-mcp;
           workspace = inputs.phenix-tools.packages.${system}.phenix-workspace;
           phenixDev = inputs.phenix-tools.packages.${system}.phenix-dev;
-          conductor = inputs.phenix-conductor.packages.${system}.default;
-          harness = inputs.phenix-harness.packages.${system}.default;
+          phenixAi = inputs.phenix-ai.packages.${system}.phenix;
         in
         {
           packages = {
             inherit stitch;
-            phenix = harness;
-            phenix-conductor = conductor;
-            phenix-harness = harness;
+            phenix = phenixAi;
+            phenix-ai = phenixAi;
             phenix-dev = phenixDev;
             phenix-workspace = workspace;
             stitch-mcp = stitchMcp;
@@ -154,9 +142,8 @@
           apps = {
             stitch = inputs.phenix-tools.apps.${system}.stitch;
             stitch-mcp = inputs.phenix-tools.apps.${system}.stitch-mcp;
-            phenix = inputs.phenix-harness.apps.${system}.default;
-            phenix-conductor = inputs.phenix-conductor.apps.${system}.default;
-            phenix-harness = inputs.phenix-harness.apps.${system}.default;
+            phenix = inputs.phenix-ai.apps.${system}.phenix;
+            phenix-ai = inputs.phenix-ai.apps.${system}.phenix;
             phenix-shell = inputs.phenix-de.apps.${system}.phenix-shell;
             default = inputs.phenix-tools.apps.${system}.stitch;
           };
@@ -173,7 +160,7 @@
                 pkgs.ripgrep
                 pkgs.fd
                 phenixDev
-                harness
+                phenixAi
                 stitch
                 workspace
               ];
