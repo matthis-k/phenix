@@ -52,7 +52,9 @@ in
         legacy_agent="$(printf 'phenix-agent-%s' 'harness')"
         legacy_opencode="$(printf 'phenix-%s' 'opencode')"
         legacy_pi="$(printf 'pi-%s' 'src')"
-        for legacy in "$legacy_agent" "$legacy_opencode" "$legacy_pi"; do
+        retired_conductor="$(printf 'phenix-%s' 'conductor')"
+        retired_harness="$(printf 'phenix-%s' 'harness')"
+        for legacy in "$legacy_agent" "$legacy_opencode" "$legacy_pi" "$retired_conductor" "$retired_harness"; do
           ! git grep -nF "$legacy" -- . ':(exclude).github/workflows/**'
         done
       '';
